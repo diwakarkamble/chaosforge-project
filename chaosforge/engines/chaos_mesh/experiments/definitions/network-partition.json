@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Partition",
+    "description": "Partitions selected Kubernetes pods from their network target.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "partition"
+    }
+}

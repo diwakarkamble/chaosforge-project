@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Status Check",
+    "description": "Checks an HTTP endpoint as part of a Chaos Mesh workflow.",
+    "configuration": {
+        "entry": "status-check",
+        "templates": [
+            {
+                "name": "status-check",
+                "status_check": {
+                    "type": "HTTP",
+                    "mode": "Synchronous",
+                    "url": "http://example.com",
+                    "method": "GET"
+                }
+            }
+        ]
+    },
+    "chaos_mesh": {
+        "kind": "StatusCheck"
+    }
+}

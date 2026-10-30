@@ -1,0 +1,53 @@
+{
+    "version": "1.0.0",
+    "title": "API Gateway Access Logging Chaos Test",
+    "description": "Temporarily disable API Gateway Access Logging and restore the original configuration.",
+
+    "configuration": {
+        "rest_api_id": null,
+        "stage_name": null,
+        "region": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+        {
+            "name": "Capture and Disable Access Logging",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_access_logging_actions",
+                "func": "capture_and_disable_access_logging",
+                "arguments": {
+                    "rest_api_id": "${rest_api_id}",
+                    "stage_name": "${stage_name}",
+                    "region": "${region}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_common",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "Restore Access Logging",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_access_logging_actions",
+                "func": "restore_access_logging"
+            }
+        }
+    ]
+}

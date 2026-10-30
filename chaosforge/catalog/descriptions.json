@@ -1,0 +1,215 @@
+﻿{
+  "lambda": {
+    "invocation-delay": {
+      "description": "Adds a configurable delay to Lambda function invocations to evaluate application behavior and resilience under increased execution latency.",
+      "impact": "Requests invoking the function may experience increased latency, timeouts, downstream delays, or cascading failures depending on the configured delay.",
+      "expected_behavior": "The application should tolerate the added latency within defined thresholds, maintain acceptable error rates, and recover normally when the experiment ends."
+    },
+    "invocation-error": {
+      "description": "Injects errors into Lambda function invocations to evaluate how the application handles function execution failures.",
+      "impact": "Lambda invocations may fail and dependent applications may receive errors, potentially triggering retries or fallback behavior.",
+      "expected_behavior": "The application should detect invocation failures, handle them gracefully, and recover automatically after the fault is removed."
+    },
+    "http-response": {
+      "description": "Injects configurable HTTP responses from Lambda integrations to test application behavior when downstream responses contain controlled error or status conditions.",
+      "impact": "Applications consuming the Lambda HTTP integration may receive unexpected HTTP status codes and may trigger error handling, retries, or fallback paths.",
+      "expected_behavior": "The application should correctly interpret the injected response, execute its error-handling path, and recover after the experiment completes."
+    }
+  },
+
+  "dynamodb": {
+    "pause-global-table-replication": {
+      "description": "Pauses replication for an Amazon DynamoDB global table to evaluate application resilience during cross-Region replication interruptions.",
+      "impact": "Changes made in one Region may not immediately replicate to other Regions, potentially causing temporary data divergence or stale reads.",
+      "expected_behavior": "The application should tolerate temporary replication lag, continue operating within acceptable consistency requirements, and converge after replication resumes."
+    }
+  },
+
+  "rds": {
+    "reboot-instance": {
+      "description": "Reboots an Amazon RDS database instance to evaluate application resilience during a database restart.",
+      "impact": "Database connections may be interrupted and applications may experience temporary connection failures, query errors, or increased latency.",
+      "expected_behavior": "Applications should detect the temporary database interruption, reconnect automatically, and resume normal operation after the instance becomes available."
+    },
+    "failover-db-cluster": {
+      "description": "Triggers an Amazon RDS database cluster failover to test application resilience during a database role transition.",
+      "impact": "Active database connections may be terminated and applications may temporarily experience connection failures or increased latency during failover.",
+      "expected_behavior": "Applications should reconnect to the new database writer, tolerate transient errors, and return to normal operation without manual intervention."
+    }
+  },
+
+  "elasticache": {
+    "interrupt-az-power": {
+      "description": "Simulates an Availability Zone power interruption for an Amazon ElastiCache replication group to evaluate cache resilience and multi-AZ recovery.",
+      "impact": "Cache nodes in the affected Availability Zone may become unavailable, causing cache misses, increased application latency, or temporary connection failures.",
+      "expected_behavior": "The application should continue operating using surviving cache nodes or fallback mechanisms and recover as the ElastiCache service restores capacity."
+    }
+  },
+
+    "ec2": {
+    "stop-instances": {
+      "description": "Stops selected Amazon EC2 instances to evaluate application resilience during instance interruption.",
+      "impact": "The selected instances become unavailable and applications may experience connection failures, reduced capacity, or service disruption if sufficient replacement capacity is not available.",
+      "expected_behavior": "Applications should tolerate the instance interruption, maintain availability through redundancy or recovery mechanisms, and return to normal operation when the instances are started again."
+    },
+    "reboot-instances": {
+      "description": "Reboots selected Amazon EC2 instances to evaluate application resilience during an instance restart.",
+      "impact": "The selected instances temporarily become unavailable, which may interrupt running workloads, connections, or application requests.",
+      "expected_behavior": "Applications should tolerate the temporary interruption, reconnect automatically where applicable, and recover normally after the instances become available."
+    },
+    "terminate-instances": {
+      "description": "Terminates selected Amazon EC2 instances to evaluate application resilience to permanent instance loss.",
+      "impact": "The selected instances are permanently terminated and workloads running on them may be disrupted or lost unless protected by redundancy, autoscaling, or recovery mechanisms.",
+      "expected_behavior": "The application should remain available through redundant capacity, autoscaling, or workload recovery mechanisms and restore the required capacity automatically."
+    },
+    "spot-instance-interruption": {
+      "description": "Simulates an Amazon EC2 Spot Instance interruption to evaluate workload resilience against unexpected capacity reclamation.",
+      "impact": "The affected Spot Instance may be interrupted and workloads running on it may experience termination, connection loss, or temporary capacity reduction.",
+      "expected_behavior": "Applications should handle Spot interruptions gracefully through checkpointing, workload redistribution, retries, or replacement capacity."
+    },
+    "insufficient-instance-capacity-error": {
+      "description": "Simulates an EC2 insufficient instance capacity error to evaluate application and infrastructure behavior when the requested capacity cannot be provisioned.",
+      "impact": "New instance provisioning may fail, potentially reducing available application capacity or preventing recovery and scaling operations.",
+      "expected_behavior": "Infrastructure and applications should handle capacity provisioning failures gracefully through retries, alternative capacity, scaling strategies, or other recovery mechanisms."
+    },
+    "asg-insufficient-instance-capacity-error": {
+      "description": "Simulates insufficient EC2 capacity during Amazon EC2 Auto Scaling operations to evaluate resilience when replacement instances cannot be launched.",
+      "impact": "An Auto Scaling group may be unable to launch replacement instances, potentially reducing available capacity and affecting application availability.",
+      "expected_behavior": "The Auto Scaling configuration should handle provisioning failures through retry, alternative capacity, or other configured recovery mechanisms while maintaining acceptable service availability."
+    },
+    "ebs-pause-volume-io": {
+      "description": "Pauses I/O operations on selected Amazon EBS volumes to evaluate application resilience to temporary storage unavailability.",
+      "impact": "Applications using the affected volumes may experience blocked or failed I/O operations, increased latency, or application errors.",
+      "expected_behavior": "Applications should tolerate temporary storage I/O disruption and recover correctly when volume I/O is restored."
+    },
+    "ebs-volume-io-latency": {
+      "description": "Introduces configurable latency into read and write operations on selected Amazon EBS volumes to evaluate application behavior under degraded storage performance.",
+      "impact": "Storage operations may become slower, increasing application latency, reducing throughput, and potentially causing timeouts under sustained I/O pressure.",
+      "expected_behavior": "Applications should tolerate increased storage latency within defined thresholds and recover normal performance after the experiment ends."
+    }
+  },
+
+  "kinesis": {
+    "kinesis-provisioned-throughput-exception": {
+        "description": "Injects ProvisionedThroughputExceededException errors into requests made to selected Kinesis Data Streams.",
+        "potential_impact": "Applications may experience failed read or write requests, increased retries, processing delays, or temporary disruption to data ingestion and consumption.",
+        "expected_behavior": "Applications should handle throttled requests through appropriate retry and exponential backoff mechanisms while maintaining stable stream processing."
+    },
+
+    "kinesis-expired-iterator-exception": {
+        "description": "Injects ExpiredIteratorException errors into GetRecords requests for selected Kinesis Data Streams.",
+        "potential_impact": "Stream consumers may fail to retrieve records, resulting in processing delays, retries, or temporary interruption of shard consumption.",
+        "expected_behavior": "Consumers should detect expired iterators, obtain a new shard iterator, and resume record processing successfully."
+    },
+
+    "kinesis-api-internal-error": {
+        "description": "Injects internal API errors into selected Kinesis operations made by the targeted IAM role.",
+        "potential_impact": "Kinesis API requests may temporarily fail, causing read or write errors and potentially interrupting stream processing.",
+        "expected_behavior": "Applications should handle transient API failures using error handling, retries, exponential backoff, and appropriate monitoring."
+    },
+
+    "kinesis-api-throttle-error": {
+        "description": "Injects throttling errors into selected Kinesis API operations made by the targeted IAM role.",
+        "potential_impact": "Kinesis requests may be throttled, resulting in failed API calls, increased latency, retries, and reduced application throughput.",
+        "expected_behavior": "Applications should respond to throttling with exponential backoff and retry mechanisms while maintaining acceptable processing performance."
+    },
+
+    "kinesis-api-unavailable-error": {
+        "description": "Injects service-unavailable errors into selected Kinesis API operations made by the targeted IAM role.",
+        "potential_impact": "Kinesis API requests may temporarily fail, potentially interrupting data ingestion or consumption.",
+        "expected_behavior": "Applications should tolerate temporary service unavailability through retries, backoff, fault handling, and recovery mechanisms."
+    }
+},
+
+  "ecs": {
+    "stop-task": {
+      "description": "Stops a running Amazon ECS task to evaluate service resilience and task replacement behavior.",
+      "impact": "The selected task becomes unavailable and requests may be affected if the service does not have sufficient healthy replacement capacity.",
+      "expected_behavior": "ECS should replace the stopped task when configured to maintain desired capacity, while the application continues serving traffic with minimal disruption."
+    },
+    "cpu-stress": {
+      "description": "Generates CPU stress inside an ECS task to evaluate application behavior under sustained CPU resource pressure.",
+      "impact": "CPU utilization may increase significantly, potentially causing higher latency, reduced throughput, task health degradation, or request failures.",
+      "expected_behavior": "The service should remain within acceptable performance thresholds and ECS should maintain healthy task capacity through scaling or replacement mechanisms."
+    },
+    "io-stress": {
+      "description": "Generates I/O stress inside an ECS task to evaluate application resilience when storage or I/O resources are under pressure.",
+      "impact": "I/O latency and resource utilization may increase, potentially slowing application operations and affecting request performance.",
+      "expected_behavior": "The application should tolerate increased I/O latency and continue operating within defined performance and availability thresholds."
+    },
+    "network-latency": {
+      "description": "Introduces network latency for an ECS task to evaluate application behavior under degraded network communication conditions.",
+      "impact": "Communication with dependent services may become slower, causing increased request latency, timeouts, retries, or reduced throughput.",
+      "expected_behavior": "The application should tolerate network delays through appropriate timeouts, retries, circuit breakers, or fallback mechanisms."
+    },
+    "packet-loss": {
+      "description": "Injects network packet loss into an ECS task to evaluate resilience against unreliable network communication.",
+      "impact": "Requests between the task and dependent services may fail or require retransmission, resulting in increased latency and transient errors.",
+      "expected_behavior": "The application should handle transient network failures gracefully and recover when normal network conditions return."
+    }
+  },
+
+  "elb": {
+    "zonal-autoshift": {
+      "description": "Tests Availability Zone traffic shifting behavior for Elastic Load Balancing to evaluate application resilience during zonal impairment.",
+      "impact": "Traffic may be shifted away from an affected Availability Zone, temporarily changing traffic distribution across healthy zones.",
+      "expected_behavior": "Healthy targets should continue serving traffic and the application should remain available while traffic is redistributed."
+    }
+  },
+
+  "eks": {
+    "inject-kubernetes-custom-resource": {
+      "description": "Injects a Kubernetes custom resource into an Amazon EKS cluster to evaluate how workloads and controllers respond to controlled cluster changes.",
+      "impact": "The injected resource may trigger Kubernetes controllers or application behavior depending on the resource definition.",
+      "expected_behavior": "The cluster and applications should handle the injected resource safely without unexpected service degradation."
+    },
+    "pod-cpu-stress": {
+      "description": "Generates CPU stress inside an EKS pod to evaluate workload behavior under CPU resource pressure.",
+      "impact": "The affected pod may experience increased CPU utilization, higher latency, reduced throughput, or health degradation.",
+      "expected_behavior": "Kubernetes should maintain workload availability through resource controls, scheduling, autoscaling, or pod replacement where configured."
+    },
+    "pod-delete": {
+      "description": "Deletes a selected Kubernetes pod to test workload recovery and Kubernetes controller behavior.",
+      "impact": "The selected pod becomes unavailable and requests may be affected while a replacement pod is created and becomes ready.",
+      "expected_behavior": "The owning Kubernetes controller should recreate the pod and the application should return to healthy operation automatically."
+    },
+    "pod-io-stress": {
+      "description": "Generates I/O stress inside an EKS pod to evaluate application resilience under storage and I/O pressure.",
+      "impact": "The pod may experience increased I/O latency, slower processing, or degraded application performance.",
+      "expected_behavior": "The workload should remain within acceptable performance limits and recover after the injected stress is removed."
+    },
+    "pod-memory-stress": {
+      "description": "Generates memory stress inside an EKS pod to evaluate workload behavior under memory pressure.",
+      "impact": "The pod may experience increased memory utilization, degraded performance, or an out-of-memory termination if limits are exceeded.",
+      "expected_behavior": "Kubernetes should maintain service availability through appropriate resource limits, restarts, scheduling, and scaling mechanisms."
+    },
+    "pod-network-blackhole-port": {
+      "description": "Blocks network communication to a selected port for an EKS pod to evaluate resilience against unavailable network endpoints.",
+      "impact": "Connections to the affected port may fail or time out, potentially disrupting communication with dependent services.",
+      "expected_behavior": "The application should detect the unavailable endpoint and use retries, failover, or other recovery mechanisms where configured."
+    },
+    "pod-network-latency": {
+      "description": "Introduces network latency for an EKS pod to evaluate application resilience under degraded network conditions.",
+      "impact": "Communication with other services may experience increased latency, timeouts, retries, and reduced throughput.",
+      "expected_behavior": "The application should tolerate the additional latency and recover normally when network conditions return to normal."
+    },
+    "pod-network-packet-loss": {
+      "description": "Injects packet loss into an EKS pod's network traffic to evaluate resilience against unreliable network communication.",
+      "impact": "Network requests may fail or require retransmission, resulting in increased latency and transient application errors.",
+      "expected_behavior": "The application should handle transient network failures gracefully and recover once packet loss is removed."
+    },
+    "terminate-nodegroup-instances": {
+      "description": "Terminates instances belonging to an EKS managed node group to evaluate cluster and workload resilience during node loss.",
+      "impact": "Pods running on terminated nodes may be disrupted and require rescheduling onto remaining or newly provisioned nodes.",
+      "expected_behavior": "Kubernetes should reschedule affected workloads and the node group should restore capacity according to its configured scaling and recovery behavior."
+    }
+  },
+
+  "s3": {
+    "pause-replication": {
+      "description": "Pauses Amazon S3 bucket replication to evaluate application behavior during temporary cross-Region or destination replication interruption.",
+      "impact": "Objects written to the source bucket may not immediately appear in the destination bucket, creating temporary replication lag.",
+      "expected_behavior": "Applications should tolerate temporary replication delays and continue operating according to their configured consistency and recovery requirements."
+    }
+  }
+}

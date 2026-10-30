@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">ChaosForge resilience mark</title>
+  <desc id="description">A protected anvil with a controlled resilience signal.</desc>
+  <defs>
+    <linearGradient id="shield" x1="20" y1="10" x2="108" y2="120" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#173f68"/>
+      <stop offset=".5" stop-color="#0b253f"/>
+      <stop offset="1" stop-color="#050e1a"/>
+    </linearGradient>
+    <linearGradient id="anvil" x1="28" y1="48" x2="94" y2="102" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff3b0"/>
+      <stop offset=".34" stop-color="#f8c64a"/>
+      <stop offset=".72" stop-color="#d98a22"/>
+      <stop offset="1" stop-color="#a64b0c"/>
+    </linearGradient>
+    <linearGradient id="inlay" x1="59" y1="70" x2="73" y2="77" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8de5ff"/>
+      <stop offset=".5" stop-color="#e0f7ff"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <path d="M64 8 108 27v31c0 29-17 49-44 62C37 107 20 87 20 58V27z" fill="url(#shield)" stroke="#7dd3fc" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M64 17 99 33v24c0 22-12 38-35 50-23-12-35-28-35-50V33z" fill="none" stroke="#4b7da8" stroke-opacity=".6" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M52 22 64 17l12 5" fill="none" stroke="#b9edff" stroke-opacity=".72" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="64" cy="104" rx="29" ry="5" fill="#020617" fill-opacity=".42"/>
+  <path d="M26 58h28l10-13h24l-8 13h23v11H79l-7 15h11l8 19H37l8-19h11l-7-15H26z" fill="url(#anvil)" stroke="#fff7d1" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M35 63h60" fill="none" stroke="#fffde9" stroke-width="3" stroke-linecap="round"/>
+  <path d="M33 67h42" fill="none" stroke="#e69c2d" stroke-opacity=".45" stroke-width="2" stroke-linecap="round"/>
+  <path d="M52 84h25" fill="none" stroke="#a9500d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M47 99h35" fill="none" stroke="#763008" stroke-width="5" stroke-linecap="round"/>
+  <path d="M52 73h10l4 3 4-3h10" fill="none" stroke="#8b3d0a" stroke-opacity=".88" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M52 72h10M70 72h10" fill="none" stroke="#ffe8a0" stroke-opacity=".55" stroke-width="1.25" stroke-linecap="round"/>
+  <path d="m62.5 73 3.5 3 4-3" fill="none" stroke="url(#inlay)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="66" cy="76" r="1.25" fill="#fff8d5"/>
+</svg>

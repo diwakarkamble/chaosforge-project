@@ -1,0 +1,55 @@
+{
+    "version": "1.0.0",
+    "title": "API Gateway X-Ray Tracing Chaos Test",
+    "description": "Capture the current API Gateway X-Ray Tracing configuration, modify it, wait, and restore the original configuration.",
+
+    "configuration": {
+        "rest_api_id": null,
+        "stage_name": null,
+        "region": null,
+        "tracing_enabled": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Update X-Ray Tracing",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_xray_actions",
+                "func": "capture_and_update_xray",
+                "arguments": {
+                    "rest_api_id": "${rest_api_id}",
+                    "stage_name": "${stage_name}",
+                    "region": "${region}",
+                    "tracing_enabled": "${tracing_enabled}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_common",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "Restore X-Ray Tracing",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_xray_actions",
+                "func": "rollback_xray"
+            }
+        }
+    ]
+}

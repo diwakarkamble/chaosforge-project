@@ -1,0 +1,33 @@
+# Azure service: Azure App Service
+# Generated from the service experiments/metadata.json.
+# Review the experiment descriptions and safety requirements before execution.
+# Use only approved non-production resources and the correct Azure subscription.
+# Required CHANGE_ME values must be replaced before running the affected experiment.
+# Resource selectors and Chaos identity fields are supplied through discovery/CLI options.
+# Live execution is explicitly enabled in the command below; review it before use.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud azure \
+    --e2e-components azure_app_service \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/azure/azure_app_service/inputs.yaml \
+    --e2e-execute
+
+components:
+  azure_app_service:
+    experiments:
+      "azure-app-service-toolkit-stop":
+        # Stops the selected App Service and restores its captured running state after the configured duration.
+        duration_seconds: 300
+        # Metadata range for duration_seconds: 1 to 3600
+      "azure-app-service-slot-swap":
+        # Swap deployment slots for the configured duration, then restore the original routing during rollback.
+        source_slot: "staging"
+        target_slot: "production"
+        duration_seconds: 300
+        # Metadata range for duration_seconds: 1 to 3600

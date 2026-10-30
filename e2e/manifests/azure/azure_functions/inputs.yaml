@@ -1,0 +1,23 @@
+﻿version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud azure \
+    --e2e-components azure_functions \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/azure/azure_functions/inputs.yaml \
+    --e2e-execute
+
+components:
+  azure_functions:
+    experiments:
+      "azure-functions-stop-app-service":
+        resource_id: "/subscriptions/7ee336c6-c95c-45ff-ab57-b5a1ad1ed9b3/resourceGroups/ece-devweub-micmreex-rg/providers/Microsoft.Web/sites/chaosforge-func-e2e-812107"
+        duration: "PT1M"
+      "azure-functions-slot-swap":
+        resource_id: "/subscriptions/7ee336c6-c95c-45ff-ab57-b5a1ad1ed9b3/resourceGroups/ece-devweub-micmreex-rg/providers/Microsoft.Web/sites/chaosforge-func-e2e-812107"
+        source_slot: "staging"
+        target_slot: "production"
+        duration_seconds: 30

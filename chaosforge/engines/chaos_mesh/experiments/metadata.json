@@ -1,0 +1,2212 @@
+{
+    "service": "chaos_mesh",
+    "display_name": "Chaos Mesh",
+    "experiments": [
+        {
+            "id": "chaos-mesh-pod-failure",
+            "name": "Pod Failure",
+            "description": "Injects pod failure for a selected Kubernetes workload.",
+            "json": "pod-failure.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "return": "name",
+                    "resource_type": "eks",
+                    "required": true,
+                    "type": "aws_resource",
+                    "label": "EKS Cluster"
+                },
+                {
+                    "return": "name",
+                    "name": "namespace",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-namespace",
+                    "required": true,
+                    "type": "aws_resource",
+                    "label": "Kubernetes Namespace"
+                },
+                {
+                    "return": "name",
+                    "name": "pod",
+                    "parent": "namespace",
+                    "resource_type": "eks-pod",
+                    "required": false,
+                    "type": "aws_resource",
+                    "label": "Target Pod"
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-pod-kill",
+            "name": "Pod Kill",
+            "description": "Kills selected Kubernetes pods.",
+            "json": "pod-kill.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "return": "name",
+                    "resource_type": "eks",
+                    "required": true,
+                    "type": "aws_resource",
+                    "label": "EKS Cluster"
+                },
+                {
+                    "return": "name",
+                    "name": "namespace",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-namespace",
+                    "required": true,
+                    "type": "aws_resource",
+                    "label": "Kubernetes Namespace"
+                },
+                {
+                    "name": "target_mode",
+                    "label": "Target Mode",
+                    "type": "select",
+                    "required": true,
+                    "default": "pod",
+                    "options": [
+                        {"value": "deployment", "label": "By Deployment - target pods via deployment label selector"},
+                        {"value": "pod", "label": "By Pod - target a single specific pod directly"}
+                    ]
+                },
+                {
+                    "return": "name",
+                    "name": "deployment",
+                    "parent": "namespace",
+                    "resource_type": "eks-deployment",
+                    "required": false,
+                    "type": "aws_resource",
+                    "label": "Deployment",
+                    "visible_when": {"target_mode": "deployment"}
+                },
+                {
+                    "return": "name",
+                    "name": "pod",
+                    "parent": "namespace",
+                    "resource_type": "eks-pod",
+                    "required": false,
+                    "type": "aws_resource",
+                    "label": "Pod",
+                    "visible_when": {"target_mode": "pod"}
+                },
+                {
+                    "label": "Chaos Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true,
+                    "visible_when": {"target_mode": "deployment"}
+                },
+                {
+                    "label": "Duration (seconds)",
+                    "default": 60,
+                    "name": "duration",
+                    "type": "integer",
+                    "required": true,
+                    "min": 10,
+                    "max": 1800
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-container-kill",
+            "name": "Container Kill",
+            "description": "Kills a selected container inside a Kubernetes pod.",
+            "json": "container-kill.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "return": "name",
+                    "resource_type": "eks",
+                    "required": true,
+                    "type": "aws_resource",
+                    "label": "EKS Cluster"
+                },
+                {
+                    "return": "name",
+                    "name": "namespace",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-namespace",
+                    "required": true,
+                    "type": "aws_resource",
+                    "label": "Kubernetes Namespace"
+                },
+                {
+                    "return": "name",
+                    "name": "pod",
+                    "parent": "namespace",
+                    "resource_type": "eks-pod",
+                    "required": false,
+                    "type": "aws_resource",
+                    "label": "Target Pod"
+                },
+                {
+                    "label": "Container Name",
+                    "name": "container_names",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-delay",
+            "name": "Network Delay",
+            "description": "Injects network latency into selected Kubernetes workloads.",
+            "json": "network-delay.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "mode",
+                    "label": "Mode",
+                    "type": "text",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "required": true,
+                    "default": "30s"
+                },
+                {
+                    "name": "delay",
+                    "label": "Network Delay",
+                    "type": "text",
+                    "required": true,
+                    "default": "100ms"
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-loss",
+            "name": "Network Packet Loss",
+            "description": "Injects packet loss into selected Kubernetes workloads.",
+            "json": "network-loss.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Packet Loss Percentage",
+                    "default": "30",
+                    "name": "loss",
+                    "type": "number",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-duplicate",
+            "name": "Network Packet Duplicate",
+            "description": "Duplicates network packets for selected Kubernetes workloads.",
+            "json": "network-duplicate.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Packet Duplicate Percentage",
+                    "default": "20",
+                    "name": "duplicate",
+                    "type": "number",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-corrupt",
+            "name": "Network Packet Corruption",
+            "description": "Corrupts network packets for selected Kubernetes workloads.",
+            "json": "network-corrupt.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "mode",
+                    "label": "Mode",
+                    "type": "text",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "required": true,
+                    "default": "30s"
+                },
+                {
+                    "name": "corrupt",
+                    "label": "Corruption Percentage",
+                    "type": "number",
+                    "required": true,
+                    "default": "10"
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-reorder",
+            "name": "Network Packet Reorder",
+            "description": "Reorders network packets for selected Kubernetes workloads.",
+            "json": "network-reorder.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Packet Reorder Percentage",
+                    "default": "10",
+                    "name": "reorder",
+                    "type": "number",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-partition",
+            "name": "Network Partition",
+            "description": "Partitions network connectivity between selected Kubernetes workloads.",
+            "json": "network-partition.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Network Direction",
+                    "default": "both",
+                    "name": "direction",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-network-bandwidth",
+            "name": "Network Bandwidth Limit",
+            "description": "Limits network bandwidth for selected Kubernetes workloads.",
+            "json": "network-bandwidth.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Bandwidth Rate",
+                    "default": "1mbps",
+                    "name": "rate",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-cpu-stress",
+            "name": "CPU Stress",
+            "description": "Injects CPU stress into selected Kubernetes workloads.",
+            "json": "cpu-stress.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "CPU Stress",
+                    "default": "1",
+                    "name": "cpu",
+                    "type": "number",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-memory-stress",
+            "name": "Memory Stress",
+            "description": "Injects memory stress into selected Kubernetes workloads.",
+            "json": "memory-stress.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Memory Stress",
+                    "default": "256",
+                    "name": "memory",
+                    "type": "number",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-dns-error",
+            "name": "DNS Error",
+            "description": "Injects DNS errors for selected Kubernetes workloads.",
+            "json": "dns-error.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-dns-random",
+            "name": "DNS Random Response",
+            "description": "Injects randomized DNS responses for selected Kubernetes workloads.",
+            "json": "dns-random.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-http-abort",
+            "name": "HTTP Abort",
+            "description": "Aborts matching HTTP requests or responses.",
+            "json": "http-abort.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "HTTP Target",
+                    "default": "Request",
+                    "name": "target",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Port",
+                    "default": "8080",
+                    "name": "port",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Method",
+                    "default": "GET",
+                    "name": "method",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Path",
+                    "default": "/",
+                    "name": "path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-http-delay",
+            "name": "HTTP Delay",
+            "description": "Injects delay into matching HTTP requests or responses.",
+            "json": "http-delay.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "HTTP Target",
+                    "default": "Request",
+                    "name": "target",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Port",
+                    "default": "8080",
+                    "name": "port",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Method",
+                    "default": "GET",
+                    "name": "method",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Path",
+                    "default": "/",
+                    "name": "path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Delay",
+                    "default": "5s",
+                    "name": "delay",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-http-replace",
+            "name": "HTTP Replace",
+            "description": "Replaces matching HTTP request or response content.",
+            "json": "http-replace.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "HTTP Target",
+                    "default": "Request",
+                    "name": "target",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Port",
+                    "default": "8080",
+                    "name": "port",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Method",
+                    "default": "GET",
+                    "name": "method",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Path",
+                    "default": "/",
+                    "name": "path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-http-patch",
+            "name": "HTTP Patch",
+            "description": "Patches matching HTTP requests or responses.",
+            "json": "http-patch.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "HTTP Target",
+                    "default": "Request",
+                    "name": "target",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Port",
+                    "default": "8080",
+                    "name": "port",
+                    "type": "number",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Method",
+                    "default": "GET",
+                    "name": "method",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "HTTP Path",
+                    "default": "/",
+                    "name": "path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-io-latency",
+            "name": "IO Latency",
+            "description": "Injects IO latency into selected Kubernetes volumes.",
+            "json": "io-latency.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Volume Path",
+                    "default": "/tmp",
+                    "name": "volume_path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "IO Latency",
+                    "default": "100ms",
+                    "name": "latency",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-io-fault",
+            "name": "IO Fault",
+            "description": "Injects IO faults into selected Kubernetes volumes.",
+            "json": "io-fault.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Volume Path",
+                    "default": "/tmp",
+                    "name": "volume_path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-io-attr-override",
+            "name": "IO Attribute Override",
+            "description": "Overrides IO attributes for selected Kubernetes volumes.",
+            "json": "io-attr-override.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Volume Path",
+                    "default": "/tmp",
+                    "name": "volume_path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-io-mistake",
+            "name": "IO Mistake",
+            "description": "Injects IO mistakes into selected Kubernetes volumes.",
+            "json": "io-mistake.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Volume Path",
+                    "default": "/tmp",
+                    "name": "volume_path",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-time",
+            "name": "Time Chaos",
+            "description": "Skews or offsets time for selected Kubernetes workloads.",
+            "json": "time-chaos.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Clock",
+                    "default": "CLOCK_REALTIME",
+                    "name": "clock",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Time Offset",
+                    "default": "1h",
+                    "name": "offset",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-kernel",
+            "name": "Kernel Chaos",
+            "description": "Injects kernel-level faults into selected Kubernetes workloads.",
+            "json": "kernel-chaos.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-aws",
+            "name": "AWS Chaos",
+            "description": "Executes supported AWS fault actions through Chaos Mesh.",
+            "json": "aws-chaos.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "label": "Kubernetes Namespace",
+                    "default": "default",
+                    "name": "namespace",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "AWS Region",
+                    "default": "us-east-1",
+                    "name": "aws_region",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "EC2 Instance ID",
+                    "name": "ec2_instance",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Duration",
+                    "default": "30s",
+                    "name": "duration",
+                    "type": "text",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-jvm",
+            "name": "JVM Chaos",
+            "description": "Injects JVM-level faults into supported Java workloads.",
+            "json": "jvm-chaos.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-block",
+            "name": "Block Chaos",
+            "description": "Injects block-device delay or freeze faults into supported volumes.",
+            "json": "block-chaos.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": true,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Mode",
+                    "default": "one",
+                    "name": "mode",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "pod",
+                    "label": "Target Pod",
+                    "type": "aws_resource",
+                    "resource_type": "eks-pod",
+                    "parent": "namespace",
+                    "return": "name",
+                    "required": false
+                },
+                {
+                    "label": "Volume Name",
+                    "name": "volume_name",
+                    "type": "aws_resource",
+                    "resource_type": "eks-volume",
+                    "parent": "pod",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "label": "Action",
+                    "default": "delay",
+                    "name": "action",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "label": "Block IO Latency",
+                    "default": "100ms",
+                    "name": "latency",
+                    "type": "text",
+                    "required": false
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-physical-machine",
+            "name": "Physical Machine Chaos",
+            "description": "Executes supported Chaos Mesh physical-machine faults on Chaosd-managed machines.",
+            "json": "physical-machine-chaos.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": false,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "physical_machine",
+                    "label": "Target Physical Machine",
+                    "type": "aws_resource",
+                    "resource_type": "chaos-physical-machine",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "text",
+                    "default": "default",
+                    "required": true
+                },
+                {
+                    "name": "mode",
+                    "label": "Mode",
+                    "type": "select",
+                    "default": "one",
+                    "options": [
+                        "one",
+                        "all",
+                        "fixed",
+                        "fixed-percent",
+                        "random-max-percent"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "value",
+                    "label": "Value",
+                    "type": "text",
+                    "required": false
+                },
+                {
+                    "name": "action",
+                    "label": "Action",
+                    "type": "select",
+                    "default": "stress-cpu",
+                    "options": [
+                        "stress-cpu",
+                        "stress-mem",
+                        "disk-read-payload",
+                        "disk-write-payload",
+                        "disk-fill",
+                        "network-corrupt",
+                        "network-duplicate",
+                        "network-loss",
+                        "network-delay",
+                        "network-partition",
+                        "network-dns",
+                        "process",
+                        "jvm-exception",
+                        "jvm-gc",
+                        "jvm-latency",
+                        "jvm-return",
+                        "jvm-stress",
+                        "jvm-rule-data",
+                        "clock"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "cpu_load",
+                    "label": "CPU Load (%)",
+                    "type": "text",
+                    "default": "10",
+                    "required": false
+                },
+                {
+                    "name": "cpu_workers",
+                    "label": "CPU Workers",
+                    "type": "text",
+                    "default": "1",
+                    "required": false
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "30s",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-workflow",
+            "name": "Workflow",
+            "description": "Runs a composed Chaos Mesh workflow using serial, parallel, task, suspend, and conditional workflow constructs.",
+            "json": "workflow.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": false,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "entry",
+                    "label": "Workflow Entry",
+                    "type": "text",
+                    "default": "chaos-task",
+                    "required": true
+                }
+            ]
+        },
+        {
+            "id": "chaos-mesh-schedule",
+            "name": "Schedule",
+            "description": "Schedules supported Chaos Mesh experiments for recurring or controlled execution.",
+            "json": "schedule.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+            {
+                "name": "aws_region",
+                "label": "AWS Region",
+                "type": "text",
+                "required": false,
+                "default": "eu-central-1"
+            },
+            {
+                "name": "eks_cluster",
+                "label": "EKS Cluster",
+                "type": "aws_resource",
+                "resource_type": "eks",
+                "return": "name",
+                "required": true
+            },
+            {
+                "name": "namespace",
+                "label": "Kubernetes Namespace",
+                "type": "aws_resource",
+                "resource_type": "eks-namespace",
+                "parent": "eks_cluster",
+                "return": "name",
+                "required": true
+            },
+            {
+                "name": "schedule",
+                "label": "Cron Schedule",
+                "type": "text",
+                "default": "*/10 * * * *",
+                "required": true
+            },
+            {
+                "name": "experiment_type",
+                "label": "Experiment Type",
+                "type": "select",
+                "default": "PodChaos",
+                "options": [
+                    "PodChaos",
+                    "NetworkChaos",
+                    "DNSChaos",
+                    "HTTPChaos",
+                    "IOChaos",
+                    "StressChaos",
+                    "TimeChaos",
+                    "KernelChaos",
+                    "JVMChaos",
+                    "BlockChaos"
+                ],
+                "required": true
+            },
+            {
+                "name": "history_limit",
+                "label": "History Limit",
+                "type": "number",
+                "default": "5",
+                "required": false
+            },
+            {
+                "name": "concurrency_policy",
+                "label": "Concurrency Policy",
+                "type": "select",
+                "default": "Forbid",
+                "options": [
+                    "Allow",
+                    "Forbid"
+
+                ],
+                "required": false
+            }
+        ]
+
+        },
+        {
+            "id": "chaos-mesh-status-check",
+            "name": "Status Check",
+            "description": "Validates an HTTP endpoint as part of Chaos Mesh workflow execution.",
+            "json": "status-check.json",
+            "engine": "Chaos Mesh",
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+            "inputs": [
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "text",
+                    "required": false,
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "aws_resource",
+                    "resource_type": "eks-namespace",
+                    "parent": "eks_cluster",
+                    "return": "name",
+                    "required": true
+                },
+                {
+                    "name": "url",
+                    "label": "Status Check URL",
+                    "type": "text",
+                    "default": "http://example.com",
+                    "required": true
+                },
+                {
+                    "name": "status_code",
+                    "label": "Expected Status Code",
+                    "type": "number",
+                    "default": "200",
+                    "required": true
+                },
+                {
+                    "name": "mode",
+                    "label": "Check Mode",
+                    "type": "select",
+                    "default": "Synchronous",
+                    "options": [
+                        "Synchronous",
+                        "Continuous"
+                    ],
+                    "required": true
+                },
+                {
+                    "name": "method",
+                    "label": "HTTP Method",
+                    "type": "select",
+                    "default": "GET",
+                    "options": [
+                        "GET",
+                        "POST"
+                    ],
+                    "required": true
+                }
+            ]
+        }
+    ]
+}

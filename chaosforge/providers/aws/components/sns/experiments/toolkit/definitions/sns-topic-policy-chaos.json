@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "title": "AWS SNS Topic Policy Chaos Test",
+  "description": "Temporarily modify the SNS Topic Policy and restore the original policy.",
+
+  "configuration": {
+    "topic_arn": null,
+    "region": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_topic_policy_actions",
+        "func": "capture_current_policy",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "update-topic-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_topic_policy_actions",
+        "func": "update_topic_policy",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_topic_policy_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-topic-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_topic_policy_actions",
+        "func": "restore_topic_policy",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

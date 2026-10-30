@@ -1,0 +1,8 @@
+{
+  "kind": "VmssShutdown",
+  "faultType": "shutdown",
+  "parameters": {
+    "abruptShutdown": "true",
+    "virtualMachineScaleSetInstances": "[0]"
+  }
+}

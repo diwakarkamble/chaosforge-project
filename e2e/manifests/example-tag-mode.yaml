@@ -1,0 +1,36 @@
+version: 1
+defaults:
+  mode: tags
+  tags:
+    Chaosforge: E2E-Test
+    ManagedBy: ChaosForge
+  execute: false
+components:
+  aws:
+    lambda:
+      region: eu-central-1
+      resource_type: lambda:function
+      selector: "#function_name"
+      target_variable: lambda_name
+      experiments:
+        - lambda-concurrency
+    elb:
+      region: eu-central-1
+      resource_type: elasticloadbalancing:loadbalancer
+      selector: "#load_balancer"
+      target_variable: load_balancer
+      inputs:
+        attribute_key: idle_timeout.timeout_seconds
+        attribute_value: "30"
+      experiments:
+        - elb-load-balancer
+    elasticache:
+      region: eu-central-1
+      resource_type: elasticache:replicationgroup
+      selector: "#replication_group_id"
+      target_variable: replication_group_id
+      inputs:
+        snapshot_retention_limit: 7
+        wait_seconds: 30
+      experiments:
+        - elasticache-snapshot-retention

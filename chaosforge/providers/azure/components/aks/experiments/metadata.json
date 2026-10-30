@@ -1,0 +1,1404 @@
+{
+    "service": "aks",
+    "display_name": "Azure AKS Chaos",
+    "experiments": [
+        {
+            "id": "aks-pod-kill",
+            "name": "Pod Kill",
+            "action": "pod-kill",
+            "kind": "PodChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-pod-failure",
+            "name": "Pod Failure",
+            "action": "pod-failure",
+            "kind": "PodChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-container-kill",
+            "name": "Container Kill",
+            "action": "container-kill",
+            "kind": "PodChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "container_name",
+                    "label": "Container Name",
+                    "type": "azure_aks_container",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-crashloop",
+            "name": "CrashLoopBackOff",
+            "action": "container-kill",
+            "kind": "PodChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "container_name",
+                    "label": "Container Name",
+                    "type": "azure_aks_container",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-node-drain",
+            "name": "Node Drain",
+            "action": "drain",
+            "kind": "NodeDrain",
+            "node_level": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "target_node",
+                    "label": "Target Node",
+                    "type": "azure_aks_node",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-node-taint",
+            "name": "Node Taint NoExecute",
+            "action": "taint",
+            "kind": "NodeTaint",
+            "node_level": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "target_node",
+                    "label": "Target Node",
+                    "type": "azure_aks_node",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-node-notready",
+            "name": "Node NotReady (VM Shutdown)",
+            "action": "shutdown",
+            "kind": "VmssShutdown",
+            "node_level": true,
+            "vmss_target": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "target_node",
+                    "label": "Target Node",
+                    "type": "azure_aks_node",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-node-cpu-stress",
+            "name": "Node CPU Exhaustion",
+            "action": "cpuPressure",
+            "kind": "VmssCpuPressure",
+            "node_level": true,
+            "vmss_target": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "target_node",
+                    "label": "Target Node",
+                    "type": "azure_aks_node",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-node-memory-pressure",
+            "name": "Node Memory Pressure",
+            "action": "physicalMemoryPressure",
+            "kind": "VmssMemoryPressure",
+            "node_level": true,
+            "vmss_target": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "target_node",
+                    "label": "Target Node",
+                    "type": "azure_aks_node",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-node-zone-failure",
+            "name": "Zone-Level Node Failure",
+            "action": "shutdown",
+            "kind": "VmssShutdown",
+            "node_level": true,
+            "vmss_target": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "target_zone",
+                    "label": "Availability Zone",
+                    "type": "azure_aks_zone",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-network-delay",
+            "name": "Network Delay 500ms",
+            "action": "delay",
+            "kind": "NetworkChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "name": "latency",
+                    "label": "Delay Latency (e.g. 500ms, 1s, 200ms)",
+                    "type": "text",
+                    "required": false,
+                    "default": "500ms"
+                },
+                {
+                    "name": "jitter",
+                    "label": "Jitter (e.g. 100ms, 50ms, 0ms)",
+                    "type": "text",
+                    "required": false,
+                    "default": "100ms"
+                },
+                {
+                    "name": "correlation",
+                    "label": "Correlation % (0-100, default 50)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 50,
+                    "min": 0,
+                    "max": 100
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-packet-loss",
+            "name": "Packet Loss",
+            "action": "loss",
+            "kind": "NetworkChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "name": "loss_percentage",
+                    "label": "Packet Loss % (1-100)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 25,
+                    "min": 1,
+                    "max": 100
+                },
+                {
+                    "name": "correlation",
+                    "label": "Correlation % (0-100, default 50)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 50,
+                    "min": 0,
+                    "max": 100
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-bandwidth-limit",
+            "name": "Bandwidth Limit 1mbps",
+            "action": "bandwidth",
+            "kind": "NetworkChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "name": "rate",
+                    "label": "Rate Limit (e.g. 1mbps, 500kbps, 100mbps)",
+                    "type": "text",
+                    "required": false,
+                    "default": "1mbps"
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-packet-corruption",
+            "name": "Packet Corruption 50%",
+            "action": "corrupt",
+            "kind": "NetworkChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "name": "corrupt_percentage",
+                    "label": "Corruption % (1-100)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 50,
+                    "min": 1,
+                    "max": 100
+                },
+                {
+                    "name": "correlation",
+                    "label": "Correlation % (0-100, default 25)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 25,
+                    "min": 0,
+                    "max": 100
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-packet-duplication",
+            "name": "Packet Duplication 50%",
+            "action": "duplicate",
+            "kind": "NetworkChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                },
+                {
+                    "name": "duplicate_percentage",
+                    "label": "Duplication % (1-100)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 50,
+                    "min": 1,
+                    "max": 100
+                },
+                {
+                    "name": "correlation",
+                    "label": "Correlation % (0-100, default 25)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 25,
+                    "min": 0,
+                    "max": 100
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-network-partition",
+            "name": "Network Partition",
+            "action": "partition",
+            "kind": "NetworkChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-cpu-stress",
+            "name": "CPU Stress 80%",
+            "action": "stress",
+            "kind": "StressChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "all"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-memory-stress",
+            "name": "Memory Stress / OOMKill",
+            "action": "stress",
+            "kind": "StressChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-dns-failure",
+            "name": "DNS Failure",
+            "action": "error",
+            "kind": "DNSChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "dns_pattern",
+                    "label": "DNS Pattern to Fail (exact FQDN or trailing wildcard, e.g. api.example.com or api* — '*' must be last; bare '*' fails ALL DNS)",
+                    "type": "text",
+                    "required": true,
+                    "default": "*"
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "all"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-io-latency",
+            "name": "Disk I/O Latency 100ms",
+            "action": "latency",
+            "kind": "IOChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "volume_path",
+                    "label": "Volume Mount Path",
+                    "type": "text",
+                    "required": true,
+                    "default": "/data"
+                },
+                {
+                    "name": "io_delay",
+                    "label": "I/O Delay (e.g. 100ms)",
+                    "type": "text",
+                    "required": false,
+                    "default": "100ms"
+                },
+                {
+                    "name": "io_percent",
+                    "label": "Percent of I/O Ops Affected (1-100)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 50,
+                    "min": 1,
+                    "max": 100
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-io-errors",
+            "name": "Disk I/O Errors EIO",
+            "action": "fault",
+            "kind": "IOChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "volume_path",
+                    "label": "Volume Mount Path",
+                    "type": "text",
+                    "required": true,
+                    "default": "/data"
+                },
+                {
+                    "name": "io_errno",
+                    "label": "Errno to Inject (5=EIO)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 5,
+                    "min": 1,
+                    "max": 133
+                },
+                {
+                    "name": "io_percent",
+                    "label": "Percent of I/O Ops Affected (1-100)",
+                    "type": "integer",
+                    "required": false,
+                    "default": 50,
+                    "min": 1,
+                    "max": 100
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "one"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-clock-skew-forward",
+            "name": "Clock Skew Forward",
+            "action": "skew",
+            "kind": "TimeChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "time_offset",
+                    "label": "Time Offset",
+                    "type": "time_offset",
+                    "required": true,
+                    "default": "+5m"
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "all"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-clock-skew-backward",
+            "name": "Clock Skew Backward",
+            "action": "skew",
+            "kind": "TimeChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "time_offset",
+                    "label": "Time Offset",
+                    "type": "time_offset",
+                    "required": true,
+                    "default": "-5m"
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "all"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-http-delay",
+            "name": "HTTP Delay 5s",
+            "action": "delay",
+            "kind": "HTTPChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "http_port",
+                    "label": "HTTP Port",
+                    "type": "integer",
+                    "required": true,
+                    "default": 80,
+                    "min": 1,
+                    "max": 65535
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "all"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-http-abort",
+            "name": "HTTP Abort 5xx",
+            "action": "abort",
+            "kind": "HTTPChaos",
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "namespace",
+                    "label": "Namespace",
+                    "type": "azure_aks_namespace",
+                    "required": true
+                },
+                {
+                    "name": "deployment",
+                    "label": "Deployment",
+                    "type": "azure_aks_deployment",
+                    "required": true
+                },
+                {
+                    "name": "http_port",
+                    "label": "HTTP Port",
+                    "type": "integer",
+                    "required": true,
+                    "default": 80,
+                    "min": 1,
+                    "max": 65535
+                },
+                {
+                    "name": "chaos_mode",
+                    "label": "Chaos Mode",
+                    "type": "chaos_mode",
+                    "required": true,
+                    "default": "all"
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                },
+                {
+                    "name": "chaos_value",
+                    "label": "Mode Value",
+                    "type": "text",
+                    "required": false,
+                    "default": ""
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-coredns-kill",
+            "name": "CoreDNS Pod Kill",
+            "action": "pod-kill",
+            "kind": "PodChaos",
+            "kube_system": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-coredns-cpu",
+            "name": "CoreDNS CPU Starvation 90%",
+            "action": "stress",
+            "kind": "StressChaos",
+            "kube_system": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        },
+        {
+            "id": "aks-kube-proxy-kill",
+            "name": "kube-proxy Pod Kill",
+            "action": "pod-kill",
+            "kind": "PodChaos",
+            "kube_system": true,
+            "inputs": [
+                {
+                    "name": "aks_context",
+                    "label": "AKS Cluster",
+                    "type": "azure_aks_cluster",
+                    "required": true
+                },
+                {
+                    "name": "duration",
+                    "label": "Duration (seconds)",
+                    "type": "integer",
+                    "required": true,
+                    "default": 60,
+                    "min": 10,
+                    "max": 1800
+                }
+            ],
+            "json": "aks-chaos.json"
+        }
+    ]
+}

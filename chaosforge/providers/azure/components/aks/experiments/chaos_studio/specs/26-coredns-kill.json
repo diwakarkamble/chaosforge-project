@@ -1,0 +1,14 @@
+{
+  "kind": "PodChaos",
+  "action": "pod-kill",
+  "mode": "one",
+  "selector": {
+    "namespaces": [
+      "kube-system"
+    ],
+    "labelSelectors": {
+      "k8s-app": "kube-dns"
+    }
+  },
+  "duration": "<duration>"
+}

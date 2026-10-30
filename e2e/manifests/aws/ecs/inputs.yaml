@@ -1,0 +1,43 @@
+﻿
+# Run from the repository root against approved non-production ECS resources.
+# Stop-task can interrupt service capacity. Stress, latency and packet-loss
+# experiments can affect application availability. Review targets first.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components ecs \
+    --e2e-experiment ecs:ecs-force-deployment \
+    --e2e-experiment ecs:stop-task \
+    --e2e-experiment ecs:cpu-stress \
+    --e2e-experiment ecs:io-stress \
+    --e2e-experiment ecs:network-latency \
+    --e2e-experiment ecs:packet-loss \
+    --e2e-aws-region eu-central-1 \
+    --e2e-aws-fis-role-arn arn:aws:iam::XXXXXXXX:role/xxxxx \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-inputs e2e/manifests/aws/ecs/inputs.yaml \
+    --e2e-execute
+
+components:
+  ecs:
+    experiments:
+      ecs-force-deployment:
+        ecs_cluster: chaos-simulator-cluster
+        ecs_service: chaos-simulator-service
+        aws_region: eu-central-1
+        wait_seconds: 30
+      stop-task: {}
+      cpu-stress:
+        duration: PT1M
+      io-stress:
+        duration: PT1M
+      network-latency:
+        duration: PT1M
+      packet-loss:
+        duration: PT1M

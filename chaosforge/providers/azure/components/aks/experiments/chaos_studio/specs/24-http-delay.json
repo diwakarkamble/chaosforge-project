@@ -1,0 +1,17 @@
+{
+  "kind": "HTTPChaos",
+  "mode": "one",
+  "selector": {
+    "namespaces": [
+      "<target-namespace>"
+    ],
+    "labelSelectors": {
+      "app": "<app-label>"
+    }
+  },
+  "target": "Request",
+  "port": 80,
+  "path": "/",
+  "delay": "5s",
+  "duration": "<duration>"
+}

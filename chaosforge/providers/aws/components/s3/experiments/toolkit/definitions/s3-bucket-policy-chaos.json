@@ -1,0 +1,88 @@
+{
+    "version": "1.0.0",
+
+    "title": "Amazon S3 Bucket Policy Chaos",
+
+    "description": "Modify S3 Bucket Policy using predefined templates and restore the original configuration.",
+
+    "configuration": {
+        "bucket_name": null,
+        "aws_region": null,
+        "policy_template": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+
+        {
+            "type": "action",
+
+            "name": "capture-current-policy",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_bucket_policy_actions",
+                "func": "capture_current_policy",
+
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+
+        {
+            "type": "action",
+
+            "name": "update-policy",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_bucket_policy_actions",
+                "func": "update_policy",
+
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}",
+                    "policy_template": "${policy_template}"
+                }
+            }
+        },
+
+        {
+            "type": "action",
+
+            "name": "wait",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_common",
+                "func": "wait",
+
+                "arguments": {
+                    "seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+
+        {
+            "type": "action",
+
+            "name": "restore-policy",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_bucket_policy_actions",
+                "func": "restore_original_policy",
+
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        }
+    ]
+}

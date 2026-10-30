@@ -1,0 +1,23 @@
+version: 1
+defaults:
+  mode: explicit
+  execute: false
+components:
+  aws:
+    s3:
+      region: eu-central-1
+      selector: "#bucket_name"
+      target_variable: bucket_name
+      experiments:
+        - s3-versioning
+      resources:
+        - name: chaosforge-e2e-bucket
+  azure:
+    azure_vm:
+      resource_type: Microsoft.Compute/virtualMachines
+      selector: "#resource_id"
+      target_variable: resource_id
+      experiments:
+        - azure-vm-reboot
+      resources:
+        - resource_id: /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Compute/virtualMachines/<vm-name>

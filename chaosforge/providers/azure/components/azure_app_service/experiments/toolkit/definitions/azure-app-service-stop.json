@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "title": "Azure App Service Stop",
+  "description": "Uses the chaosazure App Service action when the shared Toolkit runtime permits Azure extensions.",
+  "method": [{"type": "action", "name": "stop-app-service", "provider": {"type": "python", "module": "chaosazure.webapp.actions", "func": "stop_webapp", "arguments": {"filter": "${filter}"}}}]
+}

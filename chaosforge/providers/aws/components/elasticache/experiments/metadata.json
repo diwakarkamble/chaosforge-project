@@ -1,0 +1,238 @@
+{
+  "service": "elasticache",
+  "display_name": "Amazon ElastiCache",
+  "experiments": [
+    {
+      "id": "elasticache-security-group",
+      "name": "Security Group Modification",
+      "json": "elasticache-security-group-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticache:DescribeReplicationGroups"
+        ],
+        "modify": [
+          "elasticache:ModifyReplicationGroup"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "replication_group_id",
+          "label": "Redis Replication Group",
+          "type": "aws_resource",
+          "resource_type": "elasticache-replication-group",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_security_group_id",
+          "label": "Temporary Security Group ID",
+          "type": "aws_resource",
+          "resource_type": "security-group",
+          "return": "id",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "elasticache-snapshot-retention",
+      "name": "Snapshot Retention Modification",
+      "json": "elasticache-snapshot-retention-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticache:DescribeReplicationGroups"
+        ],
+        "modify": [
+          "elasticache:ModifyReplicationGroup"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "replication_group_id",
+          "label": "Redis Replication Group",
+          "type": "aws_resource",
+          "resource_type": "elasticache-replication-group",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "snapshot_retention_limit",
+          "label": "Snapshot Retention (days)",
+          "type": "integer",
+          "required": true,
+          "default": 7,
+          "min": 0,
+          "max": 35
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "elasticache-reboot",
+      "name": "Reboot Cache Cluster",
+      "json": "elasticache-reboot-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticache:DescribeCacheClusters"
+        ],
+        "modify": [
+          "elasticache:RebootCacheCluster"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "cache_cluster_id",
+          "label": "Cache Cluster",
+          "type": "aws_resource",
+          "resource_type": "elasticache-cache-cluster",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+       }
+      ]
+    },
+    {
+      "id": "elasticache-usage-limit",
+      "name": "Usage Limit Modification",
+      "json": "elasticache-usage-limit-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticache:DescribeServerlessCaches"
+        ],
+        "modify": [
+          "elasticache:ModifyServerlessCache"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "serverless_cache_name",
+          "label": "Serverless Cache",
+          "type": "aws_resource",
+          "resource_type": "elasticache",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "usage_type",
+          "label": "Usage Limit Type (DataStorage/ECPUPerSecond)",
+          "required": true,
+          "default": "DataStorage"
+        },
+        {
+          "name": "maximum",
+          "label": "Target Maximum Limit",
+          "type": "integer",
+          "required": true,
+          "default": 5
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "elasticache-daily-snapshot",
+      "name": "Daily Snapshot Configuration",
+      "json": "elasticache-daily-snapshot-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticache:DescribeReplicationGroups"
+        ],
+        "modify": [
+          "elasticache:ModifyReplicationGroup"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "replication_group_id",
+          "label": "Redis Replication Group",
+          "type": "aws_resource",
+          "resource_type": "elasticache-replication-group",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "snapshot_window",
+          "label": "Snapshot Window (HH:MM-HH:MM UTC)",
+          "required": true,
+          "default": "03:00-04:00"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    }
+  ]
+}

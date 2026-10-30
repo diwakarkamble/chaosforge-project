@@ -1,0 +1,5 @@
+# Developer-only dependencies for live Web UI functional tests.
+# These are deliberately separate from production requirements.txt.
+-r requirements.txt
+playwright==1.64.1
+pytest-html==4.2.0

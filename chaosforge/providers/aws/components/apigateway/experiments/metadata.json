@@ -1,0 +1,430 @@
+{
+    "service": "apigateway",
+    "display_name": "Amazon API Gateway",
+
+    "experiments": [
+
+        {
+            "id": "apigateway-stage-throttling",
+
+            "name": "Stage Throttling Modification",
+
+            "json": "apigateway-stage-throttling-chaos.json",
+
+            "iam": {
+
+                "read": [
+
+                    "apigateway:GET"
+
+                ],
+
+                "modify": [
+
+                    "apigateway:PATCH"
+
+                ]
+
+            },
+
+            "inputs": [
+
+                {
+                    "name": "rest_api_id",
+
+                    "label": "API Gateway",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway",
+
+                    "return": "id",
+
+                    "required": true
+                },
+
+                {
+                    "name": "stage_name",
+
+                    "label": "Stage",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway-stage",
+
+                    "parent": "rest_api_id",
+
+                    "return": "stageName",
+
+                    "required": true
+                },
+
+                {
+                    "name": "throttle_rate",
+
+                    "label": "Target Rate Limit",
+
+                    "default": "10"
+                },
+
+                {
+                    "name": "throttle_burst",
+
+                    "label": "Target Burst Limit",
+
+                    "default": "20"
+                },
+
+                {
+                    "name": "aws_region",
+
+                    "label": "AWS Region",
+
+                    "default": "eu-central-1"
+                },
+
+                {
+                    "name": "wait_seconds",
+
+                    "label": "Wait Duration (seconds)",
+
+                    "default": "300"
+                }
+
+            ]
+
+        },
+        {
+            "id": "apigateway-stage-cache",
+            "name": "Stage Cache Enable/Disable",
+            "json": "apigateway-stage-cache-chaos.json",
+
+            "iam": {
+                "read": [
+                    "apigateway:GET"
+                ],
+                "modify": [
+                    "apigateway:PATCH"
+                ]
+            },
+
+            "inputs": [
+                {
+                    "name": "rest_api_id",
+                    "label": "API Gateway",
+                    "type": "aws_resource",
+                    "resource_type": "apigateway",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "stage_name",
+                    "label": "Stage Name",
+                    "required": true
+                },
+                {
+                    "name": "region",
+                    "label": "AWS Region",
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "cache_enabled",
+                    "label": "Enable Cache (true/false)",
+                    "default": "false"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Wait Duration (seconds)",
+                    "default": "300"
+                }
+            ]
+        },
+        {
+            "id": "apigateway-stage-cache-ttl",
+
+            "name": "Cache TTL Modification",
+
+            "json": "apigateway-stage-cache-ttl-chaos.json",
+
+            "iam": {
+
+                "read": [
+                    "apigateway:GET"
+                ],
+
+                "modify": [
+                    "apigateway:PATCH"
+                ]
+
+            },
+
+            "inputs": [
+
+                {
+                    "name": "rest_api_id",
+
+                    "label": "API Gateway",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway",
+
+                    "return": "id",
+
+                    "required": true
+                },
+
+                {
+                    "name": "stage_name",
+
+                    "label": "Stage",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway-stage",
+
+                    "parent": "rest_api_id",
+
+                    "return": "stageName",
+
+                    "required": true
+                },
+
+                {
+                    "name": "region",
+
+                    "label": "AWS Region",
+
+                    "default": "eu-central-1"
+                },
+
+                {
+                    "name": "cache_ttl",
+
+                    "label": "Target Cache TTL (seconds)",
+
+                    "default": "60"
+                },
+
+                {
+                    "name": "wait_seconds",
+
+                    "label": "Wait Duration (seconds)",
+
+                    "default": "300"
+                }
+
+            ]
+        },
+        {
+            "id": "apigateway-access-logging",
+
+            "name": "Access Logging Enable/Disable",
+
+            "json": "apigateway-access-logging-chaos.json",
+
+            "iam": {
+                "read": [
+                    "apigateway:GET"
+                ],
+                "modify": [
+                    "apigateway:PATCH"
+                ]
+            },
+
+            "inputs": [
+                {
+                    "name": "rest_api_id",
+                    "label": "API Gateway",
+                    "type": "aws_resource",
+                    "resource_type": "apigateway",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "stage_name",
+                    "label": "Stage",
+                    "type": "aws_resource",
+                    "resource_type": "apigateway-stage",
+                    "parent": "rest_api_id",
+                    "return": "stageName",
+                    "required": true
+                },
+                {
+                    "name": "region",
+                    "label": "AWS Region",
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Wait Duration (seconds)",
+                    "default": "300"
+                }
+            ]
+        },
+        {
+            "id": "apigateway-xray",
+
+            "name": "X-Ray Tracing Enable/Disable",
+
+            "json": "apigateway-xray-chaos.json",
+
+            "iam": {
+
+                "read": [
+                    "apigateway:GET"
+                ],
+
+                "modify": [
+                    "apigateway:PATCH"
+                ]
+
+            },
+
+            "inputs": [
+
+                {
+                    "name": "rest_api_id",
+
+                    "label": "API Gateway",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway",
+
+                    "return": "id",
+
+                    "required": true
+                },
+
+                {
+                    "name": "stage_name",
+
+                    "label": "Stage",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway-stage",
+
+                    "parent": "rest_api_id",
+
+                    "return": "stageName",
+
+                    "required": true
+                },
+
+                {
+                    "name": "region",
+
+                    "label": "AWS Region",
+
+                    "default": "eu-central-1"
+                },
+
+                {
+                    "name": "tracing_enabled",
+
+                    "label": "Enable X-Ray (true/false)",
+
+                    "default": "false"
+                },
+
+                {
+                    "name": "wait_seconds",
+
+                    "label": "Wait Duration (seconds)",
+
+                    "default": "300"
+                }
+
+            ]
+        },
+        {
+            "id": "apigateway-stage-variables",
+
+            "name": "Stage Variables Modification",
+
+            "json": "apigateway-stage-variables-chaos.json",
+
+            "iam": {
+
+                "read": [
+                    "apigateway:GET"
+                ],
+
+                "modify": [
+                    "apigateway:PATCH"
+                ]
+
+            },
+
+            "inputs": [
+
+                {
+                    "name": "rest_api_id",
+
+                    "label": "API Gateway",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway",
+
+                    "return": "id",
+
+                    "required": true
+                },
+
+                {
+                    "name": "stage_name",
+
+                    "label": "Stage",
+
+                    "type": "aws_resource",
+
+                    "resource_type": "apigateway-stage",
+
+                    "parent": "rest_api_id",
+
+                    "return": "stageName",
+
+                    "required": true
+                },
+
+                {
+                    "name": "region",
+
+                    "label": "AWS Region",
+
+                    "default": "eu-central-1"
+                },
+
+                {
+                    "name": "variable_name",
+
+                    "label": "Stage Variable Name",
+
+                    "default": "chaos-test"
+                },
+
+                {
+                    "name": "variable_value",
+
+                    "label": "Stage Variable Value",
+
+                    "default": "enabled"
+                },
+
+                {
+                    "name": "wait_seconds",
+
+                    "label": "Wait Duration (seconds)",
+
+                    "default": "300"
+                }
+
+            ]
+        }
+
+    ]
+
+}

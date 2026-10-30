@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "title": "Elastic Load Balancing Target Group Attribute Chaos",
+  "description": "Temporarily modifies a selected ELB target group attribute and restores its original value during rollback.",
+  "configuration": {
+    "aws_region": null,
+    "target_group": null,
+    "attribute_key": null,
+    "attribute_value": null
+  },
+  "method": [
+    {
+      "name": "modify-elb-target-group-attribute",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_target_group_actions",
+        "func": "modify_target_group_attribute",
+        "arguments": {
+          "target_group_arn": "${target_group}",
+          "attribute_key": "${attribute_key}",
+          "attribute_value": "${attribute_value}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "name": "restore-elb-target-group-attribute",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_target_group_actions",
+        "func": "restore_target_group_attribute",
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

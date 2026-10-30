@@ -1,0 +1,69 @@
+{
+    "version": "1.0.0",
+    "title": "Amazon S3 Public Access Block Chaos",
+
+    "description": "Temporarily disables all four bucket-level Public Access Block controls and restores the captured configuration. The experiment requires at least one control to be enabled before injection.",
+
+    "configuration": {
+        "bucket_name": null,
+        "aws_region": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+        {
+            "type": "action",
+            "name": "capture-current-public-access",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_public_access_actions",
+                "func": "capture_current_public_access",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+        {
+            "type": "action",
+            "name": "modify-public-access",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_public_access_actions",
+                "func": "update_public_access",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+        {
+            "type": "action",
+            "name": "wait",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_common",
+                "func": "wait",
+                "arguments": {
+                    "seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "type": "action",
+            "name": "restore-public-access",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_public_access_actions",
+                "func": "restore_original_public_access",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        }
+    ]
+}

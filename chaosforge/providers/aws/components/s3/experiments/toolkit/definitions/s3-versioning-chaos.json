@@ -1,0 +1,71 @@
+{
+    "version": "1.0.0",
+    "title": "Amazon S3 Bucket Versioning Chaos",
+
+    "description": "Modify Amazon S3 Bucket Versioning and restore the original configuration.",
+
+    "configuration": {
+        "bucket_name": null,
+        "aws_region": null,
+        "target_status": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+        {
+            "type": "action",
+            "name": "capture-current-versioning",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_versioning_actions",
+                "func": "capture_current_versioning",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+        {
+            "type": "action",
+            "name": "update-versioning",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_versioning_actions",
+                "func": "update_versioning",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}",
+                    "target_status": "${target_status}"
+                }
+            }
+        },
+        {
+            "type": "action",
+            "name": "wait",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_common",
+                "func": "wait",
+                "arguments": {
+                    "seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "type": "action",
+            "name": "restore-versioning",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_versioning_actions",
+                "func": "restore_original_versioning",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        }
+    ]
+}

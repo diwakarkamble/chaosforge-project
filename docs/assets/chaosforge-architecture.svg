@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title description">
+  <title id="title">ChaosForge architecture</title>
+  <desc id="description">Interactive CLI, YAML and CI, and Local Web UI flow through shared campaign services and lifecycle orchestration into Chaos Toolkit, AWS FIS, Chaos Mesh, and Azure Chaos Studio, then provider SDKs and evidence outputs.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071522"/>
+      <stop offset="0.55" stop-color="#0b2538"/>
+      <stop offset="1" stop-color="#102f3b"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#142f46"/>
+      <stop offset="1" stop-color="#183f51"/>
+    </linearGradient>
+    <linearGradient id="output" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#153a43"/>
+      <stop offset="1" stop-color="#1b4c4d"/>
+    </linearGradient>
+    <clipPath id="canvas"><rect width="1200" height="900" rx="28"/></clipPath>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#d98a22"/>
+    </marker>
+    <style>
+      .title { font: 700 32px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0.8px; fill: #f7fafc; }
+      .eyebrow { font: 700 12px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 2.4px; fill: #e9a84e; }
+      .label { font: 700 17px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f7fafc; }
+      .small { font: 500 13px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #b8cbd6; }
+      .engine { font: 700 15px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #eef7f8; }
+      .step { font: 700 12px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 1.5px; fill: #6ed3c7; }
+      .card { fill: #10283b; stroke: #2b5268; stroke-width: 1.5; }
+      .line { fill: none; stroke: #d98a22; stroke-width: 2.5; marker-end: url(#arrow); }
+      .rail { fill: none; stroke: #4c7184; stroke-width: 2; }
+      .dot { fill: #e9a84e; }
+    </style>
+  </defs>
+
+  <g clip-path="url(#canvas)">
+    <rect width="1200" height="900" fill="url(#background)"/>
+    <path d="M0 170 C260 70 390 215 640 110 S1010 70 1200 150 V0 H0Z" fill="#12354b" opacity="0.35"/>
+    <path d="M0 760 C250 690 430 850 690 770 S1000 690 1200 790 V900 H0Z" fill="#0a1d29" opacity="0.72"/>
+  </g>
+  <rect x="1" y="1" width="1198" height="898" rx="27" fill="none" stroke="#315269" stroke-width="2"/>
+
+  <g transform="translate(72 58)">
+    <text class="eyebrow" x="0" y="0">SYSTEM ARCHITECTURE</text>
+    <text class="title" x="0" y="44">One campaign model. Multiple execution paths.</text>
+    <text class="small" x="0" y="73">Every interface converges on the same validation, lifecycle, recovery, and evidence pipeline.</text>
+  </g>
+
+  <!-- Entry points -->
+  <g>
+    <g transform="translate(88 168)">
+      <rect class="card" width="280" height="92" rx="16"/>
+      <circle cx="42" cy="46" r="22" fill="#183f51" stroke="#6ed3c7" stroke-width="1.5"/>
+      <path d="M31 39 l9 7 -9 7 M43 54 h12" fill="none" stroke="#6ed3c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <text class="label" x="78" y="39">Interactive CLI</text>
+      <text class="small" x="78" y="62">Guided operator workflow</text>
+    </g>
+    <g transform="translate(460 168)">
+      <rect class="card" width="280" height="92" rx="16"/>
+      <circle cx="42" cy="46" r="22" fill="#3b3025" stroke="#e9a84e" stroke-width="1.5"/>
+      <path d="M31 35 h17 l7 7 v17 h-24z M48 35 v8 h7 M36 49 h14 M36 55 h10" fill="none" stroke="#e9a84e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <text class="label" x="78" y="39">YAML / CI</text>
+      <text class="small" x="78" y="62">Repeatable automation</text>
+    </g>
+    <g transform="translate(832 168)">
+      <rect class="card" width="280" height="92" rx="16"/>
+      <circle cx="42" cy="46" r="22" fill="#183f51" stroke="#6ed3c7" stroke-width="1.5"/>
+      <rect x="29" y="34" width="26" height="22" rx="2" fill="none" stroke="#6ed3c7" stroke-width="2"/>
+      <path d="M29 41 h26 M34 37 h1 M39 37 h1" stroke="#6ed3c7" stroke-width="2" stroke-linecap="round"/>
+      <text class="label" x="78" y="39">Local Web UI</text>
+      <text class="small" x="78" y="62">Visual campaign builder</text>
+    </g>
+  </g>
+
+  <path class="rail" d="M228 260 V286 H600 M600 260 V286 M972 260 V286 H600"/>
+  <circle class="dot" cx="600" cy="286" r="4"/>
+  <path class="line" d="M600 290 V326"/>
+
+  <!-- Shared core -->
+  <g>
+    <rect x="260" y="334" width="680" height="112" rx="22" fill="url(#core)" stroke="#3a6579" stroke-width="1.5"/>
+    <rect x="280" y="354" width="6" height="72" rx="3" fill="#d98a22"/>
+    <text class="step" x="312" y="370">SHARED CAMPAIGN CORE</text>
+    <text class="label" x="312" y="399">Campaign application services</text>
+    <text class="small" x="312" y="423">Catalog discovery  ·  schema validation  ·  target preflight  ·  permission planning</text>
+  </g>
+
+  <path class="line" d="M600 450 V476"/>
+
+  <g>
+    <rect x="355" y="484" width="490" height="76" rx="38" fill="#d98a22"/>
+    <circle cx="396" cy="522" r="22" fill="#f4bd70" opacity="0.5"/>
+    <path d="M386 522 h20 M396 512 v20" stroke="#0b2538" stroke-width="3" stroke-linecap="round"/>
+    <text x="430" y="517" style="font:700 17px system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#071522">Lifecycle runner &amp; dispatcher</text>
+    <text x="430" y="539" style="font:600 12px system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#173248">Pre-check  ·  inject  ·  observe  ·  recover  ·  validate</text>
+  </g>
+
+  <path class="line" d="M600 564 V612"/>
+  <path class="rail" d="M204 612 H996"/>
+  <circle class="dot" cx="600" cy="612" r="4"/>
+
+  <!-- Engines -->
+  <g>
+    <g transform="translate(88 630)">
+      <rect class="card" width="232" height="82" rx="15"/>
+      <rect x="0" y="0" width="6" height="82" rx="3" fill="#8c7ae6"/>
+      <text class="engine" x="24" y="34">Chaos Toolkit</text>
+      <text class="small" x="24" y="57">Provider actions</text>
+    </g>
+    <g transform="translate(352 630)">
+      <rect class="card" width="232" height="82" rx="15"/>
+      <rect x="0" y="0" width="6" height="82" rx="3" fill="#e9a84e"/>
+      <text class="engine" x="24" y="34">AWS FIS</text>
+      <text class="small" x="24" y="57">Managed fault injection</text>
+    </g>
+    <g transform="translate(616 630)">
+      <rect class="card" width="232" height="82" rx="15"/>
+      <rect x="0" y="0" width="6" height="82" rx="3" fill="#6ed3c7"/>
+      <text class="engine" x="24" y="34">Chaos Mesh</text>
+      <text class="small" x="24" y="57">Kubernetes-native faults</text>
+    </g>
+    <g transform="translate(880 630)">
+      <rect class="card" width="232" height="82" rx="15"/>
+      <rect x="0" y="0" width="6" height="82" rx="3" fill="#55a7e8"/>
+      <text class="engine" x="24" y="34">Azure Chaos Studio</text>
+      <text class="small" x="24" y="57">Azure managed faults</text>
+    </g>
+  </g>
+  <path class="rail" d="M204 612 V626 M468 612 V626 M732 612 V626 M996 612 V626"/>
+
+  <path class="rail" d="M204 716 V734 H996 V716 M468 716 V734 M732 716 V734"/>
+  <rect x="425" y="720" width="350" height="38" rx="19" fill="#0b2538" stroke="#4c7184" stroke-width="1.5"/>
+  <text class="step" x="600" y="744" text-anchor="middle">PROVIDER SDK BRIDGE</text>
+  <path class="line" d="M600 762 V788"/>
+
+  <!-- Outputs -->
+  <g>
+    <rect x="200" y="796" width="800" height="72" rx="18" fill="url(#output)" stroke="#4c807d" stroke-width="1.5"/>
+    <text class="label" x="600" y="826" text-anchor="middle">Evidence  ·  Reports  ·  History  ·  Rollback</text>
+    <text class="small" x="600" y="850" text-anchor="middle">Durable artifacts for operators, audits, and CI systems</text>
+  </g>
+</svg>

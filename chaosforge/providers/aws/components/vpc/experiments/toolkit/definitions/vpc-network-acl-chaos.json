@@ -1,0 +1,50 @@
+{
+    "version": "1.0.0",
+    "title": "Network ACL Chaos",
+    "description": "Temporarily remove a Network ACL rule and restore it.",
+
+    "configuration": {
+        "network_acl_id": null,
+        "selected_rule": null,
+        "aws_region": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Remove Rule",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.vpc.experiments.toolkit.actions.vpc_network_acl_actions",
+                "func": "capture_and_remove_rule",
+                "arguments": {
+                    "network_acl_id": "${network_acl_id}",
+                    "selected_rule": "${selected_rule}",
+                    "region": "${aws_region}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.common_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        },
+        {
+            "name": "Rollback",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.vpc.experiments.toolkit.actions.vpc_network_acl_actions",
+                "func": "rollback_rule"
+            }
+        }
+    ]
+}

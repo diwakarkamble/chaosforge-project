@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon ElastiCache Snapshot Retention Chaos Test",
+  "description": "Temporarily modify the snapshot retention period of an ElastiCache Redis replication group.",
+
+  "configuration": {
+    "replication_group_id": null,
+    "region": null,
+    "snapshot_retention_limit": null,
+    "wait_seconds": 300
+  },
+
+  "method": [
+    {
+      "name": "capture-original-snapshot-retention",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+        "func": "capture_snapshot_retention",
+        "arguments": {
+          "replication_group_id": "${replication_group_id}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "modify-snapshot-retention",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+        "func": "modify_snapshot_retention",
+        "arguments": {
+          "replication_group_id": "${replication_group_id}",
+          "region": "${region}",
+          "snapshot_retention_limit": "${snapshot_retention_limit}"
+        }
+      }
+    },
+    {
+        "name": "wait",
+        "type": "action",
+        "provider": {
+            "type": "python",
+            "module": "chaosforge.providers.aws.common_actions",
+            "func": "wait_for_duration",
+            "arguments": {
+                "wait_seconds": "${wait_seconds}"
+            }
+        }
+    },
+    {
+      "name": "restore-snapshot-retention",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+        "func": "restore_replication_group"
+      }
+    }
+  ]
+}

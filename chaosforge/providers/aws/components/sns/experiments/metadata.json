@@ -1,0 +1,185 @@
+{
+  "service": "sns",
+  "display_name": "Amazon SNS",
+  "experiments": [
+    {
+      "id": "sns-publish-message",
+      "name": "Publish Message",
+      "json": "sns-publish-message-chaos.json",
+
+      "iam": {
+        "read": [
+          "sns:GetTopicAttributes"
+        ],
+        "modify": [
+          "sns:Publish"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "topic_arn",
+          "label": "SNS Topic",
+          "type": "aws_resource",
+          "resource_type": "sns",
+          "return": "arn",
+          "required": true
+        },
+        {
+          "name": "message",
+          "label": "Message",
+          "type": "text",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "sns-topic-policy",
+      "name": "Disable Topic Policy",
+      "json": "sns-topic-policy-chaos.json",
+
+      "iam": {
+        "read": [
+          "sns:GetTopicAttributes"
+        ],
+        "modify": [
+          "sns:SetTopicAttributes"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "topic_arn",
+          "label": "SNS Topic",
+          "type": "aws_resource",
+          "resource_type": "sns",
+          "return": "arn",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "sns-subscription-filter",
+      "name": "Subscription Filter Policy",
+      "json": "sns-subscription-filter-chaos.json",
+
+      "iam": {
+        "read": [
+          "sns:GetSubscriptionAttributes"
+        ],
+        "modify": [
+          "sns:SetSubscriptionAttributes"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "subscription_arn",
+          "label": "SNS Subscription",
+          "type": "aws_resource",
+          "resource_type": "sns_subscription",
+          "return": "arn",
+          "required": true
+        },
+        {
+          "name": "filter_policy",
+          "label": "Filter Policy (JSON)",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "sns-delete-subscription",
+      "name": "Delete Subscription",
+      "json": "sns-delete-subscription-chaos.json",
+
+      "iam": {
+        "read": [
+          "sns:GetSubscriptionAttributes"
+        ],
+        "modify": [
+          "sns:Unsubscribe"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "subscription_arn",
+          "label": "SNS Subscription",
+          "type": "aws_resource",
+          "resource_type": "sns_subscription",
+          "return": "arn",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "sns-delivery-policy",
+      "name": "Delivery Retry Policy",
+      "json": "sns-delivery-policy-chaos.json",
+
+      "iam": {
+        "read": [
+          "sns:GetTopicAttributes"
+        ],
+        "modify": [
+          "sns:SetTopicAttributes"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "topic_arn",
+          "label": "SNS Topic",
+          "type": "aws_resource",
+          "resource_type": "sns",
+          "return": "arn",
+          "required": true
+        },
+        {
+          "name": "delivery_policy",
+          "label": "Delivery Policy (JSON)",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    }
+  ]
+}

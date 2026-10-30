@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Corruption",
+    "description": "Injects corrupted network packets into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "corrupt": "10"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "corrupt"
+    }
+}

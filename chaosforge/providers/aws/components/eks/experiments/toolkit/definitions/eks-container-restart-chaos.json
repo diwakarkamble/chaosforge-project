@@ -1,0 +1,43 @@
+{
+    "version": "1.0.0",
+    "title": "EKS Container Restart Chaos",
+    "description": "Terminates a selected Kubernetes pod to simulate a container restart, waits for the configured duration, and allows Kubernetes to restore the workload.",
+
+    "configuration": {
+        "eks_cluster": null,
+        "pod_name": null,
+        "namespace": "default",
+        "wait_seconds": 30,
+        "aws_region": null
+    },
+
+    "method": [
+        {
+            "name": "restart-container",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_container_restart_actions",
+                "func": "restart_eks_container",
+                "arguments": {
+                    "pod_name": "${pod_name}",
+                    "namespace": "${namespace}"
+                }
+            }
+        },
+        {
+            "name": "wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": []
+}

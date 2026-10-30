@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "title": "AWS SNS Delivery Retry Policy Chaos Test",
+  "description": "Temporarily modify the SNS Delivery Policy and restore the original configuration.",
+
+    "configuration": {
+      "topic_arn": null,
+      "region": null,
+      "delivery_policy": null,
+      "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-delivery-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_delivery_policy_actions",
+        "func": "capture_current_delivery_policy",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "update-delivery-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_delivery_policy_actions",
+        "func": "update_delivery_policy",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "region": "${region}",
+          "delivery_policy": "${delivery_policy}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_delivery_policy_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-delivery-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_delivery_policy_actions",
+        "func": "restore_delivery_policy",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

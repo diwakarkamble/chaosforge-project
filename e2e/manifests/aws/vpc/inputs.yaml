@@ -1,0 +1,42 @@
+# Run from the repository root: request all four VPC experiments in one campaign.
+# Live execution: approved non-production network resources only.
+# Tag exactly one security group, route table, network ACL, and internet gateway
+# with Chaosforge=E2E-Test in eu-central-1. Tagging only the VPC is not sufficient.
+# The selected resources should belong to the same dedicated test VPC.
+# Tag mode requires explicit child selection when a parent has multiple rules or
+# routes. `selected_rule` accepts the AWS security-group rule ID (`sgr-...`) or
+# the zero-based ingress-rule index displayed by the Web selector. Review it
+# against the dedicated disposable security group before execution. Route-table
+# and network-ACL fixtures still need exactly one safe child because their
+# experiments do not expose an explicit child override.
+# Review child selection before execution; do not target local routes or default
+# ACL deny entries. Resource tagging does not prove a selected child is suitable.
+# Faults can interrupt connectivity. Keep the runner and recovery access outside
+# the affected network, and review internet-gateway detach prerequisites.
+# Combined mode requires --e2e-execute; omitting it skips the combined live test.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components vpc \
+    --e2e-aws-region eu-central-1 \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/aws/vpc/inputs.yaml \
+    --e2e-execute
+
+components:
+  vpc:
+    experiments:
+      vpc-security-group:
+        wait_seconds: 30
+        selected_rule: XXXXXX
+      vpc-route-table:
+        wait_seconds: 30
+      vpc-network-acl:
+        wait_seconds: 30
+      vpc-internet-gateway:
+        wait_seconds: 30

@@ -1,0 +1,34 @@
+
+# Run from the repository root against approved non-production load balancers.
+# Zonal autoshift can affect traffic routing. Verify ARC zonal shift prerequisites
+# and the target Availability Zone before executing.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components elb \
+    --e2e-experiment elb:elb-load-balancer \
+    --e2e-experiment elb:zonal-autoshift \
+    --e2e-aws-region eu-central-1 \
+    --e2e-aws-fis-role-arn arn:aws:iam::XXXXXXXX:role/chaos-fis-role \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-inputs e2e/manifests/aws/elb/inputs.yaml \
+    --e2e-execute
+
+components:
+  elb:
+    experiments:
+      elb-load-balancer:
+        aws_region: eu-central-1
+        attribute_key: idle_timeout.timeout_seconds
+        attribute_value: "30"
+        wait_seconds: 30
+      zonal-autoshift:
+        duration: PT1M
+        managed_resource_types: ALB,NLB
+        zonal_autoshift_status: ENABLED

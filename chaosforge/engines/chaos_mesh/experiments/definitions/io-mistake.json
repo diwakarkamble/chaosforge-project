@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh IO Mistake",
+    "description": "Injects IO mistakes into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "volume_path": "/tmp",
+        "mistake": {
+            "maxOccurrences": 1,
+            "maxLength": 100
+        }
+    },
+    "chaos_mesh": {
+        "kind": "IOChaos",
+        "action": "mistake"
+    }
+}

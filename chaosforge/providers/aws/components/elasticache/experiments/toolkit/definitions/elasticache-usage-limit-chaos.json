@@ -1,0 +1,55 @@
+{
+    "version": "1.0.0",
+    "title": "ElastiCache Serverless Usage Limit Modification",
+    "description": "Capture the current serverless usage limits, modify the configured limit, wait, and restore the original configuration.",
+
+    "configuration": {
+        "serverless_cache_name": null,
+        "usage_type": null,
+        "maximum": null,
+        "region": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Modify Usage Limit",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_usage_limit_actions",
+                "func": "capture_and_modify_usage_limit",
+                "arguments": {
+                    "serverless_cache_name": "${serverless_cache_name}",
+                    "usage_type": "${usage_type}",
+                    "maximum": "${maximum}",
+                    "region": "${region}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_common",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "Restore Usage Limit",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_usage_limit_actions",
+                "func": "rollback_usage_limit"
+            }
+        }
+    ]
+}

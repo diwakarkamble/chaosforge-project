@@ -1,0 +1,206 @@
+# Azure service: Azure AKS Chaos
+# Generated from the service experiments/metadata.json.
+# Review the experiment descriptions and safety requirements before execution.
+# Use only approved non-production resources and the correct Azure subscription.
+# Required CHANGE_ME values must be replaced before running the affected experiment.
+# Resource selectors and Chaos identity fields are supplied through discovery/CLI options.
+# Live execution is explicitly enabled in the command below; review it before use.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud azure \
+    --e2e-components aks \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/azure/aks/inputs.yaml \
+    --e2e-execute
+
+components:
+  aks:
+    experiments:
+      "aks-pod-kill":
+        # Pod Kill
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-pod-failure":
+        # Pod Failure
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-container-kill":
+        # Container Kill
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-crashloop":
+        # CrashLoopBackOff
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-node-drain":
+        # Node Drain
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-node-taint":
+        # Node Taint NoExecute
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-node-notready":
+        # Node NotReady (VM Shutdown)
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-node-cpu-stress":
+        # Node CPU Exhaustion
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-node-memory-pressure":
+        # Node Memory Pressure
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-node-zone-failure":
+        # Zone-Level Node Failure
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-network-delay":
+        # Network Delay 500ms
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+        latency: "500ms"
+        jitter: "100ms"
+        correlation: 50
+        # Metadata range for correlation: 0 to 100
+      "aks-packet-loss":
+        # Packet Loss
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+        loss_percentage: 25
+        # Metadata range for loss_percentage: 1 to 100
+        correlation: 50
+        # Metadata range for correlation: 0 to 100
+      "aks-bandwidth-limit":
+        # Bandwidth Limit 1mbps
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+        rate: "1mbps"
+      "aks-packet-corruption":
+        # Packet Corruption 50%
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+        corrupt_percentage: 50
+        # Metadata range for corrupt_percentage: 1 to 100
+        correlation: 25
+        # Metadata range for correlation: 0 to 100
+      "aks-packet-duplication":
+        # Packet Duplication 50%
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+        duplicate_percentage: 50
+        # Metadata range for duplicate_percentage: 1 to 100
+        correlation: 25
+        # Metadata range for correlation: 0 to 100
+      "aks-network-partition":
+        # Network Partition
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-cpu-stress":
+        # CPU Stress 80%
+        chaos_mode: "all"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-memory-stress":
+        # Memory Stress / OOMKill
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-dns-failure":
+        # DNS Failure
+        dns_pattern: "*"
+        chaos_mode: "all"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-io-latency":
+        # Disk I/O Latency 100ms
+        volume_path: "/data"
+        io_delay: "100ms"
+        io_percent: 50
+        # Metadata range for io_percent: 1 to 100
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-io-errors":
+        # Disk I/O Errors EIO
+        volume_path: "/data"
+        io_errno: 5
+        # Metadata range for io_errno: 1 to 133
+        io_percent: 50
+        # Metadata range for io_percent: 1 to 100
+        chaos_mode: "one"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-clock-skew-forward":
+        # Clock Skew Forward
+        time_offset: "+5m"
+        chaos_mode: "all"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-clock-skew-backward":
+        # Clock Skew Backward
+        time_offset: "-5m"
+        chaos_mode: "all"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-http-delay":
+        # HTTP Delay 5s
+        http_port: 80
+        # Metadata range for http_port: 1 to 65535
+        chaos_mode: "all"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-http-abort":
+        # HTTP Abort 5xx
+        http_port: 80
+        # Metadata range for http_port: 1 to 65535
+        chaos_mode: "all"
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+        chaos_value: ""
+      "aks-coredns-kill":
+        # CoreDNS Pod Kill
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-coredns-cpu":
+        # CoreDNS CPU Starvation 90%
+        duration: 60
+        # Metadata range for duration: 10 to 1800
+      "aks-kube-proxy-kill":
+        # kube-proxy Pod Kill
+        duration: 60
+        # Metadata range for duration: 10 to 1800

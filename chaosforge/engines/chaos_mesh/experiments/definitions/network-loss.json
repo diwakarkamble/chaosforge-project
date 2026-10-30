@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Packet Loss",
+    "description": "Injects packet loss into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "loss": "30"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "loss"
+    }
+}

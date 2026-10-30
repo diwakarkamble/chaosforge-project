@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon EC2 EBS Volume Detachment from Auto Scaling Group",
+  "description": "Selects a running EC2 instance from an Auto Scaling Group, detaches a non-root EBS volume, waits for the configured duration, and restores the original attachment during rollback.",
+
+  "configuration": {
+    "aws_region": null,
+    "autoscaling_group": null,
+    "force": true,
+    "wait_seconds": 30
+  },
+
+  "method": [
+    {
+      "name": "detach-asg-ebs-volume",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "detach_random_asg_ebs_volume",
+        "arguments": {
+          "autoscaling_group": "${autoscaling_group}",
+          "aws_region": "${aws_region}",
+          "force": "${force}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_common",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-asg-ebs-volume",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "restore_asg_ebs_volume",
+        "arguments": {
+          "aws_region": "${aws_region}",
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ]
+}

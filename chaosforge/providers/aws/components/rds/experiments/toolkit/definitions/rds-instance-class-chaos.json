@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "title": "AWS RDS Instance Class Chaos Test",
+  "description": "Temporarily modify the RDS DB Instance Class and restore the original configuration.",
+
+  "configuration": {
+    "db_instance_identifier": null,
+    "aws_region": null,
+    "target_instance_class": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-instance-class",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_instance_class_actions",
+        "func": "capture_current_instance_class",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-instance-class",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_instance_class_actions",
+        "func": "update_instance_class",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}",
+          "target_instance_class": "${target_instance_class}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_instance_class_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-instance-class",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_instance_class_actions",
+        "func": "restore_instance_class",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+    "version": "1.0.0",
+    "title": "ElastiCache Daily Snapshot Modification",
+    "description": "Capture the current daily snapshot configuration, modify the snapshot window, wait, and restore the original configuration.",
+
+    "configuration": {
+    "replication_group_id": null,
+    "snapshot_window": null,
+        "region": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Modify Daily Snapshot",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+                "func": "capture_snapshot_window",
+                "arguments": {
+                    "replication_group_id": "${replication_group_id}",
+                    "region": "${region}"
+                }
+            }
+        },
+        {
+            "name": "Modify Snapshot Window",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+                "func": "modify_snapshot_window",
+                "arguments": {
+                    "replication_group_id": "${replication_group_id}",
+                    "snapshot_window": "${snapshot_window}",
+                    "region": "${region}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_common",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "Restore Snapshot Window",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+                "func": "restore_replication_group"
+            }
+        }
+    ]
+}

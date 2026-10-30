@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh HTTP Abort",
+    "description": "Aborts matching HTTP requests or responses.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "target": "Request",
+        "port": 8080,
+        "method": "GET",
+        "path": "/",
+        "duration": "30s",
+        "abort": true
+    },
+    "chaos_mesh": {
+        "kind": "HTTPChaos",
+        "action": "abort"
+    }
+}

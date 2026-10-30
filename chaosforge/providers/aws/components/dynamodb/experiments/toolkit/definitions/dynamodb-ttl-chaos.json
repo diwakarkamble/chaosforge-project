@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "title": "AWS DynamoDB TTL Chaos Test",
+  "description": "Temporarily disable DynamoDB Time To Live (TTL) and restore the original configuration.",
+
+  "configuration": {
+    "table_name": null,
+    "region": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-ttl",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_ttl_actions",
+        "func": "capture_current_ttl",
+        "arguments": {
+          "table_name": "${table_name}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "disable-ttl",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_ttl_actions",
+        "func": "disable_ttl",
+        "arguments": {
+          "table_name": "${table_name}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_ttl_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-ttl",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_ttl_actions",
+        "func": "restore_ttl",
+        "arguments": {
+          "table_name": "${table_name}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

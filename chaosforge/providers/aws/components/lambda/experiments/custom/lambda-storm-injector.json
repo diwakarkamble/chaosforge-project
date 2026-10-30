@@ -1,0 +1,30 @@
+{
+    "version": "1.0.0",
+    "title": "AWS Lambda Invocation Storm Injection",
+    "description": "Evaluate system stability when Locust doubles user traffic and spawn rates every 2 minutes.",
+    "tags": ["locust", "lambda", "invocation-storm"],
+    "method": [
+        {
+            "type": "action",
+            "name": "trigger-locust-storm",
+            "provider": {
+                "type": "process",
+                "path": "locust",
+                "arguments": [
+                    "-f", "locustfile.py",
+                    "--headless",
+                    "--users", "150",
+                    "--spawn-rate", "40",
+                    "--run-time", "10m",
+                    "--tags", "payload",
+                    "--aws-region", "eu-central-1",
+                    "--lambda-name", "icg-mqtt-handler-large",
+                    "--payload-size", "30000",
+                    "--topic", "100/FrV/WDD2971231Z500152",
+                    "--data", "gAMAAABiAAAAAAATAAAAAAAAAAAAAAAAAK8SIyct2LJmxtNWDBi1ZAAAAABiX3vSAAAAA34BBgEAgAAAAADISGkgU2VydmVy",
+                    "--broker-timestamp", "1718025600000"
+                ]
+            }
+        }
+    ]
+}

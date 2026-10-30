@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChaosForge</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/chaosforge-resilience-forge.svg') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+{% include "_resilience_signal_field.html" %}
+<div class="dashboard-container">
+    {% if selected_cloud %}
+    {% include "_utility_nav.html" %}
+    {% endif %}
+    {% if not selected_cloud %}
+    <div class="utility-nav utility-nav-landing">
+        <span></span>
+        <div class="utility-actions">
+            <span class="utility-timezone" tabindex="0" title="{{ current_timezone }}">
+                {{ current_timezone_offset }}
+                <span class="utility-timezone-name"> {{ current_timezone }}</span>
+            </span>
+            <div class="utility-icons"><a class="utility-icon" href="{{ url_for('settings') }}" aria-label="Settings"><i class="bi bi-gear-fill"></i><span class="visually-hidden">Settings</span></a></div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="text-center mb-5 hero-header">
+        <span class="landing-mark-sequence{% if not selected_cloud %} landing-mark-intro{% endif %}" aria-hidden="true">
+            <img class="landing-mark" src="{{ url_for('static', filename='icons/chaosforge-resilience-forge.svg') }}" alt="">
+        </span>
+        <h1 class="hero-title">Chaos<span class="text-primary">Forge</span></h1>
+        <p class="hero-subtitle">Forging Resilient Systems Through Controlled Chaos</p>
+        <div class="hero-divider"></div>
+        <div class="hero-features">
+            <span><i class="bi bi-shield-check"></i>Controlled Experiments</span>
+            <span><i class="bi bi-speedometer2"></i>Measure Resilience</span>
+            <span><i class="bi bi-graph-up-arrow"></i>Improve Reliability</span>
+            <span><i class="bi bi-lightning-charge"></i>Build Confidence</span>
+        </div>
+    </div>
+
+    {% if selected_cloud %}
+    <div class="provider-nav mb-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light">
+            <i class="bi bi-arrow-left"></i> Change Cloud
+        </a>
+        <div class="provider-heading">
+            <img src="{{ url_for('static', filename='icons/' + selected_cloud.icon) }}" alt="{{ selected_cloud.name }}">
+            <div>
+                <p class="eyebrow">Selected cloud</p>
+                <h2>{{ selected_cloud.name }}</h2>
+            </div>
+        </div>
+    </div>
+    {% if notice %}
+    <div class="alert alert-warning" role="alert">
+        <i class="bi bi-shield-exclamation"></i> {{ notice }}
+    </div>
+    {% endif %}
+    <form class="yaml-drop-form mb-4" id="yaml-drop-form" method="post" enctype="multipart/form-data"
+          data-yaml-upload-panel {% if not cloud_identity.authenticated %}hidden{% endif %}
+          action="{{ url_for('review_campaign_yaml', cloud=selected_cloud.id) }}">
+        <label class="yaml-drop-zone" id="yaml-drop-zone" tabindex="0">
+            <input type="file" name="campaign_yaml" id="campaign-yaml-input"
+                    accept=".yaml,.yml,application/yaml,text/yaml" required aria-describedby="yaml-drop-status">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <span class="yaml-drop-title">Drop a campaign YAML here</span>
+            <span class="yaml-drop-copy">or click to select a .yaml or .yml file</span>
+        </label>
+        <div id="yaml-drop-status" class="visually-hidden" role="status"></div>
+    </form>
+    <div class="yaml-login-required mb-4" role="status" data-yaml-login-panel {% if cloud_identity.authenticated %}hidden{% endif %}>
+        <i class="bi bi-lock-fill"></i>
+        <span>Log in to {{ selected_cloud.name }} to upload a campaign YAML.</span>
+    </div>
+    {% if yaml_errors %}
+    <div class="alert alert-danger">
+        {% for message in yaml_errors %}<div>{{ message }}</div>{% endfor %}
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {% if selected_cloud and campaign_selector_required %}
+    <div class="campaign-gate mb-4" role="dialog" aria-labelledby="campaign-gate-title">
+        <div>
+            <p class="eyebrow">Before adding experiments</p>
+            <h3 id="campaign-gate-title">Choose an {{ selected_cloud.short_name }} campaign</h3>
+            <p class="section-subtitle">Open an existing draft or create a new campaign. ChaosForge will keep it active until you choose another campaign.</p>
+        </div>
+        <a href="{{ url_for('campaigns', cloud=selected_cloud.id, return_cloud=selected_cloud.id) }}" class="btn btn-primary">
+            <i class="bi bi-collection"></i> Choose Campaign
+        </a>
+    </div>
+    {% else %}
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2>{{ selected_cloud.short_name + ' Components' if selected_cloud else 'Choose Your Cloud' }}</h2>
+            <p class="section-subtitle">
+                {{ 'Select a component to browse its available experiments' if selected_cloud else 'Select the platform that owns the resources you want to test' }}
+            </p>
+        </div>
+        <div class="row">
+            {% if selected_cloud %}
+                {% for service in services %}
+                <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 mb-4">
+                    <a href="{{ url_for('service', service=service.id) }}" class="text-decoration-none">
+                        <div class="card shadow h-100 service-card {{ selected_cloud.id }}-service-card">
+                            <div class="card-body text-center">
+                                <img src="{{ url_for('static', filename='icons/' + service.icon) }}" class="service-icon service-icon-{{ service.id }} mb-3" alt="{{ service.name }}">
+                                <h4 class="service-title">{{ service.name }}</h4>
+                                <p class="service-description">{{ service.description }}</p>
+                                <p class="launch-link">View experiments →</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            {% else %}
+                {% for cloud in clouds %}
+                <div class="col-lg-6 mb-4">
+                    <a href="{{ url_for('cloud_services', cloud=cloud.id) }}" class="text-decoration-none">
+                        <div class="card shadow h-100 cloud-card cloud-card-{{ cloud.id }}">
+                            <div class="card-body cloud-card-body">
+                                <img src="{{ url_for('static', filename='icons/' + cloud.icon) }}" class="cloud-icon" alt="{{ cloud.name }}">
+                                <div>
+                                    <p class="eyebrow">Cloud provider</p>
+                                    <h3>{{ cloud.name }}</h3>
+                                    <p class="service-description">{{ cloud.description }}</p>
+                                    <p class="launch-link">Explore {{ cloud.short_name }} →</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% if selected_cloud %}
+<script src="{{ url_for('static', filename='campaign-import.js') }}"></script>
+{% endif %}
+{% include "_version_footer.html" %}
+</body>
+</html>

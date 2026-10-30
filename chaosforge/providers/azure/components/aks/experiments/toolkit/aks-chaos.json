@@ -1,0 +1,210 @@
+{
+  "version": "1.0.0",
+  "title": "Azure AKS Chaos Experiment",
+  "description": "Run a Chaos Mesh fault on AKS via Azure Chaos Studio. The experiment_id variable selects which fault to inject.",
+
+  "steady-state-hypothesis": {
+    "title": "AKS target is healthy before and after the experiment",
+    "probes": [
+      {
+        "name": "aks-target-healthy",
+        "type": "probe",
+        "tolerance": true,
+        "provider": {
+          "type": "python",
+          "module": "chaosforge.providers.azure.components.aks.experiments.chaos_studio.checks.safety",
+          "func": "probe_aks_target_healthy",
+          "arguments": {
+            "aks_context": "${aks_context}",
+            "namespace": "${namespace}",
+            "deployment": "${deployment}",
+            "owning_deployment": "${owning_deployment}"
+          }
+        }
+      }
+    ]
+  },
+
+  "configuration": {
+    "experiment_id":  null,
+    "aks_context":    null,
+    "namespace":      null,
+    "deployment":     null,
+    "chaos_mode":     "one",
+    "chaos_value":    "",
+    "container_name": "",
+    "dns_pattern":    "",
+    "volume_path":    "/data",
+    "http_port":      "80",
+    "subscription_id": "",
+    "resource_group":  "",
+    "aks_name":        "",
+    "location":        "",
+    "target_node":     "",
+    "label_key":       "",
+    "label_val":       "",
+    "target_mode":     "",
+    "owning_deployment": "",
+    "duration":        60,
+    "time_offset":     "",
+    "dry_run":         "",
+    "target_zone":     "",
+    "latency":            "500ms",
+    "jitter":             "100ms",
+    "correlation":        "50",
+    "loss_percentage":    "25",
+    "rate":               "1mbps",
+    "corrupt_percentage": "50",
+    "duplicate_percentage": "50",
+    "io_delay":           "100ms",
+    "io_errno":           "5",
+    "io_percent":         "50",
+    "chaos_mesh_version_action": "",
+    "chaos_mesh_installed_version": ""
+  },
+
+  "method": [
+    {
+      "name": "setup-studio",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.azure.components.aks.experiments.chaos_studio.executor",
+        "func": "setup_studio",
+        "arguments": {
+          "experiment_id":   "${experiment_id}",
+          "aks_context":     "${aks_context}",
+          "namespace":       "${namespace}",
+          "deployment":      "${deployment}",
+          "chaos_mode":      "${chaos_mode}",
+          "chaos_value":     "${chaos_value}",
+          "container_name":  "${container_name}",
+          "dns_pattern":     "${dns_pattern}",
+          "volume_path":     "${volume_path}",
+          "http_port":       "${http_port}",
+          "subscription_id": "${subscription_id}",
+          "resource_group":  "${resource_group}",
+          "aks_name":        "${aks_name}",
+          "location":        "${location}",
+          "target_node":     "${target_node}",
+          "label_key":       "${label_key}",
+          "label_val":       "${label_val}",
+          "target_mode":     "${target_mode}",
+          "duration":        "${duration}",
+          "time_offset":     "${time_offset}",
+          "dry_run":         "${dry_run}",
+          "latency":            "${latency}",
+          "jitter":             "${jitter}",
+          "correlation":        "${correlation}",
+          "loss_percentage":    "${loss_percentage}",
+          "rate":               "${rate}",
+          "corrupt_percentage": "${corrupt_percentage}",
+          "duplicate_percentage": "${duplicate_percentage}",
+          "io_delay":            "${io_delay}",
+          "io_errno":            "${io_errno}",
+          "io_percent":          "${io_percent}",
+          "chaos_mesh_version_action": "${chaos_mesh_version_action}",
+          "chaos_mesh_installed_version": "${chaos_mesh_installed_version}"
+        }
+      }
+    },
+    {
+      "name": "run-chaos-experiment",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.azure.components.aks.experiments.chaos_studio.executor",
+        "func": "run_experiment",
+        "arguments": {
+          "experiment_id":   "${experiment_id}",
+          "aks_context":     "${aks_context}",
+          "namespace":       "${namespace}",
+          "deployment":      "${deployment}",
+          "chaos_mode":      "${chaos_mode}",
+          "chaos_value":     "${chaos_value}",
+          "container_name":  "${container_name}",
+          "dns_pattern":     "${dns_pattern}",
+          "volume_path":     "${volume_path}",
+          "http_port":       "${http_port}",
+          "subscription_id": "${subscription_id}",
+          "resource_group":  "${resource_group}",
+          "aks_name":        "${aks_name}",
+          "target_node":     "${target_node}",
+          "label_key":       "${label_key}",
+          "label_val":       "${label_val}",
+          "duration":        "${duration}",
+          "dry_run":         "${dry_run}",
+          "latency":            "${latency}",
+          "jitter":             "${jitter}",
+          "correlation":        "${correlation}",
+          "loss_percentage":    "${loss_percentage}",
+          "rate":               "${rate}",
+          "corrupt_percentage": "${corrupt_percentage}",
+          "duplicate_percentage": "${duplicate_percentage}",
+          "io_delay":            "${io_delay}",
+          "io_errno":            "${io_errno}",
+          "io_percent":          "${io_percent}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "cleanup-experiment",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.azure.components.aks.experiments.chaos_studio.executor",
+        "func": "cleanup_experiment",
+        "arguments": {
+          "experiment_id":   "${experiment_id}",
+          "aks_context":     "${aks_context}",
+          "namespace":       "${namespace}",
+          "deployment":      "${deployment}",
+          "chaos_mode":      "${chaos_mode}",
+          "chaos_value":     "${chaos_value}",
+          "container_name":  "${container_name}",
+          "dns_pattern":     "${dns_pattern}",
+          "volume_path":     "${volume_path}",
+          "http_port":       "${http_port}",
+          "subscription_id": "${subscription_id}",
+          "resource_group":  "${resource_group}",
+          "aks_name":        "${aks_name}",
+          "target_node":     "${target_node}",
+          "label_key":       "${label_key}",
+          "label_val":       "${label_val}",
+          "duration":        "${duration}",
+          "dry_run":         "${dry_run}",
+          "latency":            "${latency}",
+          "jitter":             "${jitter}",
+          "correlation":        "${correlation}",
+          "loss_percentage":    "${loss_percentage}",
+          "rate":               "${rate}",
+          "corrupt_percentage": "${corrupt_percentage}",
+          "duplicate_percentage": "${duplicate_percentage}",
+          "io_delay":            "${io_delay}",
+          "io_errno":            "${io_errno}",
+          "io_percent":          "${io_percent}"
+        }
+      }
+    },
+    {
+      "name": "verify-rollback-health",
+      "type": "action",
+      "provider": {
+        "type": "python",
+          "module": "chaosforge.providers.azure.components.aks.experiments.chaos_studio.checks.safety",
+        "func": "verify_rollback_health",
+        "arguments": {
+          "experiment_id": "${experiment_id}",
+          "aks_context": "${aks_context}",
+          "namespace":   "${namespace}",
+          "deployment":  "${deployment}",
+          "owning_deployment": "${owning_deployment}",
+          "dry_run":     "${dry_run}"
+        }
+      }
+    }
+  ]
+}

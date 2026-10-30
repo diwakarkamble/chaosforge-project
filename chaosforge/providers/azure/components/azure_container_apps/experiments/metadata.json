@@ -1,0 +1,9 @@
+{
+  "service": "azure_container_apps",
+  "display_name": "Azure Container Apps",
+  "experiments": [
+    {"id":"azure-container-app-revision-restart","name":"Restart Container App Revision","description":"Restart one active Container Apps revision.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-container-app-revision-restart.json","inputs":[{"name":"resource_id","label":"Container App","type":"azure_component_resource","required":true},{"name":"revision_name","label":"Revision Name","type":"text","required":true}]},
+    {"id":"azure-container-app-traffic-shift","name":"Shift Container App Traffic","description":"Direct traffic to one revision for the configured duration and restore the prior traffic weights during rollback.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-container-app-traffic-shift.json","inputs":[{"name":"resource_id","label":"Container App","type":"azure_component_resource","required":true},{"name":"revision_name","label":"Revision Name","type":"text","required":true},{"name":"weight","label":"Revision Traffic Weight","type":"number","default":100,"required":true},{"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]},
+    {"id":"azure-container-app-scale-zero","name":"Deactivate Container App Revision","description":"Deactivate a revision for the configured duration and restore its original active state during rollback.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-container-app-scale-zero.json","inputs":[{"name":"resource_id","label":"Container App","type":"azure_component_resource","required":true},{"name":"revision_name","label":"Revision Name","type":"text","required":true},{"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]}
+  ]
+}

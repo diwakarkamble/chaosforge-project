@@ -1,0 +1,89 @@
+# Run from the repository root. This command requests live fault execution.
+# Use approved non-production resources only. Omit --e2e-execute to validate
+# Web UI resource selection without injecting faults or verifying recovery.
+# Tag one approved test Redis replication group and one member cache cluster
+# with Chaosforge=E2E-Test in eu-central-1. Tags do not propagate automatically.
+# Multiple tagged replication groups or cache clusters cause ambiguous selection.
+# Snapshot retention and daily snapshots target the replication group.
+# Reboot targets the separately tagged node-based cache cluster.
+# Snapshot window must not overlap the replication group's maintenance window.
+# The test group uses Tuesday 02:30-03:30 UTC; 04:00-05:00 UTC is non-overlapping.
+# Review retention and snapshot-window values against the current baseline.
+# Snapshot retention changes can affect backup availability and storage charges.
+# Reboot can interrupt cache access; keep the runner outside the affected cache.
+#
+# Current branch limitations, not solvable by these YAML inputs:
+# - Security Group Modification resolves a group-associated security group,
+#   rather than an independently approved temporary replacement group.
+# - Usage Limit requires a serverless cache, but the E2E elasticache resolver
+#   currently discovers replication groups instead of serverless caches.
+# Usage Limit is excluded from both commands until the E2E resolver supports
+# serverless-cache discovery.
+# Security Group is excluded; its settings below are reference inputs only.
+# Settings do not select experiments; the command's explicit filters do that.
+# command requests three standard experiments. command_with_fis also requests
+# Interrupt AZ Power using the configured chaos-fis-role ARN.
+# The role must trust fis.amazonaws.com; the caller needs iam:PassRole and
+# FIS control-plane permissions.
+# FIS Interrupt AZ Power requires Multi-AZ; verify topology and readiness before
+# executing. The test group was configured with a primary and cross-AZ replica.
+# Do not reuse the GitLab OIDC role unless its FIS trust and permissions are verified.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components elasticache \
+    --e2e-experiment elasticache:elasticache-snapshot-retention \
+    --e2e-experiment elasticache:elasticache-reboot \
+    --e2e-experiment elasticache:elasticache-daily-snapshot \
+    --e2e-aws-region eu-central-1 \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode isolated \
+    --e2e-strict-missing-resource \
+    --e2e-inputs e2e/manifests/aws/elasticache/inputs.yaml \
+    --e2e-execute
+
+command_with_fis: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components elasticache \
+    #--e2e-experiment elasticache:elasticache-snapshot-retention \
+    #--e2e-experiment elasticache:elasticache-reboot \
+    --e2e-experiment elasticache:elasticache-daily-snapshot \
+    --e2e-experiment elasticache:interrupt-az-power \
+    --e2e-aws-region eu-central-1 \
+    --e2e-aws-fis-role-arn arn:aws:iam::XXXXXXXXXX:role/chaos-fis-role \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-inputs e2e/manifests/aws/elasticache/inputs.yaml \
+    --e2e-execute
+
+components:
+  elasticache:
+    experiments:
+      elasticache-security-group:
+        region: eu-central-1
+        wait_seconds: 30
+      elasticache-snapshot-retention:
+        region: eu-central-1
+        snapshot_retention_limit: 7
+        wait_seconds: 30
+      elasticache-reboot:
+        region: eu-central-1
+      elasticache-usage-limit:
+        region: eu-central-1
+        usage_type: DataStorage
+        maximum: 5
+        wait_seconds: 30
+      elasticache-daily-snapshot:
+        region: eu-central-1
+        snapshot_window: 04:00-05:00
+        wait_seconds: 30
+      interrupt-az-power:
+        duration: PT5M
+        availability_zone_identifier: eu-central-1a

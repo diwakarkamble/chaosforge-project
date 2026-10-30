@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "title": "AWS RDS Auto Minor Version Upgrade Chaos Test",
+  "description": "Temporarily modify the Auto Minor Version Upgrade setting and restore the original configuration.",
+
+  "configuration": {
+    "db_instance_identifier": null,
+    "aws_region": null,
+    "target_auto_minor_version_upgrade": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-auto-minor-upgrade",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_auto_minor_version_upgrade_actions",
+        "func": "capture_current_auto_minor_upgrade",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-auto-minor-upgrade",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_auto_minor_version_upgrade_actions",
+        "func": "update_auto_minor_upgrade",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}",
+          "auto_minor_version_upgrade": "${target_auto_minor_version_upgrade}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_auto_minor_version_upgrade_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-auto-minor-upgrade",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_auto_minor_version_upgrade_actions",
+        "func": "restore_auto_minor_upgrade",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

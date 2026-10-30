@@ -1,0 +1,53 @@
+{
+    "version": "1.0.0",
+    "title": "RDS Provisioned IOPS Chaos",
+    "description": "Reduce RDS Provisioned IOPS and rollback.",
+
+    "configuration": {
+        "db_instance_identifier": null,
+        "aws_region": null,
+        "threshold_percent": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Reduce Provisioned IOPS",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_iops_actions",
+                "func": "capture_and_reduce_iops",
+                "arguments": {
+                    "db_instance_identifier": "${db_instance_identifier}",
+                    "region": "${aws_region}",
+                    "threshold_percent": "${threshold_percent}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_iops_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "Rollback",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_iops_actions",
+                "func": "rollback_iops"
+            }
+        }
+    ]
+}

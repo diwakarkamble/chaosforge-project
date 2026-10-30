@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Block Chaos",
+    "description": "Injects block-device faults into selected Kubernetes volumes.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "volume_name": "chaosforge-volume",
+        "latency": "100ms",
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "BlockChaos",
+        "action": "delay"
+    }
+}

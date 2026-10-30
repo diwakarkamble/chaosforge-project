@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "title": "AWS RDS Deletion Protection Chaos Test",
+  "description": "Temporarily modify RDS Deletion Protection and restore the original configuration.",
+
+  "configuration": {
+    "db_instance_identifier": null,
+    "aws_region": null,
+    "target_deletion_protection": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-deletion-protection",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_deletion_protection_actions",
+        "func": "capture_current_deletion_protection",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-deletion-protection",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_deletion_protection_actions",
+        "func": "update_deletion_protection",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}",
+          "deletion_protection": "${target_deletion_protection}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_deletion_protection_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-deletion-protection",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_deletion_protection_actions",
+        "func": "restore_deletion_protection",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "title": "AWS DynamoDB PITR Chaos Test",
+  "description": "Temporarily disable Point-in-Time Recovery (PITR) and restore the original configuration.",
+
+  "configuration": {
+    "table_name": null,
+    "region": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-pitr",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_pitr_actions",
+        "func": "capture_current_pitr",
+        "arguments": {
+          "table_name": "${table_name}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "disable-pitr",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_pitr_actions",
+        "func": "disable_pitr",
+        "arguments": {
+          "table_name": "${table_name}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_pitr_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-pitr",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.dynamodb.experiments.toolkit.actions.dynamodb_pitr_actions",
+        "func": "restore_pitr",
+        "arguments": {
+          "table_name": "${table_name}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

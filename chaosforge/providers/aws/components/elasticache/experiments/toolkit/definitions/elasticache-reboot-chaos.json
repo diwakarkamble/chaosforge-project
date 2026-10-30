@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon ElastiCache Memcached Reboot Chaos Test",
+  "description": "Reboot an ElastiCache Memcached cluster.",
+
+  "configuration": {
+    "cache_cluster_id": null,
+    "region": null
+  },
+
+  "method": [
+    {
+      "name": "reboot-cache-cluster",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_reboot_actions",
+        "func": "reboot_cache_cluster",
+        "arguments": {
+          "cache_cluster_id": "${cache_cluster_id}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

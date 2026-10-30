@@ -1,0 +1,89 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon ECS Desired Task Count Chaos",
+
+  "description": "Modify ECS Service Desired Task Count and restore it.",
+
+  "configuration": {
+        "ecs_cluster": null,
+        "ecs_service": null,
+        "aws_region": null,
+        "target_desired_count": null,
+        "wait_seconds": "300"
+    },
+
+  "method": [
+    {
+      "name": "capture-current-desired-count",
+
+      "type": "action",
+
+      "provider": {
+        "type": "python",
+
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_desired_task_count_actions",
+
+        "func": "capture_current_desired_count",
+
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    },
+
+    {
+      "name": "update-desired-count",
+
+      "type": "action",
+
+      "provider": {
+        "type": "python",
+
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_desired_task_count_actions",
+
+        "func": "update_desired_count",
+
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "target_desired_count": "${target_desired_count}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    },
+
+    {
+        "name": "wait",
+        "type": "action",
+        "provider": {
+            "type": "python",
+            "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_common",
+            "func": "wait_for_duration",
+            "arguments": {
+            "wait_seconds": "${wait_seconds}"
+            }
+        }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-desired-count",
+
+      "type": "action",
+
+      "provider": {
+        "type": "python",
+
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_desired_task_count_actions",
+
+        "func": "restore_desired_count",
+
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

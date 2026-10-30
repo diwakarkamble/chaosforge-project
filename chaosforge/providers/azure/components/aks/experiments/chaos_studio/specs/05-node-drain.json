@@ -1,0 +1,4 @@
+{
+  "kind": "NodeDrain",
+  "node": "<target-node>"
+}

@@ -1,0 +1,72 @@
+{
+    "version": "1.0.0",
+    "title": "EKS Replica Reduction Chaos",
+    "description": "Temporarily reduces the replica count of a selected Kubernetes deployment, waits for the configured duration, and restores the original replica count.",
+
+    "configuration": {
+        "eks_cluster": null,
+        "deployment_name": null,
+        "namespace": "default",
+        "reduced_replicas": 1,
+        "wait_seconds": 30,
+        "aws_region": null
+    },
+
+    "method": [
+        {
+            "name": "capture-current-replicas",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_replica_reduction_actions",
+                "func": "capture_current_replicas",
+                "arguments": {
+                    "deployment_name": "${deployment_name}",
+                    "namespace": "${namespace}"
+                }
+            }
+        },
+        {
+            "name": "reduce-replicas",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_replica_reduction_actions",
+                "func": "reduce_replicas",
+                "arguments": {
+                    "deployment_name": "${deployment_name}",
+                    "namespace": "${namespace}",
+                    "reduced_replicas": "${reduced_replicas}"
+                }
+            }
+        },
+        {
+            "name": "wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "restore-original-replicas",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_replica_reduction_actions",
+                "func": "restore_original_replicas",
+                "arguments": {
+                    "deployment_name": "${deployment_name}",
+                    "namespace": "${namespace}"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,99 @@
+{
+  "service": "fis",
+  "display_name": "AWS FIS",
+  "experiments": [
+    {
+      "id": "fis-create-experiment",
+      "name": "Create and Start FIS Experiment",
+      "internal": true,
+      "iam": {
+        "read": ["fis:GetExperiment", "sts:GetCallerIdentity"],
+        "modify": ["fis:CreateExperimentTemplate", "fis:StartExperiment", "fis:StopExperiment", "fis:DeleteExperimentTemplate"],
+        "additional": ["iam:PassRole"]
+      },
+      "inputs": [
+        {"name": "experiment_name", "label": "Experiment Name", "required": true},
+        {"name": "description", "label": "Description", "required": true},
+        {"name": "created_by", "label": "Created By", "type": "text", "required": true},
+        {"name": "aws_region", "label": "AWS Region", "default": "eu-central-1"},
+        {"name": "service_id", "label": "AWS Service", "required": true},
+        {"name": "experiment_id", "label": "Experiment", "required": true},
+        {"name": "target_arn", "label": "Target Resource", "required": true},
+        {"name": "role_arn", "label": "FIS Role ARN", "required": true},
+        {"name": "auto_delete_template", "label": "Delete Template After Completion (Y/N)", "default": "N"}
+      ]
+    },
+    {
+      "id": "fis-start-template",
+      "name": "Start FIS Experiment Template",
+
+      "iam": {
+        "modify": ["fis:StartExperiment"]
+      },
+
+      "inputs": [
+        {
+          "name": "experiment_template_id",
+          "label": "FIS Experiment Template",
+          "type": "aws_fis_template",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "default": "eu-central-1"
+        }
+      ]
+    },
+
+    {
+      "id": "fis-stop-experiment",
+      "name": "Stop Running FIS Experiment",
+
+      "iam": {
+        "modify": ["fis:StopExperiment"]
+      },
+
+      "inputs": [
+        {
+          "name": "experiment_id",
+          "label": "Experiment ID",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "default": "eu-central-1"
+        }
+      ]
+    },
+
+    {
+      "id": "fis-delete-template",
+      "name": "Delete FIS Template",
+
+      "iam": {
+        "read": [
+          "fis:GetExperimentTemplate"
+        ],
+        "delete": [
+          "fis:DeleteExperimentTemplate"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "template_id",
+          "label": "FIS Experiment Template",
+          "type": "aws_fis_template",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "default": "eu-central-1"
+        }
+      ]
+    }
+  ]
+}

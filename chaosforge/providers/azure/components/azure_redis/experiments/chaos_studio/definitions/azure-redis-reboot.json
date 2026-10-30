@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "title": "Azure Cache for Redis Reboot",
+  "description": "Execute the Azure Chaos Studio Redis reboot fault.",
+  "configuration": {
+    "subscription_id": "",
+    "resource_group": "",
+    "redis_name": "",
+    "chaos_identity_id": "",
+    "reboot_type": "AllNodes"
+  },
+  "method": [
+    {
+      "name": "start-redis-reboot",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.azure.components.azure_redis.experiments.chaos_studio.actions.redis_reboot",
+        "func": "run_experiment",
+        "arguments": {
+          "subscription_id": "${subscription_id}",
+          "resource_group": "${resource_group}",
+           "redis_name": "${redis_name}",
+           "chaos_identity_id": "${chaos_identity_id}",
+           "reboot_type": "${reboot_type}"
+        }
+      }
+    }
+  ]
+}

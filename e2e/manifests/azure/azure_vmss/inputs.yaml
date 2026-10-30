@@ -1,0 +1,40 @@
+﻿# Azure service: Azure Virtual Machine Scale Sets
+# Generated from the service experiments/metadata.json.
+# Review the experiment descriptions and safety requirements before execution.
+# Use only approved non-production resources and the correct Azure subscription.
+# Required CHANGE_ME values must be replaced before running the affected experiment.
+# Resource selectors and Chaos identity fields are supplied through discovery/CLI options.
+# Live execution is explicitly enabled in the command below; review it before use.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud azure \
+    --e2e-components azure_vmss \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/azure/azure_vmss/inputs.yaml \
+    --e2e-execute
+
+components:
+  azure_vmss:
+    experiments:
+      "azure-vmss-shutdown":
+        # Azure Chaos Studio classic VMSS shutdown fault.
+        duration: "PT5M"
+        abrupt_shutdown: false
+        instances:
+          - "0"
+      "azure-vmss-shutdown-2-0":
+        # Azure Chaos Studio classic VMSS shutdown 2.0 fault.
+        duration: "PT5M"
+        abrupt_shutdown: false
+      "azure-vmss-toolkit-reboot": {}
+        # Restarts one or more selected virtual machine scale set instances, or one random instance when none are selected.
+        # Optional input not set: instance_criteria (azure_vmss_instances)
+      "azure-vmss-overprovision-toggle":
+        # Disable VM Scale Set overprovisioning for the configured duration and restore its previous setting during rollback.
+        duration_seconds: 300
+        # Metadata range for duration_seconds: 1 to 3600

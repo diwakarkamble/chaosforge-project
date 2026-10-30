@@ -1,0 +1,178 @@
+{
+    "service": "vpc",
+    "display_name": "Amazon VPC",
+
+    "experiments": [
+        {
+            "id": "vpc-security-group",
+            "name": "Security Group Rule Modification",
+            "json": "vpc-security-group-chaos.json",
+
+            "iam": {
+                "read": [
+                    "ec2:DescribeSecurityGroups"
+                ],
+                "modify": [
+                    "ec2:RevokeSecurityGroupIngress",
+                    "ec2:AuthorizeSecurityGroupIngress"
+                ]
+            },
+
+            "inputs": [
+                {
+                    "name": "security_group_id",
+                    "label": "Security Group",
+                    "type": "aws_resource",
+                    "resource_type": "security-group",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "selected_rule",
+                    "label": "Security Group Rule",
+                    "type": "aws_resource",
+                    "resource_type": "security-group-rule",
+                    "parent": "security_group_id",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Wait Duration (seconds)",
+                    "default": "300"
+                }
+            ]
+        },
+        {
+            "id": "vpc-route-table",
+            "name": "Route Table Modification",
+            "json": "vpc-route-table-chaos.json",
+
+            "iam": {
+                "read": [
+                    "ec2:DescribeRouteTables"
+                ],
+                "modify": [
+                    "ec2:DeleteRoute",
+                    "ec2:CreateRoute"
+                ]
+            },
+
+            "inputs": [
+                {
+                    "name": "route_table_id",
+                    "label": "Route Table",
+                    "type": "aws_resource",
+                    "resource_type": "route-table",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "selected_route",
+                    "label": "Route",
+                    "type": "aws_resource",
+                    "resource_type": "route",
+                    "parent": "route_table_id",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Wait Duration (seconds)",
+                    "default": "300"
+                }
+            ]
+        },
+        {
+            "id": "vpc-network-acl",
+            "name": "Network ACL Rule Modification",
+            "json": "vpc-network-acl-chaos.json",
+
+            "iam": {
+                "read": [
+                    "ec2:DescribeNetworkAcls"
+                ],
+                "modify": [
+                    "ec2:DeleteNetworkAclEntry",
+                    "ec2:CreateNetworkAclEntry"
+                ]
+            },
+
+            "inputs": [
+                {
+                    "name": "network_acl_id",
+                    "label": "Network ACL",
+                    "type": "aws_resource",
+                    "resource_type": "network-acl",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "selected_rule",
+                    "label": "ACL Rule",
+                    "type": "aws_resource",
+                    "resource_type": "network-acl-rule",
+                    "parent": "network_acl_id",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Wait Duration (seconds)",
+                    "default": "300"
+                }
+            ]
+        },
+        {
+            "id": "vpc-internet-gateway",
+            "name": "Internet Gateway Isolation",
+            "json": "vpc-internet-gateway-chaos.json",
+
+            "iam": {
+                "read": [
+                    "ec2:DescribeInternetGateways"
+                ],
+                "modify": [
+                    "ec2:DetachInternetGateway",
+                    "ec2:AttachInternetGateway"
+                ]
+            },
+
+            "inputs": [
+                {
+                    "name": "internet_gateway_id",
+                    "label": "Internet Gateway",
+                    "type": "aws_resource",
+                    "resource_type": "internet-gateway",
+                    "return": "id",
+                    "required": true
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "default": "eu-central-1"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Wait Duration (seconds)",
+                    "default": "300"
+                }
+            ]
+        }
+    ]
+}

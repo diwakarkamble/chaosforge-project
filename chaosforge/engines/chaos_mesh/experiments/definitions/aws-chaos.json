@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh AWS Chaos",
+    "description": "Injects supported AWS infrastructure faults through Chaos Mesh.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "aws_region": "us-east-1",
+        "ec2_instance": "i-00000000000000000",
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "AWSChaos",
+        "action": "ec2-stop"
+    }
+}

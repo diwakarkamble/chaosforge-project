@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh JVM Chaos",
+    "description": "Injects supported JVM faults into selected Java workloads.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "class": "com.example.Application",
+        "method": "handle",
+        "duration": "30s",
+        "latency": 100
+    },
+    "chaos_mesh": {
+        "kind": "JVMChaos",
+        "action": "latency"
+    }
+}

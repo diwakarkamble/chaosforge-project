@@ -1,0 +1,316 @@
+{
+  "service": "elb",
+  "display_name": "Elastic Load Balancing",
+
+  "experiments": [
+    {
+      "id": "elb-target-deregistration",
+      "name": "Target Deregistration",
+
+      "json": "elb-target-deregistration-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticloadbalancing:DescribeLoadBalancers",
+          "elasticloadbalancing:DescribeTargetGroups",
+          "elasticloadbalancing:DescribeTargetHealth"
+        ],
+        "modify": [
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:RegisterTargets"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "load_balancer",
+          "label": "Load Balancer",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "elb",
+          "return": "arn"
+        },
+        {
+          "name": "target_group",
+          "label": "Target Group",
+          "required": true,
+          "type": "aws_resource",
+          "parent": "load_balancer",
+          "resource_type": "elb-target-group",
+          "return": "arn"
+        },
+        {
+          "name": "target",
+          "label": "Target",
+          "required": true,
+          "type": "aws_resource",
+          "parent": "target_group",
+          "resource_type": "elb-target",
+          "return": "id"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        }
+      ]
+    },
+
+    {
+      "id": "elb-cross-zone",
+      "name": "Cross-Zone Load Balancing",
+
+      "json": "elb-cross-zone-chaos.json",
+
+      "iam": {
+        "read": [
+          "elasticloadbalancing:DescribeTargetGroups",
+          "elasticloadbalancing:DescribeTargetGroupAttributes"
+        ],
+        "modify": [
+          "elasticloadbalancing:ModifyTargetGroupAttributes"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "target_group",
+          "label": "Target Group",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "elb-target-group",
+          "return": "arn"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        }
+      ]
+    },
+    {
+        "id": "elb-target-group",
+        "name": "Target Group Attribute Chaos",
+        "json": "elb-target-group-chaos.json",
+        "iam": {
+            "read": [
+            "elasticloadbalancing:DescribeTargetGroups",
+            "elasticloadbalancing:DescribeTargetGroupAttributes"
+            ],
+            "modify": [
+            "elasticloadbalancing:ModifyTargetGroupAttributes"
+            ]
+        },
+        "inputs": [
+            {
+            "name": "target_group",
+            "label": "Target Group",
+            "required": true,
+            "type": "aws_resource",
+            "resource_type": "elb-target-group",
+            "return": "arn"
+            },
+            {
+            "name": "attribute_key",
+            "label": "Attribute Key",
+            "required": true,
+            "type": "text",
+            "default": "deregistration_delay.timeout_seconds"
+            },
+            {
+            "name": "attribute_value",
+            "label": "Attribute Value",
+            "required": true,
+            "type": "text",
+            "default": "60"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            }
+        ]
+    },
+    {
+        "id": "elb-health-check",
+        "name": "Health Check Chaos",
+        "json": "elb-health-check-chaos.json",
+        "iam": {
+            "read": [
+            "elasticloadbalancing:DescribeTargetGroups"
+            ],
+            "modify": [
+            "elasticloadbalancing:ModifyTargetGroup"
+            ]
+        },
+        "inputs": [
+            {
+            "name": "target_group",
+            "label": "Target Group",
+            "required": true,
+            "type": "aws_resource",
+            "resource_type": "elb-target-group",
+            "return": "arn"
+            },
+            {
+            "name": "health_check_enabled",
+            "label": "Health Check Enabled",
+            "required": true,
+            "type": "text",
+            "default": "false"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            }
+        ]
+    },
+    {
+        "id": "elb-load-balancer",
+        "name": "Load Balancer Attribute Chaos",
+        "json": "elb-load-balancer-chaos.json",
+        "iam": {
+            "read": [
+            "elasticloadbalancing:DescribeLoadBalancers",
+            "elasticloadbalancing:DescribeLoadBalancerAttributes"
+            ],
+            "modify": [
+            "elasticloadbalancing:ModifyLoadBalancerAttributes"
+            ]
+        },
+        "inputs": [
+            {
+            "name": "load_balancer",
+            "label": "Load Balancer",
+            "required": true,
+            "type": "aws_resource",
+            "resource_type": "elb",
+            "return": "arn"
+            },
+            {
+            "name": "attribute_key",
+            "label": "Attribute Key",
+            "required": true,
+            "type": "text",
+            "default": "idle_timeout.timeout_seconds"
+            },
+            {
+            "name": "attribute_value",
+            "label": "Attribute Value",
+            "required": true,
+            "type": "text",
+            "default": "30"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            }
+        ]
+    },
+    {
+        "id": "elb-listener",
+        "name": "Listener Attribute Chaos",
+
+        "json": "elb-listener-chaos.json",
+
+        "iam": {
+            "read": [
+            "elasticloadbalancing:DescribeListeners",
+            "elasticloadbalancing:DescribeListenerAttributes"
+            ],
+            "modify": [
+            "elasticloadbalancing:ModifyListenerAttributes"
+            ]
+        },
+
+        "inputs": [
+            {
+            "name": "load_balancer",
+            "label": "Load Balancer",
+            "required": true,
+            "type": "aws_resource",
+            "resource_type": "elb",
+            "return": "arn"
+            },
+            {
+            "name": "listener",
+            "label": "Listener",
+            "required": true,
+            "type": "aws_resource",
+            "parent": "load_balancer",
+            "resource_type": "elb-listener",
+            "return": "arn"
+            },
+            {
+            "name": "attribute_key",
+            "label": "Attribute Key",
+            "required": true,
+            "type": "text"
+            },
+            {
+            "name": "attribute_value",
+            "label": "Attribute Value",
+            "required": true,
+            "type": "text"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            }
+        ]
+    },
+    {
+        "id": "elb-deregistration-delay",
+        "name": "Deregistration Delay Chaos",
+        "json": "elb-deregistration-delay-chaos.json",
+        "iam": {
+            "read": [
+            "elasticloadbalancing:DescribeTargetGroupAttributes"
+            ],
+            "modify": [
+            "elasticloadbalancing:ModifyTargetGroupAttributes"
+            ]
+        },
+        "inputs": [
+            {
+            "name": "target_group",
+            "label": "Target Group",
+            "required": true,
+            "type": "aws_resource",
+            "resource_type": "elb-target-group",
+            "return": "arn"
+            },
+            {
+            "name": "deregistration_delay",
+            "label": "Deregistration Delay",
+            "required": true,
+            "type": "text",
+            "default": "10"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            }
+        ]
+    }
+    
+  ]
+}

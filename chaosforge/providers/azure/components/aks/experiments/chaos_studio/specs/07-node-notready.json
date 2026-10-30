@@ -1,0 +1,7 @@
+{
+  "kind": "VmssShutdown",
+  "faultType": "shutdown",
+  "parameters": {
+    "abruptShutdown": "true"
+  }
+}

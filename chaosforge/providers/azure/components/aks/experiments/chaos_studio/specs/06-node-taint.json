@@ -1,0 +1,7 @@
+{
+  "kind": "NodeTaint",
+  "node": "<target-node>",
+  "taintKey": "chaos",
+  "taintValue": "test",
+  "taintEffect": "NoExecute"
+}

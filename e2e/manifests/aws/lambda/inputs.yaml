@@ -1,0 +1,78 @@
+# Run from the repository root against disposable Lambda resources only.
+# Requests all five Toolkit experiments and all three Lambda FIS actions.
+# Tag exactly one approved Lambda function with Chaosforge=E2E-Test in
+# eu-central-1. Do not target a production function or the E2E runner itself.
+# Set LAMBDA_FIS_CONFIG_BUCKET to an existing approved bucket in eu-central-1.
+# The provisioned-concurrency action requires an alias named provisioned,
+# pointing to a published version, with an existing provisioned-concurrency
+# configuration. Provisioned concurrency incurs ongoing charges.
+# Review memory, timeout, reserved/provisioned concurrency and retry targets
+# against the function baseline; equal values do not exercise a change.
+# Reserved concurrency must leave capacity for the provisioned alias and fit
+# the account quota. Async retry settings affect asynchronous invocations only.
+# FIS preparation writes FisConfigs/ objects, adds inline policies to the
+# function execution role and FIS role, and updates function environment/layers.
+# Use a supported FIS Lambda extension runtime/architecture and invocation
+# traffic during the fault; HTTP response testing needs an HTTP integration.
+# This command enables live faults and can interrupt invocations. No resources
+# are created by this YAML. Review recovery behavior before executing.
+
+version: 1
+
+command: |
+  : "${LAMBDA_FIS_CONFIG_BUCKET:?Set LAMBDA_FIS_CONFIG_BUCKET to an approved eu-central-1 bucket name}"
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components lambda \
+    --e2e-experiment lambda:lambda-memory \
+    --e2e-experiment lambda:lambda-timeout \
+    --e2e-experiment lambda:lambda-concurrency \
+    --e2e-experiment lambda:lambda-provisioned-concurrency \
+    --e2e-experiment lambda:lambda-retry \
+    --e2e-experiment lambda:invocation-delay \
+    --e2e-experiment lambda:invocation-error \
+    --e2e-experiment lambda:http-response \
+    --e2e-aws-region eu-central-1 \
+    --e2e-aws-fis-role-arn arn:aws:iam::XXXXXXX:role/chaos-fis-role \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-strict-inputs \
+    --e2e-inputs e2e/manifests/aws/lambda/inputs.yaml \
+    --e2e-execute
+
+components:
+  lambda:
+    experiments:
+      lambda-memory:
+        target_memory_size: 256
+        wait_seconds: PT30S
+      lambda-timeout:
+        target_timeout: 3
+        wait_seconds: PT30S
+      lambda-concurrency:
+        target_concurrency: 10
+        wait_seconds: PT30S
+      lambda-provisioned-concurrency:
+        target_provisioned_concurrency: 1
+        wait_seconds: PT30S
+      lambda-retry:
+        target_retry_attempts: 0
+      invocation-delay:
+        fis_config_bucket: "${LAMBDA_FIS_CONFIG_BUCKET}"
+        startup_delay_milliseconds: 1000
+        percentage: 100
+        duration: PT1M
+      invocation-error:
+        fis_config_bucket: "${LAMBDA_FIS_CONFIG_BUCKET}"
+        prevent_execution: true
+        percentage: 100
+        duration: PT1M
+      http-response:
+        fis_config_bucket: "${LAMBDA_FIS_CONFIG_BUCKET}"
+        status_code: 503
+        content_type_header: application/json
+        prevent_execution: true
+        percentage: 100
+        duration: PT1M

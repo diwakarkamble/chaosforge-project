@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Memory Stress",
+    "description": "Injects memory stress into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "stressors": {
+            "memory": 256
+        }
+    },
+    "chaos_mesh": {
+        "kind": "StressChaos",
+        "action": "stress-memory"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Schedule",
+    "description": "Schedules a Chaos Mesh experiment according to a cron expression.",
+    "configuration": {
+        "schedule": "*/10 * * * *",
+        "history_limit": 5,
+        "concurrency_policy": "Forbid",
+        "type": "PodChaos",
+        "chaos": {
+            "action": "pod-kill",
+            "mode": "one",
+            "selector": {},
+            "duration": "30s"
+        }
+    },
+    "chaos_mesh": {
+        "kind": "Schedule"
+    }
+}

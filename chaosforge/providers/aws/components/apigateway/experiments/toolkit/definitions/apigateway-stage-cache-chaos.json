@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "title": "API Gateway Stage Cache Chaos Test",
+  "description": "Temporarily enable or disable API Gateway Stage Cache and restore the original configuration.",
+
+  "configuration": {
+    "rest_api_id": null,
+    "stage_name": null,
+    "region": null,
+    "cache_enabled": "false",
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-stage-cache",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_cache_actions",
+        "func": "capture_current_stage_cache",
+        "arguments": {
+          "rest_api_id": "${rest_api_id}",
+          "stage_name": "${stage_name}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "update-stage-cache",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_cache_actions",
+        "func": "update_stage_cache",
+        "arguments": {
+          "rest_api_id": "${rest_api_id}",
+          "stage_name": "${stage_name}",
+          "region": "${region}",
+          "cache_enabled": "${cache_enabled}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_common",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-stage-cache",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_cache_actions",
+        "func": "restore_stage_cache"
+      }
+    }
+  ]
+}

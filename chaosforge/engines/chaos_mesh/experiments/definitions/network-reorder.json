@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Reorder",
+    "description": "Injects network packet reordering into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "reorder": "25",
+        "latency": "100ms"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "reorder"
+    }
+}

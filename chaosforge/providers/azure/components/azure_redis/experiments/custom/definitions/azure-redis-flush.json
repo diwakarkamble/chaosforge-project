@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "title": "Azure Cache for Redis Flush",
+  "description": "Irreversibly flush Azure Cache for Redis data to test behavior when cached data is unavailable.",
+  "configuration": {"subscription_id": "", "resource_group": "", "resource_id": ""},
+  "method": [{"name": "flush-cache", "type": "action", "provider": {"type": "python", "module": "chaosforge.providers.azure.components.azure_redis.experiments.custom.actions.redis_actions", "func": "flush_cache", "arguments": {"subscription_id": "${subscription_id}", "resource_group": "${resource_group}", "resource_id": "${resource_id}"}}}]
+}

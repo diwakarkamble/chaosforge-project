@@ -1,0 +1,1337 @@
+﻿{
+    "services":  [
+                     {
+                         "id":  "lambda",
+                         "name":  "AWS Lambda",
+                         "experiments":  [
+                                             {
+                                                 "id":  "invocation-delay",
+                                                 "name":  "Invocation Delay",
+                                                 "fis_action":  "aws:lambda:invocation-add-delay",
+                                                 "target_key":  "Functions",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "startup_delay_milliseconds",
+                                                                        "aws_name":  "startupDelayMilliseconds",
+                                                                        "label":  "Delay (Milliseconds)",
+                                                                        "type":  "number",
+                                                                        "default":  1000
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "aws_name":  "invocationPercentage",
+                                                                        "label":  "Invocation Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "invocation-error",
+                                                 "name":  "Invocation Error",
+                                                 "fis_action":  "aws:lambda:invocation-error",
+                                                 "target_key":  "Functions",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "prevent_execution",
+                                                                        "aws_name":  "preventExecution",
+                                                                        "label":  "Prevent Function Execution (true/false)",
+                                                                        "type":  "boolean",
+                                                                        "default":  true
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "aws_name":  "invocationPercentage",
+                                                                        "label":  "Invocation Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "http-response",
+                                                 "name":  "HTTP Integration Response",
+                                                 "fis_action":  "aws:lambda:invocation-http-integration-response",
+                                                 "target_key":  "Functions",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "status_code",
+                                                                        "aws_name":  "statusCode",
+                                                                        "label":  "HTTP Status Code",
+                                                                        "type":  "number",
+                                                                        "default":  500
+                                                                    },
+                                                                    {
+                                                                        "name":  "content_type_header",
+                                                                        "aws_name":  "contentTypeHeader",
+                                                                        "label":  "Content-Type Header",
+                                                                        "type":  "text",
+                                                                        "default":  "application/json"
+                                                                    },
+                                                                    {
+                                                                        "name":  "prevent_execution",
+                                                                        "aws_name":  "preventExecution",
+                                                                        "label":  "Prevent Lambda Execution",
+                                                                        "type":  "boolean",
+                                                                        "default":  true
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "aws_name":  "invocationPercentage",
+                                                                        "label":  "Invocation Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT1M"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "dynamodb",
+                         "name":  "Amazon DynamoDB",
+                         "experiments":  [
+                                             {
+                                                 "id":  "pause-global-table-replication",
+                                                 "name":  "Pause Global Table Replication",
+                                                 "fis_action":  "aws:dynamodb:global-table-pause-replication",
+                                                 "target_key":  "Tables",
+                                                 "resource_type":  "aws:dynamodb:global-table",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "rds",
+                         "name":  "Amazon RDS",
+                         "experiments":  [
+                                             {
+                                                 "id":  "reboot-instance",
+                                                 "name":  "Reboot Instance",
+                                                  "fis_action":  "aws:rds:reboot-db-instances",
+                                                  "target_key":  "DBInstances",
+                                                  "parameters":  [
+                                                                     {
+                                                                         "name":  "force_failover",
+                                                                         "aws_name":  "forceFailover",
+                                                                         "label":  "Force Multi-AZ Failover",
+                                                                         "type":  "boolean",
+                                                                         "default":  false,
+                                                                         "required":  false
+                                                                     }
+                                                                 ]
+                                             },
+                                             {
+                                                 "id":  "failover-db-cluster",
+                                                 "name":  "Failover DB Cluster",
+                                                   "fis_action":  "aws:rds:failover-db-cluster",
+                                                   "target_key":  "Clusters",
+                                                   "resource_type": "aws:rds:cluster",
+                                                  "parameters":  [
+                                                                 ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "elasticache",
+                         "name":  "Amazon ElastiCache",
+                         "experiments":  [
+                                             {
+                                                 "id":  "interrupt-az-power",
+                                                  "name":  "Interrupt AZ Power",
+                                                  "fis_action":  "aws:elasticache:replicationgroup-interrupt-az-power",
+                                                  "target_key":  "ReplicationGroups",
+                                                  "resource_type": "aws:elasticache:replicationgroup",
+                                                  "parameters":  [
+                                                                    {
+                                                                        "name": "availability_zone_identifier",
+                                                                        "aws_name": "availabilityZoneIdentifier",
+                                                                        "label": "Availability Zone Identifier",
+                                                                        "type": "text",
+                                                                        "required": true,
+                                                                        "target_parameter": true
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "ec2",
+                         "name":  "Amazon EC2",
+                         "experiments":  [
+                                             {
+                                                 "id":  "stop-instances",
+                                                 "name":  "Stop EC2 Instances",
+                                                 "fis_action":  "aws:ec2:stop-instances",
+                                                 "target_key":  "Instances",
+                                                 "resource_type":  "aws:ec2:instance",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "start_instances_after_duration",
+                                                                        "aws_name":  "startInstancesAfterDuration",
+                                                                        "label":  "Start Instances After Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "reboot-instances",
+                                                 "name":  "Reboot EC2 Instances",
+                                                 "fis_action":  "aws:ec2:reboot-instances",
+                                                 "target_key":  "Instances",
+                                                 "resource_type":  "aws:ec2:instance",
+                                                 "parameters":  [
+
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "terminate-instances",
+                                                 "name":  "Terminate EC2 Instances",
+                                                 "fis_action":  "aws:ec2:terminate-instances",
+                                                 "target_key":  "Instances",
+                                                 "resource_type":  "aws:ec2:instance",
+                                                 "parameters":  [
+
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "spot-instance-interruption",
+                                                 "name":  "Spot Instance Interruption",
+                                                 "fis_action":  "aws:ec2:send-spot-instance-interruptions",
+                                                 "target_key":  "SpotInstances",
+                                                 "resource_type":  "aws:ec2:spot-instance",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration_before_interruption",
+                                                                        "aws_name":  "durationBeforeInterruption",
+                                                                        "label":  "Duration Before Interruption",
+                                                                        "type":  "text",
+                                                                        "default":  "PT2M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "insufficient-instance-capacity-error",
+                                                 "name":  "EC2 Insufficient Instance Capacity Error",
+                                                 "fis_action":  "aws:ec2:api-insufficient-instance-capacity-error",
+                                                 "target_key":  "Roles",
+                                                 "resource_type":  "aws:iam:role",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    },
+                                                                    {
+                                                                        "name":  "availability_zone_identifiers",
+                                                                        "aws_name":  "availabilityZoneIdentifiers",
+                                                                        "label":  "Availability Zone Identifiers",
+                                                                        "type":  "text",
+                                                                        "default":  ""
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "aws_name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "asg-insufficient-instance-capacity-error",
+                                                 "name":  "ASG Insufficient Instance Capacity Error",
+                                                 "fis_action":  "aws:ec2:asg-insufficient-instance-capacity-error",
+                                                 "target_key":  "AutoScalingGroups",
+                                                 "resource_type":  "aws:ec2:autoscaling-group",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    },
+                                                                    {
+                                                                        "name":  "availability_zone_identifiers",
+                                                                        "aws_name":  "availabilityZoneIdentifiers",
+                                                                        "label":  "Availability Zone Identifiers",
+                                                                        "type":  "text",
+                                                                        "default":  ""
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "aws_name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "ebs-pause-volume-io",
+                                                 "name":  "Pause EBS I/O (EBS)",
+                                                 "fis_action":  "aws:ebs:pause-volume-io",
+                                                 "target_key":  "Volumes",
+                                                 "resource_type":  "aws:ec2:ebs-volume",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "ebs-volume-io-latency",
+                                                 "name":  "EBS I/O Latency (EBS)",
+                                                 "fis_action":  "aws:ebs:volume-io-latency",
+                                                 "target_key":  "Volumes",
+                                                 "resource_type":  "aws:ec2:ebs-volume",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "read_io_percentage",
+                                                                        "aws_name":  "readIOPercentage",
+                                                                        "label":  "Read I/O Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100,
+                                                                        "min":  0.1,
+                                                                        "max":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "read_io_latency_milliseconds",
+                                                                        "aws_name":  "readIOLatencyMilliseconds",
+                                                                        "label":  "Read I/O Latency (ms)",
+                                                                        "type":  "number",
+                                                                        "default":  100,
+                                                                        "min":  1,
+                                                                        "max":  60000
+                                                                    },
+                                                                    {
+                                                                        "name":  "write_io_percentage",
+                                                                        "aws_name":  "writeIOPercentage",
+                                                                        "label":  "Write I/O Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100,
+                                                                        "min":  0.1,
+                                                                        "max":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "write_io_latency_milliseconds",
+                                                                        "aws_name":  "writeIOLatencyMilliseconds",
+                                                                        "label":  "Write I/O Latency (ms)",
+                                                                        "type":  "number",
+                                                                        "default":  100,
+                                                                        "min":  1,
+                                                                        "max":  60000
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "ecs",
+                         "name":  "Amazon ECS",
+                         "experiments":  [
+                                             {
+                                                 "id":  "stop-task",
+                                                 "name":  "Stop ECS Task",
+                                                 "fis_action":  "aws:ecs:stop-task",
+                                                 "target_key":  "Tasks",
+                                                 "resource_type":  "aws:ecs:task",
+                                                 "parameters":  [
+
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "cpu-stress",
+                                                 "name":  "CPU Stress",
+                                                 "fis_action":  "aws:ecs:task-cpu-stress",
+                                                 "target_key":  "Tasks",
+                                                 "resource_type":  "aws:ecs:task",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "io-stress",
+                                                 "name":  "IO Stress",
+                                                 "fis_action":  "aws:ecs:task-io-stress",
+                                                 "target_key":  "Tasks",
+                                                 "resource_type":  "aws:ecs:task",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "network-latency",
+                                                 "name":  "Network Latency",
+                                                 "fis_action":  "aws:ecs:task-network-latency",
+                                                 "target_key":  "Tasks",
+                                                 "resource_type":  "aws:ecs:task",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "packet-loss",
+                                                 "name":  "Packet Loss",
+                                                 "fis_action":  "aws:ecs:task-network-packet-loss",
+                                                 "target_key":  "Tasks",
+                                                 "resource_type":  "aws:ecs:task",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "elb",
+                         "name":  "Elastic Load Balancing",
+                         "experiments":  [
+                                             {
+                                                 "id":  "zonal-autoshift",
+                                                 "name":  "Zonal Autoshift",
+                                                 "fis_action":  "aws:arc:start-zonal-autoshift",
+                                                 "target_key":  "ManagedResources",
+                                                 "resource_type":  "aws:arc:zonal-shift-managed-resource",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "availability_zone",
+                                                                        "aws_name":  "availabilityZoneIdentifier",
+                                                                        "label":  "Availability Zone",
+                                                                        "type":  "aws_resource",
+                                                                        "resource_type":  "availability-zone",
+                                                                        "return":  "zone_name"
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    },
+                                                                    {
+                                                                        "name":  "managed_resource_types",
+                                                                        "aws_name":  "managedResourceTypes",
+                                                                        "label":  "Managed Resource Types",
+                                                                        "type":  "text",
+                                                                        "default":  "ALB,NLB"
+                                                                    },
+                                                                    {
+                                                                        "name":  "zonal_autoshift_status",
+                                                                        "aws_name":  "zonalAutoshiftStatus",
+                                                                        "label":  "Zonal Autoshift Status",
+                                                                        "type":  "text",
+                                                                        "default":  "ENABLED"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+    "id": "eks",
+    "name": "Amazon EKS",
+    "experiments": [
+        {
+            "id": "inject-kubernetes-custom-resource",
+            "name": "Inject Kubernetes Custom Resource",
+            "fis_action": "aws:eks:inject-kubernetes-custom-resource",
+            "target_key": "Cluster",
+            "resource_type": "aws:eks:cluster",
+            "parameters": [
+                {
+                    "name": "kubernetes_api_version",
+                    "aws_name": "kubernetesApiVersion",
+                    "label": "Kubernetes API Version",
+                    "type": "text",
+                    "default": "chaos-mesh.org/v1alpha1"
+                },
+                {
+                    "name": "kubernetes_kind",
+                    "aws_name": "kubernetesKind",
+                    "label": "Kubernetes Kind",
+                    "type": "text",
+                    "default": "StressChaos"
+                },
+                {
+                    "name": "kubernetes_namespace",
+                    "aws_name": "kubernetesNamespace",
+                    "label": "Kubernetes Namespace",
+                    "type": "text",
+                    "default": "default"
+                },
+                {
+                    "name": "kubernetes_spec",
+                    "aws_name": "kubernetesSpec",
+                    "label": "Kubernetes Specification",
+                    "type": "text",
+                    "default": "{}"
+                },
+                {
+                    "name": "max_duration",
+                    "aws_name": "maxDuration",
+                    "label": "Maximum Duration",
+                    "type": "text",
+                    "default": "PT2M"
+                }
+            ]
+        },
+
+        {
+            "id": "pod-cpu-stress",
+            "name": "Pod CPU Stress",
+            "fis_action": "aws:eks:pod-cpu-stress",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "duration",
+                    "aws_name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "PT2M",
+                    "required": true
+                },
+                {
+                    "name": "percent",
+                    "aws_name": "percent",
+                    "label": "CPU Load Percentage",
+                    "type": "number",
+                    "default": 100
+                },
+                {
+                    "name": "workers",
+                    "aws_name": "workers",
+                    "label": "Workers",
+                    "type": "number",
+                    "default": 0
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "restricted",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "pod-delete",
+            "name": "Pod Delete",
+            "fis_action": "aws:eks:pod-delete",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "grace_period_seconds",
+                    "aws_name": "gracePeriodSeconds",
+                    "label": "Grace Period (Seconds)",
+                    "type": "number"
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "restricted",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "pod-io-stress",
+            "name": "Pod IO Stress",
+            "fis_action": "aws:eks:pod-io-stress",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "duration",
+                    "aws_name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "PT2M",
+                    "required": true
+                },
+                {
+                    "name": "workers",
+                    "aws_name": "workers",
+                    "label": "Workers",
+                    "type": "number",
+                    "default": 1
+                },
+                {
+                    "name": "percent",
+                    "aws_name": "percent",
+                    "label": "IO Load Percentage",
+                    "type": "number",
+                    "default": 80
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "restricted",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "pod-memory-stress",
+            "name": "Pod Memory Stress",
+            "fis_action": "aws:eks:pod-memory-stress",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "duration",
+                    "aws_name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "PT2M",
+                    "required": true
+                },
+                {
+                    "name": "workers",
+                    "aws_name": "workers",
+                    "label": "Workers",
+                    "type": "number",
+                    "default": 1
+                },
+                {
+                    "name": "percent",
+                    "aws_name": "percent",
+                    "label": "Memory Load Percentage",
+                    "type": "number",
+                    "default": 80
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "restricted",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "pod-network-blackhole-port",
+            "name": "Pod Network Blackhole Port",
+            "fis_action": "aws:eks:pod-network-blackhole-port",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "duration",
+                    "aws_name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "PT2M",
+                    "required": true
+                },
+                {
+                    "name": "protocol",
+                    "aws_name": "protocol",
+                    "label": "Protocol",
+                    "type": "text",
+                    "default": "tcp",
+                    "required": true
+                },
+                {
+                    "name": "traffic_type",
+                    "aws_name": "trafficType",
+                    "label": "Traffic Type",
+                    "type": "text",
+                    "default": "ingress",
+                    "required": true
+                },
+                {
+                    "name": "port",
+                    "aws_name": "port",
+                    "label": "Port",
+                    "type": "number",
+                    "default": 80,
+                    "required": true
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "privileged",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "pod-network-latency",
+            "name": "Pod Network Latency",
+            "fis_action": "aws:eks:pod-network-latency",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "duration",
+                    "aws_name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "PT2M",
+                    "required": true
+                },
+                {
+                    "name": "interface",
+                    "aws_name": "interface",
+                    "label": "Network Interface",
+                    "type": "text",
+                    "default": "DEFAULT"
+                },
+                {
+                    "name": "delay_milliseconds",
+                    "aws_name": "delayMilliseconds",
+                    "label": "Delay (Milliseconds)",
+                    "type": "number",
+                    "default": 200
+                },
+                {
+                    "name": "jitter_milliseconds",
+                    "aws_name": "jitterMilliseconds",
+                    "label": "Jitter (Milliseconds)",
+                    "type": "number",
+                    "default": 10
+                },
+                {
+                    "name": "flows_percent",
+                    "aws_name": "flowsPercent",
+                    "label": "Network Flows Percentage",
+                    "type": "number",
+                    "default": 100
+                },
+                {
+                    "name": "sources",
+                    "aws_name": "sources",
+                    "label": "Traffic Sources",
+                    "type": "text",
+                    "default": "ALL"
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "privileged",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "pod-network-packet-loss",
+            "name": "Pod Network Packet Loss",
+            "fis_action": "aws:eks:pod-network-packet-loss",
+            "target_key": "Pods",
+            "resource_type": "aws:eks:pod",
+            "parameters": [
+                {
+                    "name": "duration",
+                    "aws_name": "duration",
+                    "label": "Duration",
+                    "type": "text",
+                    "default": "PT2M",
+                    "required": true
+                },
+                {
+                    "name": "interface",
+                    "aws_name": "interface",
+                    "label": "Network Interface",
+                    "type": "text",
+                    "default": "DEFAULT"
+                },
+                {
+                    "name": "loss_percent",
+                    "aws_name": "lossPercent",
+                    "label": "Packet Loss Percentage",
+                    "type": "number",
+                    "default": 7
+                },
+                {
+                    "name": "flows_percent",
+                    "aws_name": "flowsPercent",
+                    "label": "Network Flows Percentage",
+                    "type": "number",
+                    "default": 100
+                },
+                {
+                    "name": "sources",
+                    "aws_name": "sources",
+                    "label": "Traffic Sources",
+                    "type": "text",
+                    "default": "ALL"
+                },
+                {
+                    "name": "kubernetes_service_account",
+                    "aws_name": "kubernetesServiceAccount",
+                    "label": "Kubernetes Service Account",
+                    "type": "text",
+                    "default": "fis-chaos-sa",
+                    "required": true
+                },
+
+                {
+                    "name": "fis_pod_container_image",
+                    "aws_name": "fisPodContainerImage",
+                    "label": "FIS Pod Container Image",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "max_errors_percent",
+                    "aws_name": "maxErrorsPercent",
+                    "label": "Maximum Errors Percentage",
+                    "type": "number",
+                    "default": 0,
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_labels",
+                    "aws_name": "fisPodLabels",
+                    "label": "FIS Pod Labels",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_annotations",
+                    "aws_name": "fisPodAnnotations",
+                    "label": "FIS Pod Annotations",
+                    "type": "text",
+                    "advanced": true
+                },
+                {
+                    "name": "fis_pod_security_policy",
+                    "aws_name": "fisPodSecurityPolicy",
+                    "label": "FIS Pod Security Policy",
+                    "type": "text",
+                    "default": "privileged",
+                    "advanced": true
+                }
+            ]
+        },
+
+        {
+            "id": "terminate-nodegroup-instances",
+            "name": "Terminate Nodegroup Instances",
+            "fis_action": "aws:eks:terminate-nodegroup-instances",
+            "target_key": "Nodegroups",
+            "resource_type": "aws:eks:nodegroup",
+            "parameters": [
+                {
+                    "name": "instance_termination_percentage",
+                    "aws_name": "instanceTerminationPercentage",
+                    "label": "Instance Termination Percentage",
+                    "type": "number",
+                    "default": 50,
+                    "required": true
+                }
+            ]
+        }
+    ]
+},
+                     {
+                         "id":  "s3",
+                         "name":  "Amazon S3",
+                         "experiments":  [
+                                             {
+                                                 "id":  "pause-replication",
+                                                 "name":  "Pause Bucket Replication",
+                                                 "fis_action":  "aws:s3:bucket-pause-replication",
+                                                 "target_key":  "Buckets",
+                                                 "resource_type":  "aws:s3:bucket",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "tag_key",
+                                                                        "label":  "Resource Tag Key",
+                                                                        "type":  "text",
+                                                                        "default":  "Name"
+                                                                    },
+                                                                    {
+                                                                        "name":  "tag_value",
+                                                                        "label":  "Resource Tag Value",
+                                                                        "type":  "text",
+                                                                        "default":  ""
+                                                                    },
+                                                                    {
+                                                                        "name":  "region",
+                                                                        "aws_name":  "region",
+                                                                        "label":  "Destination Bucket Region",
+                                                                        "type":  "aws_region",
+                                                                        "default":  "eu-central-1"
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "aws_name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    },
+                                                                     {
+                                                                         "name":  "destination_buckets",
+                                                                         "aws_name":  "destinationBuckets",
+                                                                         "label":  "Destination Bucket(s) (Optional)",
+                                                                         "type":  "text",
+                                                                         "default":  "",
+                                                                         "required":  false
+                                                                     }
+                                                                ]
+                                             }
+                                         ]
+                     },
+                     {
+                         "id":  "kinesis",
+                         "name":  "Amazon Kinesis",
+                         "experiments":  [
+                                             {
+                                                 "id":  "kinesis-provisioned-throughput-exception",
+                                                 "name":  "Provisioned Throughput Exception",
+                                                 "fis_action":  "aws:kinesis:stream-provisioned-throughput-exception",
+                                                 "target_key":  "KinesisStreams",
+                                                 "resource_type":  "aws:kinesis:stream",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "kinesis-expired-iterator-exception",
+                                                 "name":  "Expired Iterator Exception",
+                                                 "fis_action":  "aws:kinesis:stream-expired-iterator-exception",
+                                                 "target_key":  "KinesisStreams",
+                                                 "resource_type":  "aws:kinesis:stream",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "kinesis-api-internal-error",
+                                                 "name":  "Kinesis API Internal Error",
+                                                 "fis_action":  "aws:fis:inject-api-internal-error",
+                                                 "target_key":  "Roles",
+                                                 "resource_type":  "aws:iam:role",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "service",
+                                                                        "label":  "Service",
+                                                                        "type":  "text",
+                                                                        "default":  "kinesis"
+                                                                    },
+                                                                    {
+                                                                        "name":  "operations",
+                                                                        "label":  "Operations",
+                                                                        "type":  "text",
+                                                                        "default":  "GetRecords,PutRecord,PutRecords"
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "kinesis-api-throttle-error",
+                                                 "name":  "Kinesis API Throttle Error",
+                                                 "fis_action":  "aws:fis:inject-api-throttle-error",
+                                                 "target_key":  "Roles",
+                                                 "resource_type":  "aws:iam:role",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "service",
+                                                                        "label":  "Service",
+                                                                        "type":  "text",
+                                                                        "default":  "kinesis"
+                                                                    },
+                                                                    {
+                                                                        "name":  "operations",
+                                                                        "label":  "Operations",
+                                                                        "type":  "text",
+                                                                        "default":  "GetRecords,PutRecord,PutRecords"
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             },
+                                             {
+                                                 "id":  "kinesis-api-unavailable-error",
+                                                 "name":  "Kinesis API Unavailable Error",
+                                                 "fis_action":  "aws:fis:inject-api-unavailable-error",
+                                                 "target_key":  "Roles",
+                                                 "resource_type":  "aws:iam:role",
+                                                 "parameters":  [
+                                                                    {
+                                                                        "name":  "service",
+                                                                        "label":  "Service",
+                                                                        "type":  "text",
+                                                                        "default":  "kinesis"
+                                                                    },
+                                                                    {
+                                                                        "name":  "operations",
+                                                                        "label":  "Operations",
+                                                                        "type":  "text",
+                                                                        "default":  "GetRecords,PutRecord,PutRecords"
+                                                                    },
+                                                                    {
+                                                                        "name":  "percentage",
+                                                                        "label":  "Percentage",
+                                                                        "type":  "number",
+                                                                        "default":  100
+                                                                    },
+                                                                    {
+                                                                        "name":  "duration",
+                                                                        "label":  "Duration",
+                                                                        "type":  "text",
+                                                                        "default":  "PT5M"
+                                                                    }
+                                                                ]
+                                             }
+                                         ]
+                     }
+                 ]
+}

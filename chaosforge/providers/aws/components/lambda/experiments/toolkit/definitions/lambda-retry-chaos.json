@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "title": "AWS Lambda Async Retry Attempts Chaos Test",
+  "description": "Temporarily modify Lambda asynchronous retry attempts and restore the original value.",
+
+  "configuration": {
+    "lambda_name": null,
+    "aws_region": null,
+    "target_retry_attempts": null
+  },
+
+  "method": [
+    {
+      "name": "capture-current-retry-attempts",
+      "type": "action",
+      "provider": {
+        "type": "python",
+    "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_async_retry_actions",
+        "func": "capture_current_retry_attempts",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-retry-attempts",
+      "type": "action",
+      "provider": {
+        "type": "python",
+    "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_async_retry_actions",
+        "func": "update_retry_attempts",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "retry_attempts": "${target_retry_attempts}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-original-retry-attempts",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_async_retry_actions",
+        "func": "restore_retry_attempts",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

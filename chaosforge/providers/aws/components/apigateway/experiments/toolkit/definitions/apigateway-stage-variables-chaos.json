@@ -1,0 +1,57 @@
+{
+    "version": "1.0.0",
+    "title": "API Gateway Stage Variables Modification",
+    "description": "Capture the current API Gateway Stage Variables, modify one variable, wait, and restore the original configuration.",
+
+    "configuration": {
+        "rest_api_id": null,
+        "stage_name": null,
+        "region": null,
+        "variable_name": null,
+        "variable_value": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Modify Stage Variable",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_variables_actions",
+                "func": "capture_and_update_stage_variable",
+                "arguments": {
+                    "rest_api_id": "${rest_api_id}",
+                    "stage_name": "${stage_name}",
+                    "region": "${region}",
+                    "variable_name": "${variable_name}",
+                    "variable_value": "${variable_value}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_common",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "Restore Stage Variables",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_variables_actions",
+                "func": "rollback_stage_variables"
+            }
+        }
+    ]
+}

@@ -1,0 +1,52 @@
+{
+    "version": "1.0.0",
+    "title": "API Gateway Stage Cache TTL Modification",
+    "description": "Capture the current API Gateway Stage Cache TTL, modify it, wait for the configured duration, and restore the original Cache TTL.",
+
+    "configuration": {
+        "rest_api_id": null,
+        "stage_name": null,
+        "region": null,
+        "cache_ttl": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Modify Cache TTL",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_cache_ttl_actions",
+                "func": "capture_and_modify_cache_ttl",
+                "arguments": {
+                    "rest_api_id": "${rest_api_id}",
+                    "stage_name": "${stage_name}",
+                    "region": "${region}",
+                    "cache_ttl": "${cache_ttl}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_common",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        },
+        {
+            "name": "Rollback Cache TTL",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_cache_ttl_actions",
+                "func": "rollback_cache_ttl"
+            }
+        }
+    ]
+}

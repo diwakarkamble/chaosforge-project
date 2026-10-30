@@ -1,0 +1,9 @@
+{
+  "service": "azure_postgres_flexible",
+  "display_name": "Azure Database for PostgreSQL Flexible Server",
+  "experiments": [
+    {"id": "azure-postgres-flexible-toolkit-stop", "name": "Stop PostgreSQL Flexible Server", "description": "Stops the selected PostgreSQL Flexible Server and restores its captured running state after the configured duration.", "source": "Azure SDK custom action", "engine": "Azure SDK", "json": "custom/definitions/azure-postgres-flexible-stop.json", "inputs": [{"name":"resource_id","label":"PostgreSQL Flexible Server","type":"azure_component_resource","required":true},{"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]},
+    {"id":"azure-postgres-flexible-restart","name":"Restart PostgreSQL Flexible Server","description":"Restart a PostgreSQL Flexible Server using the Azure SDK.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-postgres-flexible-restart.json","inputs":[{"name":"resource_id","label":"PostgreSQL Flexible Server","type":"azure_component_resource","required":true}]},
+    {"id":"azure-postgres-flexible-firewall-disruption","name":"Remove PostgreSQL Firewall Rule","description":"Remove one existing firewall rule for the configured duration and restore its exact address range during rollback.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-postgres-flexible-firewall-disruption.json","inputs":[{"name":"resource_id","label":"PostgreSQL Flexible Server","type":"azure_component_resource","required":true},{"name":"rule_name","label":"Firewall Rule Name","type":"text","required":true},{"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]}
+  ]
+}

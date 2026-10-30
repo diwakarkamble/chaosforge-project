@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Pod Failure",
+    "description": "Injects pod failure into selected Kubernetes pods for a configured duration.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "PodChaos",
+        "action": "pod-failure"
+    }
+}

@@ -1,0 +1,17 @@
+campaign:
+  name: Lambda Memory Test
+  continue_on_failure: false
+
+cloud:
+  provider: aws
+
+template: true
+
+experiments:
+  - service: lambda
+    experiment: lambda-memory
+    variables:
+      lambda_name: replace-with-lambda-name
+      aws_region: eu-central-1
+      target_memory_size: 256
+      wait_seconds: PT30S

@@ -1,0 +1,21 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Physical Machine Chaos",
+    "description": "Injects Chaosd-based faults into physical or virtual machines managed by Chaos Mesh.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "physical_machine": "",
+        "action": "stress-cpu",
+        "value": "",
+        "action_config": {
+            "load": 10,
+            "workers": 1
+        },
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "PhysicalMachineChaos",
+        "action": "stress-cpu"
+    }
+}

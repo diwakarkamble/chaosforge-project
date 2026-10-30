@@ -1,0 +1,47 @@
+{
+    "version": "1.0.0",
+    "title": "RDS Parameter Group Chaos",
+    "description": "Change the DB Parameter Group and automatically restore the original Parameter Group.",
+
+    "configuration": {
+        "db_instance_identifier": null,
+        "region": null,
+        "chaos_parameter_group": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Capture and Change Parameter Group",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_parameter_group_actions",
+                "func": "capture_and_change_parameter_group",
+                "arguments": {
+                    "db_instance_identifier": "${db_instance_identifier}",
+                    "region": "${region}",
+                    "chaos_parameter_group": "${chaos_parameter_group}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "process",
+                "path": "sleep",
+                "arguments": "${wait_seconds}"
+            }
+        },
+        {
+            "name": "Rollback Parameter Group",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_parameter_group_actions",
+                "func": "rollback_parameter_group"
+            }
+        }
+    ]
+}

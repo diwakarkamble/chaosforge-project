@@ -1,0 +1,8 @@
+{
+  "service": "azure_event_hub",
+  "display_name": "Azure Event Hubs",
+  "experiments": [
+    {"id": "azure-event-hub-state", "name": "Change Event Hub State", "description": "Changes selected Event Hub entities for a configured duration and restores each captured original state during rollback.", "source": "Azure SDK custom action", "engine": "Azure SDK", "json": "custom/definitions/azure-event-hub-state.json", "inputs": [{"name": "resource_id", "label": "Event Hubs Namespace", "type": "azure_component_resource", "required": true}, {"name": "desired_state", "label": "Desired Event Hub State", "type": "choice", "choices": ["Active", "Disabled", "SendDisabled"], "required": true}, {"name": "event_hubs", "label": "Event Hub Entities", "type": "text", "default": "*", "required": true, "hint": "Use * for every Event Hub in the selected namespace, or enter a comma-separated list of entity names, for example orders, payments."}, {"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]},
+    {"id":"azure-event-hub-public-access-disruption","name":"Disable Event Hubs Public Access","description":"Disable namespace public access for the configured duration and restore its original setting during rollback.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-event-hub-public-access-disruption.json","inputs":[{"name":"resource_id","label":"Event Hubs Namespace","type":"azure_component_resource","required":true},{"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]}
+  ]
+}

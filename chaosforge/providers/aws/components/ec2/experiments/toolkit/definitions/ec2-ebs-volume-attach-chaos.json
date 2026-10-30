@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon EC2 EBS Volume Attachment",
+  "description": "Attaches an available EBS volume to an EC2 instance, keeps the attachment active for the configured duration, and restores the original attachment state during rollback.",
+
+  "configuration": {
+    "aws_region": null,
+    "instance_id": null,
+    "volume_id": null,
+    "device_name": "/dev/sdf",
+    "wait_seconds": 30
+  },
+
+  "method": [
+    {
+      "name": "attach-ebs-volume",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "attach_ebs_volume",
+        "arguments": {
+          "instance_id": "${instance_id}",
+          "volume_id": "${volume_id}",
+          "device_name": "${device_name}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-ebs-volume-attachment",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "detach_attached_ebs_volume",
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

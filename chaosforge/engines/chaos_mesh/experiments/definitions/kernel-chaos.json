@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Kernel Chaos",
+    "description": "Injects a kernel failure into selected Kubernetes nodes.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "fail_kern": {
+            "name": "foo",
+            "callchain": [],
+            "failtype": 2
+        },
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "KernelChaos",
+        "action": "failKern"
+    }
+}

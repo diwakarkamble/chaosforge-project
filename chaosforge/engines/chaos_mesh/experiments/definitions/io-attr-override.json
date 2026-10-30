@@ -1,0 +1,19 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh IO Attribute Override",
+    "description": "Overrides IO attributes for selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "volume_path": "/tmp",
+        "attr_override": {
+            "perm": "000"
+        }
+    },
+    "chaos_mesh": {
+        "kind": "IOChaos",
+        "action": "attrOverride"
+    }
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ cloud|upper }} Campaigns</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+{% include "_resilience_signal_field.html" %}
+<div class="container mt-5">
+{% include "_utility_nav.html" %}
+<div class="page-cart-row">
+  <a href="{{ url_for('cloud_services', cloud=cloud) if return_cloud else url_for('dashboard') }}" class="btn btn-outline-secondary">{% if return_cloud %}<i class="bi bi-arrow-left"></i> Back to {{ cloud|upper }} Components{% else %}<i class="bi bi-arrow-left"></i> Back to Cloud Selection{% endif %}</a>
+</div>
+<h2 class="mb-3">{{ cloud|upper }} Campaigns</h2>
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+<form method="post" action="{{ url_for('campaigns', cloud=cloud) }}" class="card card-body mb-4">
+  <label for="campaign_name" class="form-label">New campaign name</label>
+  <div class="input-group">
+    <input id="campaign_name" name="campaign_name" class="form-control" maxlength="100" required>
+    <button class="btn btn-primary" type="submit"><i class="bi bi-plus-lg"></i> Create Campaign</button>
+  </div>
+</form>
+<h4>Draft Campaigns</h4>
+{% if campaigns %}
+<div class="table-responsive"><table class="table table-hover table-bordered"><thead class="table-dark"><tr><th>Name</th><th>Created</th><th>Updated</th><th>Experiments</th><th>Actions</th></tr></thead><tbody>
+{% for item in campaigns %}<tr><td>{{ item.name }}</td><td>{{ item.created_at }}</td><td>{{ item.updated_at }}</td><td>{{ item.experiments }}</td><td class="text-nowrap"><a class="btn btn-sm btn-primary" href="{{ url_for('open_campaign_draft_route', cloud=cloud, campaign_id=item.id) }}">Open</a><form class="d-inline" method="post" action="{{ url_for('delete_campaign_draft_route', cloud=cloud, campaign_id=item.id) }}"><button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this draft?')">Delete</button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<p class="text-muted">No {{ cloud|upper }} draft campaigns yet.</p>{% endif %}
+<h4 class="mt-5">Execution History</h4>
+{% if executions %}<div class="table-responsive"><table class="table table-hover table-bordered"><thead class="table-dark"><tr><th>Campaign</th><th>Created</th><th>Source</th><th>Status</th><th>Started</th><th>Actions</th></tr></thead><tbody>
+{% for run in executions %}<tr><td>{{ run.campaign_name }}</td><td>{{ run.created_at }}</td><td>{{ run.source }}</td><td>{{ run.status }}</td><td>{{ run.started_at }}</td><td class="text-nowrap"><a class="btn btn-sm btn-outline-info" href="{{ url_for('execution', cloud=cloud, run=run.id) }}"><i class="bi bi-terminal"></i> View Logs</a></td></tr>{% endfor %}
+</tbody></table></div>{% else %}<p class="text-muted">No {{ cloud|upper }} executions recorded.</p>{% endif %}
+</div>
+{% include "_version_footer.html" %}
+</body>
+</html>

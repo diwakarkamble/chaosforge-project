@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>{{ service.display_name }}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/chaosforge-resilience-forge.svg') }}">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+{% include "_resilience_signal_field.html" %}
+
+<div class="container mt-5">
+
+    {% include "_utility_nav.html" %}
+
+    <p class="eyebrow">{{ cloud|upper }} component</p>
+
+    <h2 class="mb-4">
+        {{ service.display_name }}
+    </h2>
+
+    <hr>
+
+    <div class="row">
+
+        {% if service.has_custom_experiments %}
+
+            {% for experiment in service.experiments %}
+
+            <div class="col-lg-4 col-md-6 mb-4">
+
+                <a
+                    href="{{ url_for('experiment', service=experiment.service, experiment_id=experiment.id, fis_service_id=experiment.fis_service_id, fis_experiment_id=experiment.fis_experiment_id) if experiment.fis_service_id else url_for('experiment', service=experiment.service|default(service.service, true), experiment_id=experiment.id) }}"
+                    class="text-decoration-none text-dark">
+
+                    <div class="card shadow h-100">
+
+                        <div class="card-body text-center">
+
+                            <h5>
+                                {{ experiment.name }}
+                            </h5>
+
+                            <p class="engine-label engine-label-{{ experiment.engine_class }} mb-2">
+                                {{ experiment.engine_label }}
+                            </p>
+
+                            <p class="reversibility-label reversibility-label-{{ experiment.reversibility }} mb-2">
+                                {{ experiment.reversibility|upper }}
+                            </p>
+
+                            {% if experiment.description %}
+                            <p class="text-muted small mb-0">{{ experiment.description }}</p>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="col-12">
+
+                <div class="card shadow">
+
+                    <div class="card-body text-center py-5">
+
+                        <h4 class="mb-3">
+                            No Custom Experiments Available
+                        </h4>
+
+                        <p class="text-muted mb-0">
+                            ChaosForge does not currently provide custom
+                            chaos experiments for {{ service.display_name }}.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <a
+        href="{{ url_for('cloud_services', cloud=cloud) }}"
+        class="btn btn-secondary mt-4">
+
+        ← {{ cloud|upper }} Components
+
+    </a>
+
+</div>
+
+{% include "_version_footer.html" %}
+</body>
+
+</html>

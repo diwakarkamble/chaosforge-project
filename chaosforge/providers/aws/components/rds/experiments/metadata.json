@@ -1,0 +1,297 @@
+{
+  "service": "rds",
+  "display_name": "Amazon RDS",
+  "experiments": [
+    {
+      "id": "rds-instance-class",
+      "name": "Instance Class Modification",
+      "json": "rds-instance-class-chaos.json",
+
+      "iam": {
+        "read": [
+          "rds:DescribeDBInstances",
+          "rds:DescribeValidDBInstanceModifications"
+        ],
+        "modify": [
+          "rds:ModifyDBInstance"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "db_instance_identifier",
+          "label": "RDS Instance",
+          "type": "aws_resource",
+          "resource_type": "rds",
+          "return": "identifier",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_instance_class",
+          "label": "Target Instance Class",
+          "hint": "Lists only instance classes that RDS currently allows for the selected instance. No option means this instance cannot run this experiment.",
+          "type": "aws_resource",
+          "resource_type": "rds-instance-class",
+          "parent": "db_instance_identifier",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "rds-backup-retention",
+      "name": "Backup Retention",
+      "json": "rds-backup-retention-chaos.json",
+
+      "iam": {
+        "read": [
+          "rds:DescribeDBInstances"
+        ],
+        "modify": [
+          "rds:ModifyDBInstance"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "db_instance_identifier",
+          "label": "RDS Instance",
+          "type": "aws_resource",
+          "resource_type": "rds",
+          "return": "identifier",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_backup_retention_period",
+          "label": "Target Backup Retention (days)",
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 35
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "rds-auto-minor-version-upgrade",
+      "name": "Auto Minor Version Upgrade",
+      "json": "rds-auto-minor-version-upgrade-chaos.json",
+
+      "iam": {
+        "read": [
+          "rds:DescribeDBInstances"
+        ],
+        "modify": [
+          "rds:ModifyDBInstance"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "db_instance_identifier",
+          "label": "RDS Instance",
+          "type": "aws_resource",
+          "resource_type": "rds",
+          "return": "identifier",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_auto_minor_version_upgrade",
+          "label": "Target Auto Minor Version Upgrade",
+          "type": "boolean",
+          "required": true,
+          "hint": "Enter the opposite of the instance's current Auto Minor Version Upgrade setting so the experiment applies a fault."
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "rds-deletion-protection",
+      "name": "Deletion Protection",
+      "json": "rds-deletion-protection-chaos.json",
+
+      "iam": {
+        "read": [
+          "rds:DescribeDBInstances"
+        ],
+        "modify": [
+          "rds:ModifyDBInstance"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "db_instance_identifier",
+          "label": "RDS Instance",
+          "type": "aws_resource",
+          "resource_type": "rds",
+          "return": "identifier",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_deletion_protection",
+          "label": "Target Deletion Protection",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "rds-storage-autoscaling",
+      "name": "Storage Autoscaling",
+      "json": "rds-storage-autoscaling-chaos.json",
+
+      "iam": {
+        "read": [
+          "rds:DescribeDBInstances"
+        ],
+        "modify": [
+          "rds:ModifyDBInstance"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "db_instance_identifier",
+          "label": "RDS Instance",
+          "type": "aws_resource",
+          "resource_type": "rds",
+          "return": "identifier",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "threshold_percent",
+          "label": "Target Max Storage (%)",
+          "type": "integer",
+          "required": true,
+          "default": 80,
+          "min": 1,
+          "max": 99
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "rds-iops",
+      "name": "Provisioned IOPS Modification",
+      "json": "rds-iops-chaos.json",
+
+      "iam": {
+      "read": [
+        "rds:DescribeDBInstances"
+      ],
+      "modify": [
+        "rds:ModifyDBInstance"
+      ]
+    },
+
+    "inputs": [
+      {
+        "name": "db_instance_identifier",
+        "label": "RDS Instance",
+        "type": "aws_resource",
+        "resource_type": "rds",
+        "return": "identifier",
+        "required": true
+      },
+      {
+        "name": "aws_region",
+        "label": "AWS Region",
+        "type": "aws_region",
+        "required": true,
+        "default": "eu-central-1"
+      },
+        {
+          "name": "threshold_percent",
+          "label": "Target IOPS (% of current, decrease only)",
+          "hint": "Sets target IOPS to this percentage of the current value. It only reduces IOPS and must remain at or above the AWS minimum of 1000. For example, 2000 IOPS with 50 targets 1000; an instance already at 1000 cannot run this experiment.",
+          "type": "integer",
+        "required": true,
+        "default": 50,
+        "min": 1,
+        "max": 99
+      },
+      {
+        "name": "wait_seconds",
+        "label": "Wait Duration (seconds)",
+        "type": "integer",
+        "default": 300,
+        "min": 1,
+        "max": 3600
+      }
+    ]
+    }
+  ]
+}

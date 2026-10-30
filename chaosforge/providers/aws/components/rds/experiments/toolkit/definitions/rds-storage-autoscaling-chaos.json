@@ -1,0 +1,53 @@
+{
+    "version": "1.0.0",
+    "title": "RDS Storage Autoscaling Limit Reduction",
+    "description": "Capture the current MaxAllocatedStorage, reduce it based on a threshold percentage, wait, and restore the original value.",
+
+    "configuration": {
+        "db_instance_identifier": null,
+        "aws_region": null,
+        "threshold_percent": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+        {
+            "name": "capture-and-reduce-max-allocated-storage",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_storage_autoscaling_actions",
+                "func": "capture_and_reduce_max_allocated_storage",
+                "arguments": {
+                    "db_instance_identifier": "${db_instance_identifier}",
+                    "region": "${aws_region}",
+                    "threshold_percent": "${threshold_percent}"
+                }
+            }
+        },
+        {
+            "name": "wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_storage_autoscaling_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "rollback-max-allocated-storage",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_storage_autoscaling_actions",
+                "func": "rollback_max_allocated_storage"
+            }
+        }
+    ]
+}

@@ -1,0 +1,253 @@
+{
+  "service": "lambda",
+  "display_name": "AWS Lambda",
+  "experiments": [
+    {
+      "id": "lambda-memory",
+      "name": "Memory Modification",
+      "json": "lambda-memory-chaos.json",
+      
+      "iam": {
+        "read": [
+          "lambda:GetFunctionConfiguration"
+        ],
+        "modify": [
+          "lambda:UpdateFunctionConfiguration"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "lambda_name",
+          "label": "Lambda Function",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "lambda",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+
+        {
+          "name": "target_memory_size",
+          "label": "Memory (MB)",
+          "type": "integer",
+          "required": true,
+          "default": 512,
+          "min": 128,
+          "max": 10240
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "min": 1,
+           "max": 3600,
+          "default": "300"
+        }
+      ]
+    },
+    {
+      "id": "lambda-timeout",
+      "name": "Timeout Modification",
+      "json": "lambda-timeout-chaos.json",
+      
+      "iam": {
+        "read": [
+          "lambda:GetFunctionConfiguration"
+        ],
+        "modify": [
+          "lambda:UpdateFunctionConfiguration"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "lambda_name",
+          "label": "Lambda Function",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "lambda",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_timeout",
+          "label": "Target Timeout (seconds)",
+          "required": true,
+          "type": "integer",
+          "default": 5,
+          "min": 1,
+          "max": 900
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 3600,
+          "default": 300
+        }
+      ]
+    },
+    {
+      "id": "lambda-concurrency",
+      "name": "Reserved Concurrency",
+      "json": "lambda-concurrency-chaos.json",
+      
+      "iam": {
+        "read": [
+          "lambda:GetFunctionConcurrency",
+          "lambda:ListProvisionedConcurrencyConfigs",
+          "lambda:GetProvisionedConcurrencyConfig"
+        ],
+        "modify": [
+          "lambda:PutFunctionConcurrency",
+          "lambda:DeleteFunctionConcurrency",
+          "lambda:DeleteProvisionedConcurrencyConfig",
+          "lambda:PutProvisionedConcurrencyConfig"
+        ]
+      },
+      
+      "inputs": [
+        {
+          "name": "lambda_name",
+          "label": "Lambda Function",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "lambda",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_concurrency",
+          "label": "Target Reserved Concurrency",
+          "required": true,
+          "type": "integer",
+          "default": 10,
+          "min": 0,
+           "max": 100000
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 3600,
+          "default": 200
+        }
+      ]
+    },
+    {
+      "id": "lambda-provisioned-concurrency",
+      "name": "Provisioned Concurrency",
+      "json": "lambda-provisioned-concurrency-chaos.json",
+      
+      "iam": {
+        "read": [
+          "lambda:GetProvisionedConcurrencyConfig"
+        ],
+        "modify": [
+          "lambda:PutProvisionedConcurrencyConfig"
+        ]
+      },
+      
+      "inputs": [
+        {
+          "name": "lambda_name",
+          "label": "Lambda Function",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "lambda",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_provisioned_concurrency",
+          "label": "Target Provisioned Concurrency",
+          "required": true,
+          "type": "integer",
+          "default": 5,
+          "min": 0,
+           "max": 100000
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 3600,
+          "default": 300
+        }
+      ]
+    },
+    {
+      "id": "lambda-retry",
+      "name": "Async Retry Attempts",
+      "json": "lambda-retry-chaos.json",
+      
+      "iam": {
+        "read": [
+          "lambda:GetFunctionEventInvokeConfig"
+        ],
+        "modify": [
+          "lambda:PutFunctionEventInvokeConfig"
+        ]
+      },
+      
+      "inputs": [
+        {
+          "name": "lambda_name",
+          "label": "Lambda Function",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "lambda",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_retry_attempts",
+          "label": "Target Retry Attempts (0-2)",
+          "required": true,
+          "type": "integer",
+          "default": 1,
+          "min": 0,
+          "max": 2
+        }
+      ]
+    }
+  ]
+}

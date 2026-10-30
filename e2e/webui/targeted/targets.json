@@ -1,0 +1,15 @@
+{
+  "generic_target": {
+    "enabled": true,
+    "cloud": "${TARGET_CLOUD}",
+    "service": "${TARGET_SERVICE}",
+    "experiment": "${TARGET_EXPERIMENT}",
+    "target_type": "${TARGET_TYPE}",
+    "resource_type": "${TARGET_RESOURCE_TYPE}",
+    "region": "${TARGET_REGION}",
+    "selector": "select[data-resource='${TARGET_RESOURCE_TYPE}']",
+    "target": {
+      "${TARGET_TAG_KEY}": "${TARGET_TAG_VALUE}"
+    }
+  }
+}

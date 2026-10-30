@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# macOS/Linux compatibility shim. Use run_e2e_webui.py on every platform.
+exec python scripts/run_e2e_webui.py "$@"

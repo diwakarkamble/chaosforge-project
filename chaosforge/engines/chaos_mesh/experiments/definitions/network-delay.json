@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Delay",
+    "description": "Injects network delay into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "delay": "100ms"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "delay"
+    }
+}

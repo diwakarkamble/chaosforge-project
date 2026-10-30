@@ -1,0 +1,223 @@
+{
+    "service": "eks",
+    "display_name": "Amazon EKS",
+
+    "experiments": [
+
+        {
+            "id": "eks-node-drain",
+            "name": "Node Drain",
+            "description": "Drains a selected EKS node, evicts workloads, waits for the configured drain timeout, and then uncordons the node.",
+            "json": "eks-node-drain-chaos.json",
+
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+
+            "inputs": [
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "required": true,
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name"
+                },
+                {
+                    "name": "node_name",
+                    "label": "Kubernetes Node",
+                    "required": true,
+                    "type": "aws_resource",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-node",
+                    "return": "name"
+                },
+                {
+                    "name": "delete_pods_with_local_storage",
+                    "label": "Delete Pods With Local Storage",
+                    "required": true,
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "name": "timeout",
+                    "label": "Drain Timeout (Seconds)",
+                    "required": true,
+                    "type": "number",
+                    "default": 120
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "aws_region",
+                    "required": true
+                }
+            ]
+        },
+
+        {
+            "id": "eks-node-cordon",
+            "name": "Node Cordon",
+            "description": "Prevents new workloads from being scheduled on a selected EKS node, keeps the node cordoned for the configured duration, and then uncordons it.",
+            "json": "eks-node-cordon-chaos.json",
+
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+
+            "inputs": [
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "required": true,
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name"
+                },
+                {
+                    "name": "node_name",
+                    "label": "Kubernetes Node",
+                    "required": true,
+                    "type": "aws_resource",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-node",
+                    "return": "name"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Chaos Duration (Seconds)",
+                    "required": true,
+                    "type": "number",
+                    "default": 30
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "aws_region",
+                    "required": true
+                }
+            ]
+        },
+
+        {
+            "id": "eks-replica-reduction",
+            "name": "Replica Reduction",
+            "description": "Temporarily reduces the replica count of a selected Kubernetes deployment, keeps the reduced replica count for the configured duration, and restores the original replica count automatically.",
+            "json": "eks-replica-reduction-chaos.json",
+
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+
+            "inputs": [
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "required": true,
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name"
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "required": true,
+                    "type": "aws_resource",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-namespace",
+                    "return": "name"
+                },
+                {
+                    "name": "deployment_name",
+                    "label": "Kubernetes Deployment",
+                    "required": true,
+                    "type": "aws_resource",
+                    "parent": "namespace",
+                    "resource_type": "eks-deployment",
+                    "return": "name"
+                },
+                {
+                    "name": "reduced_replicas",
+                    "label": "Reduced Replica Count",
+                    "required": true,
+                    "type": "number",
+                    "default": 1
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Chaos Duration (Seconds)",
+                    "required": true,
+                    "type": "number",
+                    "default": 30
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "aws_region",
+                    "required": true
+                }
+            ]
+        },
+
+        {
+            "id": "eks-container-restart",
+            "name": "Container Restart",
+            "description": "Terminates a selected Kubernetes pod to simulate a container restart, waits for the configured duration, and allows Kubernetes to restore the workload.",
+            "json": "eks-container-restart-chaos.json",
+
+            "iam": {
+                "read": [],
+                "modify": [],
+                "delete": []
+            },
+
+            "inputs": [
+                {
+                    "name": "eks_cluster",
+                    "label": "EKS Cluster",
+                    "required": true,
+                    "type": "aws_resource",
+                    "resource_type": "eks",
+                    "return": "name"
+                },
+                {
+                    "name": "namespace",
+                    "label": "Kubernetes Namespace",
+                    "required": true,
+                    "type": "aws_resource",
+                    "parent": "eks_cluster",
+                    "resource_type": "eks-namespace",
+                    "return": "name"
+                },
+                {
+                    "name": "pod_name",
+                    "label": "Kubernetes Pod",
+                    "required": true,
+                    "type": "aws_resource",
+                    "parent": "namespace",
+                    "resource_type": "eks-pod",
+                    "return": "name"
+                },
+                {
+                    "name": "wait_seconds",
+                    "label": "Chaos Duration (Seconds)",
+                    "required": true,
+                    "type": "number",
+                    "default": 30
+                },
+                {
+                    "name": "aws_region",
+                    "label": "AWS Region",
+                    "type": "aws_region",
+                    "required": true
+                }
+            ]
+        }
+    ]
+}

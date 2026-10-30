@@ -1,0 +1,76 @@
+{
+  "version": "1.0.0",
+
+  "title": "Amazon ECS Force New Deployment",
+
+  "description": "Trigger a new ECS deployment and restore the original task definition.",
+
+  "configuration": {
+    "aws_region": null,
+    "ecs_cluster": null,
+    "ecs_service": null,
+    "wait_seconds": "30"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-task-definition",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_force_deployment_actions",
+        "func": "capture_current_task_definition",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}",
+          "ecs_cluster": "${ecs_cluster}"
+        }
+      }
+    },
+
+    {
+      "name": "force-new-deployment",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_force_deployment_actions",
+        "func": "force_new_deployment",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}",
+          "ecs_cluster": "${ecs_cluster}"
+        }
+      }
+    },
+
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_common",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-task-definition",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_force_deployment_actions",
+        "func": "restore_task_definition",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}",
+          "ecs_cluster": "${ecs_cluster}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+    "version": "1.0.0",
+    "title": "Amazon S3 Default Encryption Chaos",
+
+    "description": "Enable default bucket encryption and restore the original configuration.",
+
+    "configuration": {
+        "bucket_name": null,
+        "aws_region": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+        {
+            "type": "action",
+            "name": "capture-current-encryption",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_encryption_actions",
+                "func": "capture_current_encryption",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+        {
+            "type": "action",
+            "name": "enable-encryption",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_encryption_actions",
+                "func": "update_encryption",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+        {
+            "type": "action",
+            "name": "wait",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_common",
+                "func": "wait",
+                "arguments": {
+                    "seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "type": "action",
+            "name": "restore-encryption",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_encryption_actions",
+                "func": "restore_original_encryption",
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        }
+    ]
+}

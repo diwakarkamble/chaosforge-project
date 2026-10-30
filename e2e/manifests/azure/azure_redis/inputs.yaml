@@ -1,0 +1,34 @@
+# Azure service: Azure Cache for Redis
+# Generated from the service experiments/metadata.json.
+# Review the experiment descriptions and safety requirements before execution.
+# Use only approved non-production resources and the correct Azure subscription.
+# Required CHANGE_ME values must be replaced before running the affected experiment.
+# Resource selectors and Chaos identity fields are supplied through discovery/CLI options.
+# Live execution is explicitly enabled in the command below; review it before use.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud azure \
+    --e2e-components azure_redis \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/azure/azure_redis/inputs.yaml \
+    --e2e-execute
+
+components:
+  azure_redis:
+    experiments:
+      "azure-redis-reboot":
+        # Use Azure Chaos Studio to reboot Azure Cache for Redis nodes and test application resilience to a cache node restart.
+        reboot_type: "AllNodes"
+        # Allowed choices for reboot_type: ["AllNodes", "PrimaryNode", "SecondaryNode"]
+      "azure-redis-flush":
+        # Irreversibly flush Azure Cache for Redis data to test behavior when cached data is unavailable.
+        {}
+      "azure-redis-access-disruption":
+        # Disable public network access to Azure Cache for Redis for the configured duration and restore the original setting during rollback.
+        duration_seconds: 300
+        # Metadata range for duration_seconds: 1 to 3600

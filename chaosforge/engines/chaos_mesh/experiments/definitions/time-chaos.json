@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Time Chaos",
+    "description": "Shifts the clock of selected containers.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "clock": "CLOCK_REALTIME",
+        "offset": "1h",
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "TimeChaos",
+        "action": "time"
+    }
+}

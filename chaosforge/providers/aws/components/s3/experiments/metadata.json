@@ -1,0 +1,244 @@
+{
+  "service": "s3",
+  "display_name": "Amazon S3",
+
+  "experiments": [
+    {
+      "id": "s3-versioning",
+      "name": "Bucket Versioning",
+      "json": "s3-versioning-chaos.json",
+
+      "iam": {
+        "read": [
+          "s3:GetBucketVersioning"
+        ],
+        "modify": [
+          "s3:PutBucketVersioning"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "bucket_name",
+          "label": "S3 Bucket",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "s3",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_status",
+          "label": "Target Status (Enabled/Suspended)",
+          "type": "text",
+          "required": true,
+          "default": "Enabled"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+
+    {
+      "id": "s3-encryption",
+      "name": "Default Encryption",
+      "json": "s3-encryption-chaos.json",
+
+      "iam": {
+        "read": [
+          "s3:GetEncryptionConfiguration"
+        ],
+        "modify": [
+          "s3:PutEncryptionConfiguration",
+          "s3:DeleteBucketEncryption"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "bucket_name",
+          "label": "S3 Bucket",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "s3",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+
+    {
+      "id": "s3-public-access",
+      "name": "Public Access Block",
+      "json": "s3-public-access-chaos.json",
+      "description": "Temporarily disables all four bucket-level Public Access Block controls, then restores their captured configuration. Buckets with no enabled control are rejected because this fault would be a no-op.",
+
+      "iam": {
+        "read": [
+          "s3:GetBucketPublicAccessBlock"
+        ],
+        "modify": [
+          "s3:PutBucketPublicAccessBlock",
+          "s3:DeleteBucketPublicAccessBlock"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "bucket_name",
+          "label": "S3 Bucket",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "s3",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+
+    {
+      "id": "s3-lifecycle",
+      "name": "Lifecycle Configuration",
+      "json": "s3-lifecycle-chaos.json",
+
+      "iam": {
+        "read": [
+          "s3:GetLifecycleConfiguration"
+        ],
+        "modify": [
+          "s3:PutLifecycleConfiguration",
+          "s3:DeleteLifecycleConfiguration"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "bucket_name",
+          "label": "S3 Bucket",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "s3",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "expiration_days",
+          "label": "Object Expiration (Days)",
+          "type": "integer",
+          "required": true,
+          "default": 30,
+          "min": 1,
+          "max": 3650
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+
+    {
+      "id": "s3-bucket-policy",
+      "name": "Bucket Policy",
+      "json": "s3-bucket-policy-chaos.json",
+
+      "iam": {
+        "read": [
+          "s3:GetBucketPolicy"
+        ],
+        "modify": [
+          "s3:PutBucketPolicy",
+          "s3:DeleteBucketPolicy"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "bucket_name",
+          "label": "S3 Bucket",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "s3",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "policy_template",
+          "label": "Policy Template (readonly / deny-public-read / deny-delete)",
+          "type": "text",
+          "required": true,
+          "default": "readonly"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
+
+<title>Current Campaign</title>
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/chaosforge-resilience-forge.svg') }}">
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+{% include "_resilience_signal_field.html" %}
+
+<div class="container mt-5">
+
+{% include "_utility_nav.html" %}
+<div class="page-cart-row">
+<a href="{{ url_for('cloud_services', cloud=cloud) }}" class="btn btn-secondary">
+<i class="bi bi-arrow-left"></i> Back to {{ cloud|upper }} Components
+</a>
+<a href="{{ url_for('campaigns', cloud=cloud) }}" class="btn btn-outline-primary">
+<i class="bi bi-collection"></i> Campaign Library
+</a>
+</div>
+
+<h2>
+
+{{ campaign.name }}
+
+</h2>
+
+<hr>
+
+{% if latest_execution %}
+<div class="alert alert-info d-flex justify-content-between align-items-center" role="status">
+    <div>
+        <strong>Latest {{ cloud|upper }} execution:</strong>
+        {{ latest_execution.label }} - {{ latest_execution.status }}
+    </div>
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('execution', cloud=cloud, run=latest_execution.id) }}">
+        <i class="bi bi-terminal"></i> View Execution
+    </a>
+</div>
+{% endif %}
+
+{% if experiments %}
+
+<div class="table-responsive campaign-table-wrap">
+<table class="table table-hover table-bordered">
+
+<thead class="table-dark">
+
+<tr>
+
+<th scope="col">
+    <input
+        type="checkbox"
+        id="select-all"
+        aria-label="Select all campaign experiments">
+</th>
+
+<th scope="col">#</th>
+
+<th scope="col">Service</th>
+
+<th scope="col">Experiment</th>
+
+<th scope="col">Engine</th>
+
+<th scope="col">Safety</th>
+
+<th scope="col">Status</th>
+
+<th scope="col">Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for index, exp in experiments %}
+
+<tr>
+
+<td>
+    <input
+        type="checkbox"
+        class="exp-check"
+        value="{{ index }}"
+        aria-label="Select {{ exp.name }}"
+        checked>
+</td>
+
+<td>{{ loop.index }}</td>
+
+<td>{{ service_display_name(exp.target_service if exp.service == 'fis' and exp.target_service else exp.service) }}</td>
+
+<td>{{ exp.name }}</td>
+
+<td>{{ exp.engine }}</td>
+
+<td><span class="reversibility-label reversibility-label-{{ exp.reversibility }}">{{ exp.reversibility|upper }}</span></td>
+
+<td>{{ execution_results.get(index, {}).get('status', exp.status) }}</td>
+
+<td class="table-actions">
+
+<a
+href="{{ url_for('edit_campaign', index=index, cloud=cloud) }}"
+class="btn btn-sm btn-primary">
+
+<i class="bi bi-pencil"></i>
+
+Edit
+
+</a>
+
+<a
+href="{{ url_for('remove', index=index, cloud=cloud) }}"
+class="btn btn-sm btn-danger">
+
+<i class="bi bi-trash"></i>
+
+Remove
+
+</a>
+
+{% if execution_results.get(index) %}
+<a
+href="{{ url_for('execution', cloud=cloud, run=execution_results[index].run_id, focus=execution_results[index].log_start) }}"
+class="btn btn-sm btn-outline-info">
+
+<i class="bi bi-terminal"></i>
+
+View Results
+
+</a>
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+</div>
+
+{% if execution_sessions|length > 1 %}
+<details class="mt-3">
+    <summary>Previous {{ cloud|upper }} executions</summary>
+    <ul class="mt-2 mb-0">
+    {% for run in execution_sessions[1:] %}
+        <li><a href="{{ url_for('execution', cloud=cloud, run=run.id) }}">{{ run.campaign_name }} - {{ run.status }}</a></li>
+    {% endfor %}
+    </ul>
+</details>
+{% endif %}
+
+<div id="campaign-selection-status" class="visually-hidden" role="status" tabindex="-1"></div>
+
+<div class="mt-4 action-toolbar">
+
+<a href="{{ url_for('export_campaign_yaml', **({'cloud': cloud} if cloud == 'azure' else {})) }}" class="btn btn-outline-primary">
+<i class="bi bi-download"></i> Download YAML
+</a>
+
+<button id="view-permissions" data-cloud="{{ cloud }}" class="btn btn-outline-secondary">
+<i class="bi bi-shield-check"></i> View Required Permissions
+</button>
+
+<a
+href="{{ url_for('clear', cloud=cloud) }}"
+class="btn btn-warning">
+
+Clear Campaign
+
+</a>
+
+<button
+id="execute-selected"
+data-cloud="{{ cloud }}"
+class="btn btn-success">
+
+Execute Selected
+
+</button>
+
+<button
+id="execute-all"
+data-cloud="{{ cloud }}"
+class="btn btn-outline-success">
+
+Execute All
+
+</button>
+
+</div>
+
+{% else %}
+
+<div class="alert alert-warning" role="status">
+
+<h5>Campaign is empty.</h5>
+
+<p>Add experiments from the dashboard.</p>
+
+</div>
+
+<a
+href="/"
+class="btn btn-primary">
+
+Go to Dashboard
+
+</a>
+
+{% endif %}
+
+</div>
+
+<div class="modal fade" id="permission-review-modal" tabindex="-1" aria-labelledby="permission-review-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="permission-review-title">Required Permissions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Copy only the commands required to run this campaign. Each section names the identity that receives its roles. This review does not assign roles or start execution.</p>
+                <div id="irreversible-review-warning" class="alert alert-danger visually-hidden" role="alert">
+                    <strong>Irreversible experiments selected:</strong>
+                    <ul id="irreversible-review-list" class="mb-2"></ul>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="acknowledge-irreversible">
+                        <label class="form-check-label" for="acknowledge-irreversible">I understand these experiments cannot reliably restore the original state.</label>
+                    </div>
+                </div>
+                <section id="chaos-mesh-version-review" class="mt-3" hidden>
+                    <h6>Chaos Mesh Version</h6>
+                    <p class="text-muted">Review the installed version for each selected EKS cluster.</p>
+                    <div id="chaos-mesh-version-options"></div>
+                </section>
+                <pre id="permission-review-report" class="mb-0"></pre>
+                <div id="permission-review-cards" hidden></div>
+                <details id="aws-policy-review" class="mt-3" hidden>
+                    <summary>Generated IAM policy reference</summary>
+                    <pre id="aws-policy-report" class="mt-2 mb-0"></pre>
+                </details>
+                <details class="mt-3" hidden>
+                    <summary>Optional: first-time Chaos Studio identity setup permissions</summary>
+                    <pre id="bootstrap-permission-review" class="mt-2 mb-0"></pre>
+                    <div id="bootstrap-permission-cards" class="mt-2" hidden></div>
+                </details>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirm-permission-review" class="btn btn-success">I Have Reviewed These Permissions</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='campaign.js') }}"></script>
+
+{% include "_version_footer.html" %}
+</body>
+
+</html>

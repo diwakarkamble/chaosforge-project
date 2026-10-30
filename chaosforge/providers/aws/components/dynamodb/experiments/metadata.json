@@ -1,0 +1,172 @@
+{
+  "service": "dynamodb",
+  "display_name": "Amazon DynamoDB",
+  "experiments": [
+    {
+      "id": "dynamodb-capacity",
+      "name": "Capacity Modification",
+      "json": "dynamodb-capacity-chaos.json",
+
+      "iam": {
+        "read": [
+          "dynamodb:DescribeTable"
+        ],
+        "modify": [
+          "dynamodb:UpdateTable"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "table_name",
+          "label": "DynamoDB Table",
+          "type": "aws_resource",
+          "resource_type": "dynamodb",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_rcu",
+          "label": "Target RCU",
+          "required": true,
+          "type": "integer",
+          "default": 10,
+          "min": 1,
+          "max": 100000
+        },
+        {
+          "name": "target_wcu",
+          "label": "Target WCU",
+          "required": true,
+          "type": "integer",
+          "default": 10,
+          "min": 1,
+          "max": 100000
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "default": "300",
+          "type": "integer",
+          "required": true,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+      "id": "dynamodb-pitr",
+      "name": "Point In Time Recovery",
+      "json": "dynamodb-pitr-chaos.json",
+
+      "iam": {
+        "read": [
+          "dynamodb:DescribeContinuousBackups"
+        ],
+        "modify": [
+          "dynamodb:UpdateContinuousBackups"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "table_name",
+          "label": "DynamoDB Table",
+          "type": "aws_resource",
+          "resource_type": "dynamodb",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "default": "300"
+        }
+      ]
+    },
+    {
+      "id": "dynamodb-stream",
+      "name": "Streams Configuration",
+      "json": "dynamodb-stream-chaos.json",
+
+      "iam": {
+        "read": [
+          "dynamodb:DescribeTable"
+        ],
+        "modify": [
+          "dynamodb:UpdateTable"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "table_name",
+          "label": "DynamoDB Table",
+          "type": "aws_resource",
+          "resource_type": "dynamodb",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "default": "300"
+        }
+      ]
+    },
+    {
+      "id": "dynamodb-ttl",
+      "name": "TTL Configuration",
+      "json": "dynamodb-ttl-chaos.json",
+
+      "iam": {
+        "read": [
+          "dynamodb:DescribeTimeToLive"
+        ],
+        "modify": [
+          "dynamodb:UpdateTimeToLive"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "table_name",
+          "label": "DynamoDB Table",
+          "type": "aws_resource",
+          "resource_type": "dynamodb",
+          "return": "name",
+          "required": true
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "default": "300"
+        }
+      ]
+    }
+  ]
+}

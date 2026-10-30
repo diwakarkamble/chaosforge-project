@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "title": "AWS RDS Backup Retention Chaos Test",
+  "description": "Temporarily modify the RDS Backup Retention Period and restore the original configuration.",
+
+  "configuration": {
+    "db_instance_identifier": null,
+    "aws_region": null,
+    "target_backup_retention_period": "1",
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-backup-retention",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_backup_retention_actions",
+        "func": "capture_current_backup_retention",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "modify-backup-retention",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_backup_retention_actions",
+        "func": "modify_backup_retention",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}",
+          "backup_retention_period": "${target_backup_retention_period}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_backup_retention_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-backup-retention",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.rds.experiments.toolkit.actions.rds_backup_retention_actions",
+        "func": "restore_backup_retention",
+        "arguments": {
+          "db_instance_identifier": "${db_instance_identifier}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon EC2 EBS Volume Detachment",
+  "description": "Detaches a non-root EBS volume from an EC2 instance, keeps the volume detached for the configured duration, and restores the original attachment during rollback.",
+
+  "configuration": {
+    "aws_region": null,
+    "instance_id": null,
+    "volume_id": null,
+    "device_name": null,
+    "force": true,
+    "wait_seconds": 30
+  },
+
+  "method": [
+    {
+      "name": "detach-ebs-volume",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "detach_ebs_volume",
+        "arguments": {
+          "instance_id": "${instance_id}",
+          "volume_id": "${volume_id}",
+          "device_name": "${device_name}",
+          "aws_region": "${aws_region}",
+          "force": "${force}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-ebs-volume",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_ebs_actions",
+        "func": "restore_ebs_volume",
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "title": "AWS Lambda Timeout Chaos Test",
+  "description": "Temporarily change Lambda timeout to a user-specified value, wait for a specific duration, and restore the original timeout setting.",
+  "configuration": {
+    "lambda_name": null,
+    "aws_region": null,
+    "target_timeout": null,
+    "wait_seconds": "300"
+  },
+  "method": [
+    {
+      "name": "capture-current-timeout",
+      "type": "action",
+      "provider": {
+        "type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_timeout_actions",
+        "func": "capture_current_timeout",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-timeout",
+      "type": "action",
+      "provider": {
+        "type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_timeout_actions",
+        "func": "update_timeout",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "timeout_value": "${target_timeout}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_timeout_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "name": "restore-original-timeout",
+      "type": "action",
+      "provider": {
+        "type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_timeout_actions",
+        "func": "restore_timeout",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

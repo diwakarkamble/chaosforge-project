@@ -1,0 +1,49 @@
+# Run from the repository root: all five EC2 catalog experiments in one campaign.
+# Live execution: approved non-production instances, volumes, and ASGs only.
+# Use Chaosforge=E2E-Test in eu-central-1; tags are case-sensitive.
+# Tag exactly one standalone EC2 instance and one Auto Scaling Group.
+# Tag exactly one attached, non-root data volume for the detach experiment,
+# and one available spare volume for attachment. Do not tag a root volume.
+# Child volumes must also match the tag; multiple matches cause ambiguity.
+# Attachment requires the volume and target instance to share an availability
+# zone, and /dev/sdf must be unused. Review ASG instances for these prerequisites.
+# ASG actions can affect multiple instances; review the whole group's scope.
+# Keep the runner and recovery access outside the selected instances/ASG.
+# Stopping instances interrupts workloads and can lose instance-store data.
+# Quiesce data-volume writes before detach; force detachment is disabled here.
+# Review rollback and ASG health/replacement behavior before running all five.
+# Combined mode requires --e2e-execute; omitting it skips the combined live test.
+# These inputs do not select native AWS FIS experiments.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components ec2 \
+    --e2e-aws-region eu-central-1 \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/aws/ec2/inputs.yaml \
+    --e2e-execute
+
+components:
+  ec2:
+    experiments:
+      ec2-ebs-volume-detach:
+        force: false
+        wait_seconds: 60
+      ec2-ebs-volume-attach:
+        device_name: /dev/sdf
+        wait_seconds: 60
+      ec2-ebs-volume-detach-asg:
+        force: false
+        wait_seconds: 60
+      ec2-ebs-volume-attach-asg:
+        device_name: /dev/sdf
+        wait_seconds: 60
+      ec2-incremental-instance-stop:
+        step_quantity: 1
+        step_duration: 60
+        fault_duration_seconds: 60

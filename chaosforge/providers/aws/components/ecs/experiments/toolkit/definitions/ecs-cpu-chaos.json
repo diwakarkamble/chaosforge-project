@@ -1,0 +1,72 @@
+{
+  "version": "1.0.0",
+
+  "title": "Amazon ECS CPU Modification",
+
+  "description": "Temporarily modify the ECS Task Definition CPU and restore the original task definition.",
+
+  "configuration": {
+    "aws_region": null,
+    "ecs_service": null,
+    "target_cpu": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-task-definition",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_cpu_modification_actions",
+        "func": "capture_current_task_definition",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-cpu",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_cpu_modification_actions",
+        "func": "update_cpu",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "target_cpu": "${target_cpu}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_common",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-cpu",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_cpu_modification_actions",
+        "func": "restore_cpu",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+    "version": "1.0.0",
+    "title": "EKS Node Drain Chaos",
+    "description": "Drains a selected Kubernetes node, waits for the configured duration, and restores the node.",
+
+    "configuration": {
+        "node_name": null,
+        "delete_pods_with_local_storage": false,
+        "timeout": 120,
+        "wait_seconds": 30,
+        "aws_region": null
+    },
+
+    "method": [
+        {
+            "name": "drain-eks-node",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_actions",
+                "func": "drain_eks_node",
+                "arguments": {
+                    "node_name": "${node_name}",
+                    "delete_pods_with_local_storage": "${delete_pods_with_local_storage}",
+                    "timeout": "${timeout}"
+                }
+            }
+        },
+        {
+            "name": "wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "uncordon-eks-node",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_cordon_actions",
+                "func": "uncordon_eks_node",
+                "arguments": {
+                    "node_name": "${node_name}"
+                }
+            }
+        }
+    ]
+}

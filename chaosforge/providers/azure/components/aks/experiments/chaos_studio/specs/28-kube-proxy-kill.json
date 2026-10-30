@@ -1,0 +1,17 @@
+{
+  "kind": "PodChaos",
+  "action": "pod-kill",
+  "mode": "one",
+  "selector": {
+    "namespaces": [
+      "kube-system"
+    ],
+    "labelSelectors": {
+      "component": "kube-proxy"
+    },
+    "nodeSelectors": {
+      "kubernetes.azure.com/mode": "user"
+    }
+  },
+  "duration": "<duration>"
+}

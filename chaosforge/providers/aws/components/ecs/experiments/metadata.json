@@ -1,0 +1,308 @@
+{
+  "service": "ecs",
+  "display_name": "Amazon ECS",
+
+  "experiments": [
+    {
+      "id": "ecs-desired-task-count",
+      "name": "Desired Task Count",
+
+      "json": "ecs-desired-task-count-chaos.json",
+
+      "iam": {
+        "read": [
+          "ecs:ListClusters",
+          "ecs:ListServices",
+          "ecs:DescribeServices"
+        ],
+        "modify": [
+          "ecs:UpdateService"
+        ]
+      },
+
+      "inputs": [
+        {
+            "name": "ecs_cluster",
+            "label": "ECS Cluster",
+            "required": true,
+            "type": "aws_resource",
+            "resource_type": "ecs",
+            "return": "name"
+        },
+        {
+            "name": "ecs_service",
+            "label": "ECS Fargate Service",
+            "required": true,
+            "type": "aws_resource",
+            "parent": "ecs_cluster",
+            "resource_type": "ecs-service",
+            "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "target_desired_count",
+          "label": "Target Desired Task Count",
+          "required": true,
+          "type": "integer",
+          "default": 1,
+          "min": 0,
+          "max": 100
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Duration (seconds)",
+          "required": true,
+          "type": "integer",
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    },
+    {
+        "id": "ecs-force-deployment",
+        "name": "Force New Deployment",
+        "json": "ecs-force-deployment-chaos.json",
+
+        "iam": {
+            "read": [
+            "ecs:ListClusters",
+            "ecs:ListServices",
+            "ecs:DescribeServices"
+            ],
+            "modify": [
+            "ecs:UpdateService"
+            ]
+        },
+
+        "inputs": [
+            {
+                "name": "ecs_cluster",
+                "label": "ECS Cluster",
+                "required": true,
+                "type": "aws_resource",
+                "resource_type": "ecs",
+                "return": "name"
+            },
+            {
+                "name": "ecs_service",
+                "label": "ECS Fargate Service",
+                "required": true,
+                "type": "aws_resource",
+                "parent": "ecs_cluster",
+                "resource_type": "ecs-service",
+                "return": "name"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            },
+            {
+            "name": "wait_seconds",
+            "label": "Wait Duration (seconds)",
+            "type": "integer",
+            "required": true,
+            "default": 30,
+            "min": 1,
+            "max": 3600
+            }
+            
+        ]
+    },
+    {
+        "id": "ecs-cpu-modification",
+        "name": "CPU Modification",
+        "json": "ecs-cpu-chaos.json",
+
+        "iam": {
+            "read": [
+            "ecs:ListClusters",
+            "ecs:ListServices",
+            "ecs:DescribeServices",
+            "ecs:DescribeTaskDefinition"
+            ],
+            "modify": [
+            "ecs:RegisterTaskDefinition",
+            "ecs:UpdateService"
+            ],
+            "additional": [
+            "iam:PassRole"
+            ]
+        },
+
+        "inputs": [
+            {
+                "name": "ecs_cluster",
+                "label": "ECS Cluster",
+                "required": true,
+                "type": "aws_resource",
+                "resource_type": "ecs",
+                "return": "name"
+            },
+            {
+                "name": "ecs_service",
+                "label": "ECS Fargate Service",
+                "required": true,
+                "type": "aws_resource",
+                "parent": "ecs_cluster",
+                "resource_type": "ecs-service",
+                "return": "name"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            },
+            {
+            "name": "target_cpu",
+            "label": "Target CPU",
+            "type": "integer",
+            "required": true,
+            "default": 512,
+            "min": 256,
+            "max": 16384
+            },
+            {
+            "name": "wait_seconds",
+            "label": "Wait Duration (seconds)",
+            "type": "integer",
+            "required": true,
+            "default": 300,
+            "min": 1,
+            "max": 3600
+            }
+        ]
+    },
+    {
+        "id": "ecs-memory-modification",
+        "name": "Memory Modification",
+        "json": "ecs-memory-chaos.json",
+
+        "iam": {
+            "read": [
+            "ecs:ListClusters",
+            "ecs:ListServices",
+            "ecs:DescribeServices",
+            "ecs:DescribeTaskDefinition"
+            ],
+            "modify": [
+            "ecs:RegisterTaskDefinition",
+            "ecs:UpdateService"
+            ],
+            "additional": [
+            "iam:PassRole"
+            ]
+        },
+
+        "inputs": [
+            {
+                "name": "ecs_cluster",
+                "label": "ECS Cluster",
+                "required": true,
+                "type": "aws_resource",
+                "resource_type": "ecs",
+                "return": "name"
+            },
+            {
+                "name": "ecs_service",
+                "label": "ECS Fargate Service",
+                "required": true,
+                "type": "aws_resource",
+                "parent": "ecs_cluster",
+                "resource_type": "ecs-service",
+                "return": "name"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            },
+            {
+            "name": "target_memory",
+            "label": "Target Memory (MB)",
+            "type": "integer",
+            "required": true,
+            "default": 1024,
+            "min": 512,
+            "max": 30720
+            },
+            {
+            "name": "wait_seconds",
+            "label": "Wait Duration (seconds)",
+            "type": "integer",
+            "required": true,
+            "default": 300,
+            "min": 1,
+            "max": 3600
+            }
+        ]
+    },
+    {
+        "id": "ecs-task-definition-rollback",
+        "name": "Task Definition Rollback",
+        "json": "ecs-task-definition-rollback-chaos.json",
+
+        "iam": {
+            "read": [
+            "ecs:ListClusters",
+            "ecs:ListServices",
+            "ecs:DescribeServices",
+            "ecs:DescribeTaskDefinition",
+            "ecs:ListTaskDefinitions"
+            ],
+            "modify": [
+            "ecs:UpdateService"
+            ]
+        },
+
+        "inputs": [
+            {
+                "name": "ecs_cluster",
+                "label": "ECS Cluster",
+                "required": true,
+                "type": "aws_resource",
+                "resource_type": "ecs",
+                "return": "name"
+            },
+            {
+                "name": "ecs_service",
+                "label": "ECS Fargate Service",
+                "required": true,
+                "type": "aws_resource",
+                "parent": "ecs_cluster",
+                "resource_type": "ecs-service",
+                "return": "name"
+            },
+            {
+            "name": "aws_region",
+            "label": "AWS Region",
+            "type": "aws_region",
+            "required": true,
+            "default": "eu-central-1"
+            },
+            {
+            "name": "wait_seconds",
+            "label": "Wait Duration (seconds)",
+            "type": "integer",
+            "required": true,
+            "default": 300,
+            "min": 1,
+            "max": 3600
+            }
+        ]
+    }
+  ]
+}

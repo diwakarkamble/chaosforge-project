@@ -1,0 +1,54 @@
+# Run from the repository root. This command requests live AWS FIS experiments.
+# Use one approved non-production provisioned Kinesis stream tagged
+# Chaosforge=E2E-Test in eu-central-1.
+# These stream-target FIS actions are distinct from the API-error actions that
+# target IAM roles; those role-target actions are not included here.
+# The FIS execution role needs Kinesis FIS permissions and the caller needs
+# iam:PassRole. Confirm permissions before running.
+# These actions inject errors into Kinesis API calls; meaningful application
+# impact requires active GetRecords/PutRecord traffic during the experiment.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components kinesis \
+    --e2e-experiment kinesis:kinesis-provisioned-throughput-exception \
+    --e2e-experiment kinesis:kinesis-expired-iterator-exception \
+    --e2e-aws-region eu-central-1 \
+    --e2e-aws-fis-role-arn arn:aws:iam::XXXXXXXX:role/chaos-fis-role \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-inputs e2e/manifests/aws/kinesis/inputs.yaml \
+    --e2e-execute
+
+# Set KINESIS_EXPLICIT_CONFIG to a separate full E2E manifest for the generic
+# fis component and fis-create-experiment, with reviewed service_id,
+# experiment_id, role_arn, target_arn selection, and action inputs.
+# This inputs-only file cannot be used as --e2e-config. The current explicit
+# resolver does not support the generic fis component; this command is a
+# reference until that E2E support exists. Do not use the FIS execution role
+# as the application-role target for API-error experiments.
+command_explicit: |
+  scripts/run-e2e-webui \
+    --e2e-mode explicit \
+    --e2e-config "${KINESIS_EXPLICIT_CONFIG:?Set KINESIS_EXPLICIT_CONFIG to a full explicit E2E manifest path}" \
+    --e2e-cloud aws \
+    --e2e-components fis \
+    --e2e-aws-fis-role-arn arn:aws:iam::XXXXXXX:role/chaos-fis-role \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-execute
+
+components:
+  kinesis:
+    experiments:
+      kinesis-provisioned-throughput-exception:
+        duration: PT1M
+        percentage: 100
+      kinesis-expired-iterator-exception:
+        duration: PT1M
+        percentage: 100

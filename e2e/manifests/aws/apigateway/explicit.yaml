@@ -1,0 +1,26 @@
+version: 1
+defaults:
+  mode: explicit
+  execute: true
+components:
+  aws:
+    apigateway:
+      region: eu-central-1
+      selector: '#rest_api_id'
+      target_variable: rest_api_id
+      experiments:
+      - apigateway-stage-throttling
+      - apigateway-stage-cache
+      - apigateway-stage-cache-ttl
+      - apigateway-access-logging
+      - apigateway-xray
+      - apigateway-stage-variables
+      resources:
+      - resource_id: y3fp8cf7yb
+      inputs:
+        stage_name: dev
+        region: eu-central-1
+        wait_seconds: 30
+        throttle_rate: '10'
+        throttle_burst: '20'
+        aws_region: eu-central-1

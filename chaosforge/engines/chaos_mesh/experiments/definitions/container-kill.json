@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Container Kill",
+    "description": "Kills selected containers inside Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "container_names": [],
+        "duration": null,
+        "grace_period": null
+    },
+    "chaos_mesh": {
+        "kind": "PodChaos",
+        "action": "container-kill"
+    }
+}

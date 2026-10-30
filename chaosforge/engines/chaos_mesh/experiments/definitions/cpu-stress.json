@@ -1,0 +1,18 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh CPU Stress",
+    "description": "Injects CPU stress into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "stressors": {
+            "cpu": 1
+        }
+    },
+    "chaos_mesh": {
+        "kind": "StressChaos",
+        "action": "stress-cpu"
+    }
+}

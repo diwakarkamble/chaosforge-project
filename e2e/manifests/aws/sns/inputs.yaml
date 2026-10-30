@@ -1,0 +1,59 @@
+# Run from the repository root. This command requests live SNS fault execution.
+# Use the non-production SNS topic tagged Chaosforge=E2E-Test in eu-central-1.
+# This manifest requests all five experiments, including subscription tests.
+# Subscription tests require a confirmed disposable SNS-to-SQS subscription.
+# The current tag-mode resolver cannot discover SNS subscriptions by tags;
+# requesting all five remains blocked until subscription discovery is supported.
+# Delete Subscription is irreversible; run it last and recreate the subscription
+# before repeating the suite. No production subscribers should use this topic.
+# Publish Message sends one test message; configure no production subscribers.
+# Topic Policy and Delivery Policy are restored from their captured baselines.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components sns \
+    --e2e-experiment sns:sns-publish-message \
+    --e2e-experiment sns:sns-topic-policy \
+    --e2e-experiment sns:sns-delivery-policy \
+    --e2e-aws-region eu-central-1 \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-inputs e2e/manifests/aws/sns/inputs.yaml \
+    --e2e-execute
+
+# Set SNS_EXPLICIT_CONFIG to a separate full E2E manifest containing
+# components.aws.sns with selector, target_variable, experiments, inputs,
+# region, and explicit resources. This inputs-only file is not that manifest.
+# Subscription ARNs still need resolver support; explicit mode alone does not
+# enable subscription discovery. Review the selected targets before execution.
+command_explicit: |
+  scripts/run-e2e-webui \
+    --e2e-mode explicit \
+    --e2e-config "${SNS_EXPLICIT_CONFIG:?Set SNS_EXPLICIT_CONFIG to a full explicit E2E manifest path}" \
+    --e2e-cloud aws \
+    --e2e-components sns \
+    --e2e-campaign-mode combined \
+    --e2e-strict-missing-resource \
+    --e2e-execute
+
+components:
+  sns:
+    experiments:
+      sns-publish-message:
+        message: "ChaosForge SNS E2E test message"
+      sns-topic-policy:
+        wait_seconds: 30
+      sns-subscription-filter:
+        filter_policy: '{"ChaosForgeTest":["match"]}'
+        wait_seconds: 30
+      sns-delete-subscription:
+        wait_seconds: 30
+      sns-delivery-policy:
+        delivery_policy: >-
+          {"http":{"defaultHealthyRetryPolicy":{"minDelayTarget":1,"maxDelayTarget":5,"numRetries":2,"numMaxDelayRetries":0,"numNoDelayRetries":0,"numMinDelayRetries":0,"backoffFunction":"linear"}}}
+        wait_seconds: 30

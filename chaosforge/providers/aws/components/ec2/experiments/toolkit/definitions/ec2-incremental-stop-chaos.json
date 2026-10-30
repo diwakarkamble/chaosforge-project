@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon EC2 Incremental Instance Stop",
+  "description": "Progressively stops selected EC2 instances in controlled batches, keeping each batch stopped for the configured duration.",
+
+  "configuration": {
+    "aws_region": null,
+    "instance_ids": null,
+    "step_quantity": 1,
+    "step_duration": 60,
+    "fault_duration_seconds": 300
+  },
+
+  "method": [
+    {
+      "name": "stop-instances-incrementally",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_incremental_actions",
+        "func": "stop_instances_incrementally",
+        "arguments": {
+          "instance_ids": "${instance_ids}",
+          "step_quantity": "${step_quantity}",
+          "step_duration": "${step_duration}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ,
+    {
+      "name": "hold-stopped-instances",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_common",
+        "func": "wait_for_duration",
+        "arguments": {"wait_seconds": "${fault_duration_seconds}"}
+      }
+    }
+  ],
+  "rollbacks": [{"name":"restore-instances","type":"action","provider":{"type":"python","module":"chaosforge.providers.aws.components.ec2.experiments.toolkit.actions.ec2_incremental_actions","func":"restore_incrementally_stopped_instances","arguments":{"instance_ids":"${instance_ids}","aws_region":"${aws_region}"}}}]
+}

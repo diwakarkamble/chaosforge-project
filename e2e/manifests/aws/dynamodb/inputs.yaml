@@ -1,0 +1,42 @@
+# Run from the repository root: explicitly select all four DynamoDB experiments.
+# Use exactly one approved non-production table tagged Chaosforge=E2E-Test
+# in eu-central-1. Tag names and values are case-sensitive.
+# Omit --e2e-execute to check discovery and planning without injecting faults.
+# Capacity requires PROVISIONED billing; on-demand tables skip the mutation.
+# Review the target RCU/WCU below against the table's baseline and workload.
+# PITR, Streams, and TTL must already be enabled to exercise their disable faults.
+# TTL must be in a stable state; its transitions can take up to an hour.
+# Stream re-enablement can change its ARN; review downstream consumers.
+# PITR disable/re-enable can affect the recovery window; use disposable data.
+# Do not run concurrent DynamoDB campaigns: actions share local rollback files.
+
+version: 1
+
+command: |
+  scripts/run-e2e-webui \
+    --e2e-mode tags \
+    --e2e-cloud aws \
+    --e2e-components dynamodb \
+    --e2e-experiment dynamodb:dynamodb-capacity \
+    --e2e-experiment dynamodb:dynamodb-pitr \
+    --e2e-experiment dynamodb:dynamodb-stream \
+    --e2e-experiment dynamodb:dynamodb-ttl \
+    --e2e-aws-region eu-central-1 \
+    --e2e-tag Chaosforge=E2E-Test \
+    --e2e-campaign-mode combined \
+    --e2e-inputs e2e/manifests/aws/dynamodb/inputs.yaml \
+    --e2e-execute
+
+components:
+  dynamodb:
+    experiments:
+      dynamodb-capacity:
+        target_rcu: 10
+        target_wcu: 10
+        wait_seconds: 60
+      dynamodb-pitr:
+        wait_seconds: 60
+      dynamodb-stream:
+        wait_seconds: 60
+      dynamodb-ttl:
+        wait_seconds: 60

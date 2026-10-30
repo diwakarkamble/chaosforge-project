@@ -1,0 +1,16 @@
+﻿version: 1
+
+defaults:
+  mode: explicit
+  execute: false
+
+components:
+  aws:
+    elb:
+      region: eu-central-1
+      selector: "#load_balancer"
+      target_variable: load_balancer
+      experiments:
+        - elb-load-balancer
+      resources:
+        - resource_id: arn:aws:elasticloadbalancing:eu-central-1:772217230489:loadbalancer/app/chaos-simulator-alb/1c50e2730556ef68

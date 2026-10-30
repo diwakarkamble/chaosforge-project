@@ -1,0 +1,33 @@
+version: 1
+
+defaults:
+  # These are optional overrides. Tag mode already defaults duration-like
+  # inputs to one minute for functional-test speed.
+  duration: PT30S
+  duration_seconds: 30
+  wait_seconds: 30
+
+components:
+  azure_key_vault:
+    experiments:
+      azure-key-vault-disable-certificate:
+        certificate_name: e2e-certificate
+      azure-key-vault-update-certificate-policy:
+        certificate_name: e2e-certificate
+        enabled: false
+
+  azure_postgres_flexible:
+    experiments:
+      azure-postgres-flexible-firewall-disruption:
+        rule_name: e2e-firewall-rule
+
+  apigateway:
+    experiments:
+      apigateway-stage-variables:
+        variable_name: e2e-test
+        variable_value: enabled
+
+  sns:
+    experiments:
+      sns-publish-message:
+        message: ChaosForge E2E functional test message

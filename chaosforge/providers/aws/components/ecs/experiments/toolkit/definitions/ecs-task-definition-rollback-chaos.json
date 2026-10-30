@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+
+  "title": "Amazon ECS Task Definition Rollback",
+
+  "description": "Temporarily roll back the ECS Service to the previous Task Definition revision and restore the original revision.",
+
+  "configuration": {
+    "aws_region": null,
+    "ecs_cluster": null,
+    "ecs_service": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-task-definition",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_task_definition_rollback_actions",
+        "func": "capture_current_task_definition",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}",
+          "ecs_cluster": "${ecs_cluster}"
+        }
+      }
+    },
+    {
+      "name": "rollback-task-definition",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_task_definition_rollback_actions",
+        "func": "rollback_task_definition",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}",
+          "ecs_cluster": "${ecs_cluster}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_common",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-original-task-definition",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.ecs.experiments.toolkit.actions.ecs_task_definition_rollback_actions",
+        "func": "restore_task_definition",
+        "arguments": {
+          "ecs_service": "${ecs_service}",
+          "aws_region": "${aws_region}",
+          "ecs_cluster": "${ecs_cluster}"
+        }
+      }
+    }
+  ]
+}

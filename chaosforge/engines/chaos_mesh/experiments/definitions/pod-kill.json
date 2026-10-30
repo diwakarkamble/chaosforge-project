@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Pod Kill",
+    "description": "Kills selected Kubernetes pods and allows their controllers to recreate them.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": null,
+        "grace_period": null
+    },
+    "chaos_mesh": {
+        "kind": "PodChaos",
+        "action": "pod-kill"
+    }
+}

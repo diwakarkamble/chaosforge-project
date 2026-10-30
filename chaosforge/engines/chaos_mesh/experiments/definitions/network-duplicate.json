@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Duplicate",
+    "description": "Injects duplicate network packets into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "duplicate": "20"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "duplicate"
+    }
+}

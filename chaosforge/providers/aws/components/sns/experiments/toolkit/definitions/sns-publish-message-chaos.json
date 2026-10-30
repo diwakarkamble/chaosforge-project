@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "title": "AWS SNS Publish Message Chaos Test",
+  "description": "Publish a test message to an SNS Topic.",
+
+  "configuration": {
+    "topic_arn": null,
+    "message": null,
+    "region": null
+  },
+
+  "method": [
+    {
+      "name": "publish-message",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_publish_actions",
+        "func": "publish_message",
+        "arguments": {
+          "topic_arn": "${topic_arn}",
+          "message": "${message}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

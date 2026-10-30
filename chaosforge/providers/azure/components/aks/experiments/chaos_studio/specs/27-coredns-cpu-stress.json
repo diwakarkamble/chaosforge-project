@@ -1,0 +1,19 @@
+{
+  "kind": "StressChaos",
+  "mode": "one",
+  "selector": {
+    "namespaces": [
+      "kube-system"
+    ],
+    "labelSelectors": {
+      "k8s-app": "kube-dns"
+    }
+  },
+  "stressors": {
+    "cpu": {
+      "workers": 2,
+      "load": 90
+    }
+  },
+  "duration": "<duration>"
+}

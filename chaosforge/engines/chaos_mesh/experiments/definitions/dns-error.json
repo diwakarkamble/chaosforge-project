@@ -1,0 +1,15 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh DNS Error",
+    "description": "Returns DNS errors for selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s"
+    },
+    "chaos_mesh": {
+        "kind": "DNSChaos",
+        "action": "error"
+    }
+}

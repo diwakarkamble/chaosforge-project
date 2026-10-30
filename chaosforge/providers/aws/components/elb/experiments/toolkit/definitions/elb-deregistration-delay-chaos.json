@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "title": "Elastic Load Balancing Deregistration Delay Chaos",
+  "description": "Temporarily changes the deregistration delay of a selected ELB target group and restores the original value during rollback.",
+  "configuration": {
+    "aws_region": null,
+    "target_group": null,
+    "deregistration_delay": null
+  },
+  "method": [
+    {
+      "name": "modify-elb-deregistration-delay",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_deregistration_delay_actions",
+        "func": "modify_deregistration_delay",
+        "arguments": {
+          "target_group_arn": "${target_group}",
+          "deregistration_delay": "${deregistration_delay}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "name": "restore-elb-deregistration-delay",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_deregistration_delay_actions",
+        "func": "restore_deregistration_delay",
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1">
+
+    <title>{{ experiment.name }}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/chaosforge-resilience-forge.svg') }}">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}">
+
+    <link
+	rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+{% include "_resilience_signal_field.html" %}
+
+<div class="container mt-5">
+
+    {% include "_utility_nav.html" %}
+
+    <h2>{{ experiment.name }}</h2>
+    {% if experiment.reversibility in ("reversible", "irreversible") %}
+    <p class="reversibility-label reversibility-label-{{ experiment.reversibility }}">
+        {{ experiment.reversibility|upper }}
+    </p>
+    {% endif %}
+
+    {% if experiment.reversibility == "irreversible" %}
+    <div class="alert alert-danger" role="alert">
+        This experiment cannot reliably restore the original resource state, data, or external side effects.
+    </div>
+    {% endif %}
+
+<p class="text-muted">
+
+    {{ experiment.fis_component_display_name or service.display_name }}
+
+</p>
+
+<hr>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+
+        <h4 class="mb-3">
+            Experiment Description
+        </h4>
+
+        <div
+            id="experiment-description-container"
+            class="experiment-description-card"
+            {% if not description %}
+            style="display: none;"
+            {% endif %}
+        >
+
+            <div class="description-section description-info">
+                <div class="description-title">
+                    <strong>Description</strong>
+                </div>
+
+                <div
+                    id="experiment-description"
+                    class="description-text"
+                >
+                    {% if description %}
+                        {{ description.description }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="description-section description-impact">
+                <div class="description-title">
+                    <span>⚠</span>
+                    <strong>Potential Impact</strong>
+                </div>
+
+                <div
+                    id="experiment-impact"
+                    class="description-text"
+                >
+                    {% if description %}
+                        {{ description.impact }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="description-section description-expected">
+                <div class="description-title">
+                    <span>✓</span>
+                    <strong>Expected Behavior</strong>
+                </div>
+
+                <div
+                    id="experiment-expected-behavior"
+                    class="description-text"
+                >
+                    {% if description %}
+                        {{ description.expected_behavior }}
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <div
+            id="experiment-description-empty"
+            class="text-muted"
+            {% if description %}
+            style="display: none;"
+            {% endif %}
+        >
+            Description is not available for this experiment.
+        </div>
+
+    </div>
+</div>
+
+{% if iam_policy %}
+
+<div class="mb-4">
+
+    <button
+        type="button"
+        class="btn btn-outline-warning"
+        data-bs-toggle="modal"
+        data-bs-target="#iamPolicyModal">
+
+        <i class="bi bi-shield-lock-fill"></i>
+
+        View Required IAM Policy
+
+    </button>
+
+</div>
+
+{% if lambda_execution_policy_json %}
+<div class="mb-4">
+    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#lambdaExecutionPolicyModal">
+        <i class="bi bi-shield-lock-fill"></i> View Lambda Execution Role Policy
+    </button>
+</div>
+{% endif %}
+
+{% endif %}
+
+<form method="POST" action="{{ form_action }}" data-experiment-id="{{ experiment.id }}">
+{% set destination_assignment = campaign_assignment|default(false) %}
+{% set destination_name = active_campaign_name|default('Current campaign') %}
+<section class="campaign-destination mb-4" aria-labelledby="campaign-destination-title">
+    <div class="campaign-destination-heading">
+        <div>
+            <span class="campaign-destination-kicker">Campaign destination</span>
+            <h5 id="campaign-destination-title">{% if destination_assignment %}Choose where to save this experiment{% else %}This experiment will be added to{% endif %}</h5>
+        </div>
+        <i class="bi bi-collection-fill" aria-hidden="true"></i>
+    </div>
+    {% if destination_assignment %}
+    <p class="campaign-destination-copy">Select an existing {{ cloud|upper }} draft or create one now. The experiment configuration below is kept and added when you submit.</p>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label" for="campaign_id">Existing campaign</label>
+            <select class="form-select" id="campaign_id" name="campaign_id">
+                <option value="">Choose an existing campaign</option>
+                {% for draft in campaign_drafts %}
+                <option value="{{ draft.id }}" {% if form and form.get('campaign_id') == draft.id %}selected{% endif %}>{{ draft.name }} ({{ draft.experiments }} experiments)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="new_campaign_name">Or create a new campaign</label>
+            <input class="form-control" id="new_campaign_name" name="new_campaign_name" maxlength="100" value="{{ form.get('new_campaign_name', '') if form else '' }}" placeholder="For example: Redis resilience validation">
+        </div>
+    </div>
+    {% else %}
+    <div class="campaign-destination-active">
+        <div><strong>{{ destination_name }}</strong><span>{{ cloud|upper }} draft is open</span></div>
+        <a href="{{ campaign_library_url|default(url_for('campaigns', cloud=cloud)) }}" class="btn btn-sm btn-outline-info">Change campaign</a>
+    </div>
+    {% endif %}
+</section>
+{% if cloud == "azure" %}
+<div class="row azure-context-panel mb-4">
+    <div class="col-md-6 mb-3">
+        <label class="form-label" for="subscription_id">Azure Subscription</label>
+        <input class="form-control" id="subscription_id" name="subscription_id" readonly required
+               value="{{ form.get('subscription_id', azure_identity.subscription_id) if form else azure_identity.subscription_id }}"
+               data-subscription-name="{{ azure_identity.name }}">
+        <div class="azure-subscription-name">{{ azure_identity.name }}</div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label" for="resource_group">Azure Resource Group</label>
+        <select class="form-select" id="resource_group" name="resource_group" required
+                data-azure-resource-groups>
+            <option value="{{ form.get('resource_group', '') if form else '' }}">
+                {{ form.get('resource_group', 'Loading resource groups...') if form else 'Loading resource groups...' }}
+            </option>
+        </select>
+        <div class="form-text text-warning" id="azure-resource-group-error" hidden></div>
+    </div>
+</div>
+{% endif %}
+
+{% if errors %}
+<div class="alert alert-danger" role="alert" tabindex="-1">
+    {% for field, message in errors.items() %}
+    <div><strong>{{ field }}:</strong> {{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+{# ============================================================
+   AWS REGION
+   Always render region before AWS resource selectors
+   ============================================================ #}
+
+{% for input in experiment.inputs if input.name == "aws_region" %}
+
+<div class="mb-3">
+
+    <label class="form-label" for="aws_region">
+        {{ display_label(input) }}
+        <span class="field-help">
+            <button type="button" class="field-help-trigger" aria-label="Help for {{ display_label(input) }}">?</button>
+            <span class="field-help-tooltip" role="tooltip">{{ field_help(input) }}</span>
+        </span>
+    </label>
+
+    <select
+        class="form-select"
+        id="aws_region"
+        name="aws_region"
+        {% if input.required %}
+        required
+        {% endif %}
+    >
+
+        <option value="">
+            Select AWS Region
+        </option>
+
+        {% for region_code, region_name in regions %}
+        <option
+            value="{{ region_code }}"
+            {% if (form.get('aws_region', input.default) if form else input.default) == region_code %}
+            selected
+            {% endif %}
+        >
+            {{ region_name }} ({{ region_code }})
+        </option>
+        {% endfor %}
+
+        <option value="__manual__">
+            Other (Enter Region Manually)
+        </option>
+
+    </select>
+
+    <input
+        type="text"
+        class="form-control mt-2"
+        id="aws_region_manual"
+        placeholder="Enter AWS Region (e.g. ap-south-1)"
+        style="display: none;"
+        autocomplete="off"
+    >
+
+</div>
+
+{% endfor %}
+
+{% for input in experiment.inputs if input.name != "aws_region" %}
+
+<div
+    class="mb-3"
+    {% if input.visible_when %}
+    data-visible-when="{{ input.visible_when|tojson|forceescape }}"
+    {% endif %}
+    {% if service.service == "fis" and input.name == "target_arn" %}
+    id="target-resource-wrapper"
+    {% endif %}
+>
+
+{% if not (service.service == "fis" and input.name == "target_arn") %}
+
+<label class="form-label">
+
+{{ display_label(input) }}
+<span class="field-help">
+    <button type="button" class="field-help-trigger" aria-label="Help for {{ display_label(input) }}">?</button>
+    <span class="field-help-tooltip" role="tooltip">{{ field_help(input) }}</span>
+</span>
+
+</label>
+
+{% endif %}
+
+{% if service.service == "fis" and input.name == "service_id" %}
+
+<select
+    class="form-select"
+    id="service_id"
+    name="{{ 'fis_service_picker' if experiment.fis_service_id else 'service_id' }}">
+
+    <option value="" selected>
+    	Select AWS Service
+    </option>
+
+    {% for item in fis_services %}
+
+    <option value="{{ item.id }}" {% if item.id == selected_service %}selected{% endif %}>
+
+        {{ item.name }}
+
+    </option>
+
+    {% endfor %}
+
+</select>
+
+{% elif service.service == "fis" and input.name == "experiment_id" %}
+
+<select
+    class="form-select"
+    id="experiment_id"
+    name="{{ 'fis_experiment_picker' if experiment.fis_service_id else 'experiment_id' }}"
+    data-selected-experiment="{{ selected_fis_experiment or '' }}">
+
+    <option value="">
+        Select Experiment
+    </option>
+
+</select>
+
+<div
+    id="dynamic-parameters"
+    class="mt-3">
+
+</div>
+{% elif service.service == "fis" and input.name == "target_arn" %}
+
+    <div
+     id="target-resource-container"
+     {% if experiment.fis_service_id %}
+     style="display:block;"
+     {% else %}
+     style="display:none;"
+     {% endif %}>
+
+<label class="form-label">
+
+{{ input.label }}
+
+</label>
+
+    <select
+        class="form-select"
+        id="target_arn"
+        name="target_arn"
+        data-resource="{{ experiment.fis_target_selector or experiment.fis_service_id }}"
+        data-label="{{ input.label }}"
+        data-return="arn"
+        {% if input.required %}required{% endif %}>
+
+        <option value="">
+            Select Target Resource
+        </option>
+
+        {% if experiment.fis_service_id %}
+        {% for resource in discovered_resources %}
+        <option value="{{ resource.arn or resource.id or resource.name }}">
+            {{ resource.name or resource.id or resource.arn }}
+        </option>
+        {% endfor %}
+        {% endif %}
+
+    </select>
+
+</div>
+
+{% elif input.type == "aws_resource" %}
+
+<select
+    class="form-select"
+    id="{{ input.name }}"
+    name="{{ input.name }}"
+    data-resource="{{ input.resource_type }}"
+    data-label="{{ input.label }}"
+    data-return="{{ input.return if input.return else 'id' }}"
+    data-initial-value="{{ form.get(input.name, input.default if input.default is defined else '') if form else (input.default if input.default is defined else '') }}"
+    {% if input.parent %}
+    data-parent="{{ input.parent }}"
+    disabled
+    {% endif %}
+    {% if input.required %}
+    required
+    {% endif %}
+>
+    <option value="">
+        Select {{ input.label }}
+    </option>
+</select>
+
+
+{% elif input.type in ("select", "choice", "chaos_mode") %}
+
+<select
+    class="form-select"
+    id="{{ input.name }}"
+    name="{{ input.name }}"
+    {% if input.required %}
+    required
+    {% endif %}
+>
+    <option value="">
+        Select {{ input.label }}
+    </option>
+
+    {% set choices = input.options if input.options else (input.choices if input.choices else (["one", "all", "fixed", "fixed-percent", "random-max-percent"] if input.type == "chaos_mode" else [])) %}
+    {% for option in choices %}
+    <option
+        value="{{ option.value if option is mapping else option }}"
+        {% if (form.get(input.name, input.default) if form else input.default) == (option.value if option is mapping else option) %}
+        selected
+        {% endif %}
+    >
+        {{ option.label if option is mapping else option }}
+    </option>
+    {% endfor %}
+</select>
+
+{% elif input.type and input.type.startswith("azure_aks_") %}
+
+<select
+    class="form-select azure-resource-select"
+    id="{{ input.name }}"
+    name="{{ input.name }}"
+    data-azure-resource="{{ input.type }}"
+    {% if input.required %}required{% endif %}>
+    <option value="">Select {{ input.label }}</option>
+</select>
+
+{% elif input.type == "azure_redis_cache" %}
+
+<select class="form-select" id="redis_name" name="redis_name" required
+        data-azure-redis-caches
+        data-initial-value="{{ form.get('redis_name', '') if form else '' }}">
+    <option value="">Select a resource group first</option>
+</select>
+
+{% elif input.type == "azure_component_resource" %}
+
+{% set initial_component_resource = form.get(input.name, '') if form else (input.default if input.default is defined else '') %}
+<select class="form-select" id="{{ input.name }}" name="{{ input.name }}" required
+        data-azure-component-resource="{{ service.service }}"
+        data-initial-value="{{ initial_component_resource }}">
+    <option value="">Select a resource group first</option>
+    {% if initial_component_resource %}
+    <option value="{{ initial_component_resource }}" selected>{{ initial_component_resource.rstrip('/').rsplit('/', 1)[-1] }}</option>
+    {% endif %}
+</select>
+
+{% elif input.type == "azure_vmss_instances" %}
+
+{% set initial_instances = form.get(input.name, '') if form else (input.default if input.default is defined else '') %}
+<input type="hidden" id="{{ input.name }}" name="{{ input.name }}" value="{{ initial_instances }}" data-azure-vmss-instances>
+<div class="border rounded p-3" data-azure-vmss-instance-picker aria-live="polite">
+    <div class="text-muted">Select a scale set first.</div>
+</div>
+
+{% elif input.type == "azure_component_chaos_identity" %}
+
+<select class="form-select" id="{{ input.name }}" name="{{ input.name }}" required
+        data-azure-component-chaos-identity="{{ service.service }}"
+        data-initial-value="{{ form.get(input.name, '') if form else '' }}">
+    <option value="">Loading Azure Chaos identity...</option>
+</select>
+<div class="azure-redis-chaos-identity-help">Uses <code>chaosforge-managed-identity</code> with the target-specific Azure Chaos Studio role.</div>
+<button class="btn btn-outline-warning btn-sm mt-2" type="button" data-bootstrap-azure-component-chaos-identity="{{ service.service }}">
+    <i class="bi bi-shield-plus"></i> Set Up Azure Chaos Identity and Target Permission
+</button>
+<div class="azure-redis-identity-status" data-azure-component-identity-status="{{ service.service }}" role="status" aria-live="polite" hidden></div>
+
+{% elif input.type == "azure_redis_chaos_identity" %}
+
+<select class="form-select" id="chaos_identity_id" name="chaos_identity_id" required
+        data-azure-redis-chaos-identities
+        data-initial-value="{{ form.get('chaos_identity_id', '') if form else '' }}">
+    <option value="">Loading Azure Chaos identity...</option>
+</select>
+<div class="azure-redis-chaos-identity-help">Uses <code>chaosforge-managed-identity</code>, which needs Redis Cache Contributor on the selected Redis cache.</div>
+<button class="btn btn-outline-warning btn-sm mt-2" type="button"
+        data-bootstrap-azure-redis-chaos-identity>
+    <i class="bi bi-shield-plus"></i> Set Up Azure Chaos Identity and Redis Permission
+</button>
+<div class="azure-redis-identity-status" id="azure-redis-chaos-identity-status" role="status" aria-live="polite" hidden></div>
+
+{% elif input.type == "aws_fis_template" %}
+
+<select class="form-select" id="{{ input.name }}" name="{{ input.name }}"
+        data-fis-template-select
+        data-initial-value="{{ form.get(input.name, '') if form else '' }}"
+        {% if input.required %}required{% endif %}>
+    <option value="">Loading FIS experiment templates...</option>
+</select>
+
+{% elif input.type == "boolean" %}
+
+<select
+    class="form-select"
+    id="{{ input.name }}"
+    name="{{ input.name }}"
+    {% if input.required %}required{% endif %}
+>
+    <option value="">Select true or false</option>
+    <option value="true" {% if (form.get(input.name, input.default) if form else input.default) in (true, 'true') %}selected{% endif %}>true</option>
+    <option value="false" {% if (form.get(input.name, input.default) if form else input.default) in (false, 'false') %}selected{% endif %}>false</option>
+</select>
+
+{% if input.hint %}
+<div class="form-text">{{ input.hint }}</div>
+{% else %}
+<div class="form-text">Select true or false.</div>
+{% endif %}
+
+
+{% else %}
+
+<input
+    type="{{ 'number' if input.type in ('integer', 'number', 'float') and input.name not in ('wait_seconds', 'duration_seconds', 'fault_duration_seconds') else 'text' }}"
+    class="form-control"
+    id="{{ input.name }}"
+    name="{{ input.name }}"
+    value="{{ form.get(input.name, input.default if input.default is defined and input.default is not none else '') if form else (input.default if input.default is defined and input.default is not none else '') }}"
+    {% if input.readonly %}readonly{% endif %}
+    {% if input.min is defined %}min="{{ input.min }}"{% endif %}
+    {% if input.max is defined %}max="{{ input.max }}"{% endif %}
+    {% if input.required %}
+    required
+    {% endif %}
+>
+
+{% if input.hint or input.type in ('integer', 'number', 'float', 'boolean', 'iso8601_duration') %}
+<div class="form-text">
+    {% if input.hint %}
+        {{ input.hint }}
+    {% elif input.type in ('integer', 'number', 'float') %}
+        Enter a numeric value{% if input.min is defined or input.max is defined %} within the displayed range{% endif %}.
+    {% elif input.type == 'boolean' %}
+        Enter true or false.
+    {% else %}
+        Example: PT1M or PT30S.
+    {% endif %}
+</div>
+{% endif %}
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+<input
+    type="hidden"
+    name="service"
+    value="{{ service.service }}">
+
+{% if experiment.fis_service_id %}
+<input type="hidden" name="service_id" value="{{ experiment.fis_service_id }}">
+<input type="hidden" name="experiment_id" value="{{ experiment.fis_experiment_id }}">
+{% endif %}
+
+<input
+    type="hidden"
+    name="experiment_id"
+    value="{{ experiment.id }}">
+
+
+<div class="mt-4 action-toolbar">
+
+<button
+    type="submit"
+    class="btn btn-primary">
+
+    Add Experiment
+
+</button>
+
+<a
+    href="{{ cancel_url }}"
+    class="btn btn-secondary">
+
+    Cancel
+
+</a>
+
+</div>
+</form>
+
+    <script>
+    function updateConditionalInputs() {
+        document.querySelectorAll("[data-visible-when]").forEach(function(wrapper) {
+            const condition = JSON.parse(wrapper.dataset.visibleWhen);
+            const visible = Object.entries(condition).every(function([name, value]) {
+                return document.querySelector(`[name="${name}"]`)?.value === value;
+            });
+            wrapper.hidden = !visible;
+            wrapper.querySelectorAll("input, select").forEach(function(field) {
+                field.disabled = !visible;
+            });
+        });
+    }
+    function updateChaosModeValue() {
+        const mode = document.querySelector('[name="chaos_mode"], [name="mode"]');
+        const value = document.querySelector('[name="chaos_value"]');
+        if (!mode || !value) return;
+        const wrapper = value.closest(".mb-3");
+        const required = ["fixed", "fixed-percent", "random-max-percent"].includes(mode.value);
+        wrapper.hidden = !required;
+        value.disabled = !required;
+        value.required = required;
+        if (!required) value.value = "";
+    }
+    document.addEventListener("change", updateConditionalInputs);
+    document.addEventListener("change", updateChaosModeValue);
+    document.addEventListener("DOMContentLoaded", updateConditionalInputs);
+    document.addEventListener("DOMContentLoaded", updateChaosModeValue);
+    document.addEventListener("DOMContentLoaded", function () {
+        const targetMode = document.getElementById("target_mode");
+        if (targetMode && !targetMode.value) targetMode.value = "pod";
+        updateConditionalInputs();
+    });
+document.addEventListener("DOMContentLoaded", function () {
+
+    // ============================================================
+    // COMMON ELEMENTS
+    // ============================================================
+
+    const regionInput =
+        document.getElementById("aws_region");
+
+    const manualRegionInput =
+        document.getElementById("aws_region_manual");
+
+    const serviceSelect =
+        document.getElementById("service_id");
+
+    const experimentSelect =
+        document.getElementById("experiment_id");
+
+    const resourceSelect =
+        document.getElementById("target_arn");
+
+    const parameterContainer =
+        document.getElementById("dynamic-parameters");
+
+    const descriptionContainer =
+        document.getElementById("experiment-description-container");
+
+    const descriptionText =
+        document.getElementById("experiment-description");
+
+    const impactText =
+        document.getElementById("experiment-impact");
+
+    const expectedBehaviorText =
+        document.getElementById("experiment-expected-behavior");
+
+    const descriptionEmpty =
+        document.getElementById("experiment-description-empty");
+
+
+    // ============================================================
+    // AWS REGION
+    // ============================================================
+
+    function getSelectedRegion() {
+
+        if (!regionInput) {
+            return "";
+        }
+
+        if (regionInput.value === "__manual__") {
+
+            return manualRegionInput
+                ? manualRegionInput.value.trim()
+                : "";
+        }
+
+        return regionInput.value;
+    }
+
+
+    // ============================================================
+    // LOAD TOP-LEVEL AWS RESOURCE
+    // ============================================================
+
+    const resourceLoadControllers = new WeakMap();
+
+    function storedResourceLabel(value) {
+        const text = String(value || "").replace(/\/$/, "");
+        if (text.startsWith("arn:")) {
+            return text.split(/[/:]/).filter(Boolean).pop() || text;
+        }
+        return text.includes("/") ? text.split("/").pop() : text;
+    }
+
+    async function loadResource(select) {
+
+        const region = getSelectedRegion();
+
+        if (!region) {
+
+            select.innerHTML =
+                "<option value=''>Select AWS Region first</option>";
+
+            return;
+        }
+
+        const resourceType =
+            select.dataset.resource;
+
+        if (!resourceType) {
+            return;
+        }
+
+        /*
+        * Cancel any previous request for this select.
+        * This prevents an older async response from
+        * overwriting a newer selection.
+        */
+        const previousController =
+            resourceLoadControllers.get(select);
+
+        if (previousController) {
+            previousController.abort();
+        }
+
+        const controller =
+            new AbortController();
+
+        resourceLoadControllers.set(
+            select,
+            controller
+        );
+
+        const preservedValue =
+            select.value ||
+            select.dataset.initialValue ||
+            "";
+
+        select.disabled = true;
+        select.innerHTML =
+            "<option value=''>Loading resources...</option>";
+
+        try {
+
+            const response = await fetch(
+                `/api/resources/${resourceType}/${region}`,
+                {
+                    signal: controller.signal
+                }
+            );
+
+            if (controller.signal.aborted) {
+                return;
+            }
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+            const data =
+                await response.json();
+
+            if (controller.signal.aborted) {
+                return;
+            }
+
+            const resources =
+                Array.isArray(data)
+                    ? data
+                    : (data.value || []);
+
+            select.innerHTML =
+                `<option value="">
+                    Select ${select.dataset.label}
+                </option>`;
+
+            resources.forEach(function(resource) {
+
+                const returnField =
+                    select.dataset.return || "id";
+
+                const value =
+                    resource[returnField] ??
+                    resource.id ??
+                    resource.name ??
+                    resource.arn;
+
+                const name =
+                    resource.name ??
+                    resource.id ??
+                    resource.arn;
+
+                if (
+                    value === undefined ||
+                    value === null ||
+                    value === ""
+                ) {
+                    return;
+                }
+
+                const option =
+                    document.createElement("option");
+
+                option.value = value;
+                option.textContent = name;
+
+                option.selected =
+                    value === preservedValue;
+
+                select.appendChild(option);
+            });
+
+            if (
+                preservedValue &&
+                !Array.from(select.options).some(option => option.value === preservedValue)
+            ) {
+                const option = document.createElement("option");
+                option.value = preservedValue;
+                option.textContent = storedResourceLabel(preservedValue);
+                option.selected = true;
+                select.appendChild(option);
+            }
+
+        } catch (error) {
+
+            if (error.name === "AbortError") {
+                return;
+            }
+
+            console.error(
+                "Failed to load resource:",
+                resourceType,
+                region,
+                error
+            );
+
+            select.innerHTML =
+                "<option value=''>Unable to load resources</option>";
+
+        } finally {
+
+            if (
+                resourceLoadControllers.get(select) ===
+                controller
+            ) {
+                select.disabled = false;
+                resourceLoadControllers.delete(select);
+            }
+        }
+    }
+
+
+    // ============================================================
+    // LOAD CHILD AWS RESOURCE
+    // ============================================================
+
+    async function loadChild(parent, child) {
+
+        const region =
+            getSelectedRegion();
+
+        if (!region) {
+
+            child.disabled = true;
+            child.innerHTML =
+                "<option value=''>Select AWS Region first</option>";
+
+            return;
+        }
+
+        if (!parent.value) {
+
+            child.disabled = true;
+            child.innerHTML =
+                `<option value="">
+                    Select ${parent.dataset.label || "parent resource"} first
+                </option>`;
+
+            return;
+        }
+
+        const parentType =
+            parent.dataset.resource;
+
+        const childType =
+            child.dataset.resource;
+
+        child.disabled = true;
+        child.dataset.unavailable = "false";
+        child.innerHTML =
+            "<option value=''>Loading resources...</option>";
+
+        try {
+
+            let parentValue = parent.value;
+
+            /*
+            * EKS Namespace -> Deployment / Pod
+            *
+            * Deployment and Pod discovery require:
+            *   1. EKS cluster
+            *   2. Kubernetes namespace
+            *
+            * EKS Pod -> Volume
+            *
+            * Volume discovery requires:
+            *   1. EKS cluster
+            *   2. Kubernetes namespace
+            *   3. Kubernetes pod
+            */
+            if (
+                (
+                    parentType === "eks-namespace" &&
+                    (
+                        childType === "eks-deployment" ||
+                        childType === "eks-pod" ||
+                        childType === "eks-container"
+                    )
+                ) ||
+                (
+                    parentType === "eks-pod" &&
+                    childType === "eks-volume"
+                )
+            ) {
+                const clusterSelect = document.querySelector(
+                    'select[data-resource="eks"]'
+                );
+
+                if (!clusterSelect || !clusterSelect.value) {
+                    child.innerHTML =
+                        "<option value=''>Select EKS Cluster first</option>";
+                    return;
+                }
+
+                /*
+                * EKS Namespace -> Deployment / Pod
+                */
+                if (
+                    parentType === "eks-namespace" &&
+                    (
+                        childType === "eks-deployment" ||
+                        childType === "eks-pod"
+                    )
+                ) {
+                    parentValue =
+                        `${clusterSelect.value}::${parent.value}`;
+                }
+
+                else if (
+                    parentType === "eks-namespace" &&
+                    childType === "eks-container"
+                ) {
+                    parentValue = `${clusterSelect.value}::${parent.value}`;
+                    child.dataset.targetPod = document.getElementById("pod")?.value || "";
+                    child.dataset.targetDeployment = document.getElementById("deployment")?.value || "";
+                }
+
+                /*
+                * EKS Pod -> Volume
+                */
+                else if (
+                    parentType === "eks-pod" &&
+                    childType === "eks-volume"
+                ) {
+                    const namespaceSelect =
+                        document.getElementById("namespace");
+
+                    if (!namespaceSelect || !namespaceSelect.value) {
+                        child.innerHTML =
+                            "<option value=''>Select Kubernetes Namespace first</option>";
+                        return;
+                    }
+
+                    parentValue =
+                        `${clusterSelect.value}::${namespaceSelect.value}::${parent.value}`;
+                }
+            }
+
+            const targetQuery = childType === "eks-container"
+                ? `?pod=${encodeURIComponent(child.dataset.targetPod || "")}&deployment=${encodeURIComponent(child.dataset.targetDeployment || "")}`
+                : "";
+            const response = await fetch(
+                `/api/resources/${parentType}/${encodeURIComponent(parentValue)}/${childType}/${region}${targetQuery}`
+            );
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.error || `HTTP ${response.status}`);
+            }
+
+            const data =
+                await response.json();
+
+            const resources =
+                Array.isArray(data)
+                    ? data
+                    : (data.value || []);
+
+            child.innerHTML =
+                `<option value="">
+                    Select ${child.dataset.label}
+                </option>`;
+
+            resources.forEach(function(resource) {
+
+                const returnField =
+                    child.dataset.return || "id";
+
+                const value =
+                    resource[returnField] ??
+                    resource.id ??
+                    resource.name ??
+                    resource.arn;
+
+                const name =
+                    resource.name ??
+                    resource.id ??
+                    resource.arn;
+
+                if (value === undefined || value === null || value === "") {
+                    return;
+                }
+
+                const option =
+                    document.createElement("option");
+
+                option.value = value;
+                option.textContent = name;
+                option.selected = value === child.dataset.initialValue;
+
+                child.appendChild(option);
+            });
+
+            if (childType === "rds-instance-class" && !resources.length) {
+                child.disabled = true;
+                child.dataset.unavailable = "true";
+                child.innerHTML = "<option value=''>No valid target classes available</option>";
+            }
+
+            const preservedChildValue = child.dataset.initialValue || "";
+            if (
+                preservedChildValue &&
+                !Array.from(child.options).some(option => option.value === preservedChildValue)
+            ) {
+                const option = document.createElement("option");
+                option.value = preservedChildValue;
+                option.textContent = storedResourceLabel(preservedChildValue);
+                option.selected = true;
+                child.appendChild(option);
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Failed to load child resource:",
+                childType,
+                error
+            );
+
+            child.innerHTML = `<option value="">${error.message}</option>`;
+        } finally {
+            child.disabled = child.dataset.unavailable === "true";
+        }
+    }
+
+
+    // ============================================================
+    // RESET RESOURCE SELECTORS
+    // ============================================================
+
+    function resetResources() {
+
+        document
+            .querySelectorAll("select[data-resource]")
+            .forEach(function(select) {
+
+                if (!select.dataset.parent) {
+
+                    select.innerHTML =
+                        "<option value=''>Select AWS Region first</option>";
+                }
+
+                else {
+
+                    select.innerHTML =
+                        `<option value="">
+                            Select ${select.dataset.label}
+                        </option>`;
+                }
+            });
+    }
+
+    function loadTopLevelResources() {
+        document.querySelectorAll("select[data-resource]").forEach(function(select) {
+            if (!select.dataset.parent) loadResource(select);
+        });
+        if (resourceSelect?.dataset.resource) {
+            loadResource(resourceSelect);
+        }
+    }
+
+
+    // ============================================================
+    // REGION CHANGED
+    // ============================================================
+
+    if (regionInput) {
+
+        regionInput.addEventListener(
+            "change",
+            function () {
+
+                if (
+                    this.value === "__manual__"
+                ) {
+
+                    if (manualRegionInput) {
+
+                        manualRegionInput.style.display =
+                            "block";
+
+                        manualRegionInput.value = "";
+
+                        manualRegionInput.focus();
+                    }
+
+                    resetResources();
+
+                    return;
+                }
+
+
+                if (manualRegionInput) {
+
+                    manualRegionInput.style.display =
+                        "none";
+
+                    manualRegionInput.value = "";
+                }
+
+
+                const region =
+                    getSelectedRegion();
+
+                if (!region) {
+
+                    resetResources();
+
+                    return;
+                }
+
+
+                loadTopLevelResources();
+            }
+        );
+    }
+
+
+    // ============================================================
+    // MANUAL REGION
+    // ============================================================
+
+    if (manualRegionInput) {
+
+        manualRegionInput.addEventListener(
+            "change",
+            function () {
+
+                const region =
+                    getSelectedRegion();
+
+                if (!region) {
+                    return;
+                }
+
+                loadTopLevelResources();
+            }
+        );
+
+
+        manualRegionInput.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key !== "Enter") {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const region =
+                    getSelectedRegion();
+
+                if (!region) {
+                    return;
+                }
+
+                loadTopLevelResources();
+            }
+        );
+    }
+
+
+    // ============================================================
+    // PARENT RESOURCE CHANGED
+    // ============================================================
+
+    document
+        .querySelectorAll("select[data-parent]")
+        .forEach(function(child) {
+
+            const parent =
+                document.getElementById(
+                    child.dataset.parent
+                );
+
+            if (!parent) {
+                return;
+            }
+
+            //
+            // Load child when parent changes
+            //
+            parent.addEventListener(
+                "change",
+                function () {
+
+                    loadChild(
+                        parent,
+                        child
+                    );
+
+                }
+            );
+
+            //
+            // IMPORTANT:
+            // If parent already has a value when the page
+            // loads, initialize the child immediately.
+            //
+            if (parent.value) {
+
+                loadChild(
+                    parent,
+                    child
+                );
+
+            }
+
+        });
+
+{% if service.service == "chaos_mesh" %}
+    const containerSelect = document.querySelector('select[data-resource="eks-container"]')
+
+    const namespaceSelect =
+        document.getElementById("namespace");
+
+    const targetModeSelect =
+        document.getElementById("target_mode");
+
+    const deploymentSelect =
+        document.getElementById("deployment");
+
+    const podSelect =
+        document.getElementById("pod");
+
+
+    /*
+     * Load the selected EKS target when Target Mode changes.
+     *
+     * Deployment:
+     *   Namespace -> Deployment
+     *
+     * Pod:
+     *   Namespace -> Pod
+     */
+    function loadSelectedEksTarget() {
+        if (!namespaceSelect?.value) {
+            return;
+        }
+
+        if (targetModeSelect?.value === "deployment") {
+            if (deploymentSelect) {
+                loadChild(
+                    namespaceSelect,
+                    deploymentSelect
+                );
+            }
+
+            if (containerSelect) {
+                containerSelect.innerHTML =
+                    "<option value=''>Select Deployment first</option>";
+            }
+        } else if (targetModeSelect?.value === "pod") {
+            if (podSelect) {
+                loadChild(
+                    namespaceSelect,
+                    podSelect
+                );
+            }
+
+            if (containerSelect) {
+                containerSelect.innerHTML =
+                    "<option value=''>Select Pod first</option>";
+            }
+        }
+    }
+
+
+    /*
+     * Load containers after Deployment/Pod selection.
+     */
+    function loadSelectedEksContainers() {
+        if (!containerSelect || !namespaceSelect?.value) {
+            return;
+        }
+
+        const target =
+            targetModeSelect?.value === "deployment"
+                ? deploymentSelect
+                : podSelect;
+
+        if (!target?.value) {
+            containerSelect.innerHTML =
+                `<option value="">Select ${
+                    targetModeSelect?.value === "deployment"
+                        ? "Deployment"
+                        : "Pod"
+                } first</option>`;
+
+            return;
+        }
+
+        loadChild(
+            namespaceSelect,
+            containerSelect
+        );
+    }
+
+
+    targetModeSelect?.addEventListener("change", loadSelectedEksTarget)
+
+    deploymentSelect?.addEventListener("change", loadSelectedEksContainers)
+
+    podSelect?.addEventListener("change", loadSelectedEksContainers)
+{% endif %}
+
+
+    // ============================================================
+    // INITIAL RESOURCE STATE
+    // ============================================================
+
+    if (getSelectedRegion()) {
+        loadTopLevelResources();
+    } else {
+        resetResources();
+    }
+
+
+    // ============================================================
+    // FIS FUNCTIONS
+    // ============================================================
+
+    if (!serviceSelect) {
+        return;
+    }
+
+
+    // ------------------------------------------------------------
+    // LOAD FIS EXPERIMENTS
+    // ------------------------------------------------------------
+
+    function loadExperiments(service) {
+
+        if (!experimentSelect) {
+            return;
+        }
+
+        experimentSelect.innerHTML =
+            "<option value=''>Loading...</option>";
+
+        fetch(
+            "/api/fis/experiments/" +
+            encodeURIComponent(service)
+        )
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                return response.json();
+            })
+            .then(function(data) {
+
+                const experiments =
+                    Array.isArray(data)
+                        ? data
+                        : (data.value || []);
+
+                experimentSelect.innerHTML =
+                    "<option value=''>Select Experiment</option>";
+
+                experiments.forEach(function(item) {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value =
+                        item.id;
+
+                    option.textContent =
+                        item.name;
+
+                    experimentSelect.appendChild(
+                        option
+                    );
+                });
+
+
+                const hiddenExperiment =
+                    document.querySelector(
+                        "input[type='hidden'][name='experiment_id']"
+                    );
+
+                if (
+                    experimentSelect.dataset.selectedExperiment ||
+                    (hiddenExperiment && hiddenExperiment.value)
+                ) {
+
+                    experimentSelect.value =
+                        experimentSelect.dataset.selectedExperiment ||
+                        hiddenExperiment.value;
+                }
+
+
+                if (
+                    experimentSelect.value
+                ) {
+
+                    loadDescription(
+                        service,
+                        experimentSelect.value
+                    );
+
+                    loadParameters(
+                        service,
+                        experimentSelect.value
+                    );
+                }
+            })
+            .catch(function(error) {
+
+                console.error(
+                    "Failed to load FIS experiments:",
+                    error
+                );
+
+                experimentSelect.innerHTML =
+                    "<option value=''>Unable to load experiments</option>";
+            });
+    }
+
+
+    // ------------------------------------------------------------
+    // LOAD FIS TARGET RESOURCES
+    // ------------------------------------------------------------
+
+    function loadFISResources(service) {
+
+        if (!resourceSelect) {
+            return;
+        }
+
+        const region =
+            getSelectedRegion();
+
+        if (!region) {
+
+            resourceSelect.innerHTML =
+                "<option value=''>Select AWS Region first</option>";
+
+            return;
+        }
+
+        resourceSelect.innerHTML =
+            "<option value=''>Loading...</option>";
+
+
+        let url =
+            "/api/fis/resources/" +
+            service +
+            "/" +
+            region;
+
+
+        if (service === "ecs") {
+
+            url =
+                "/api/fis/resources/ecs_task/" +
+                region;
+        }
+
+
+        fetch(url)
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                return response.json();
+            })
+            .then(function(data) {
+
+                resourceSelect.innerHTML =
+                    "<option value=''>Select Target Resource</option>";
+
+                const resources =
+                    Array.isArray(data)
+                        ? data
+                        : (data.value || []);
+
+                resources.forEach(function(item) {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.value =
+                        item.arn ||
+                        item.id ||
+                        item.name;
+
+                    option.textContent =
+                        item.name ||
+                        item.id ||
+                        item.arn;
+
+                    resourceSelect.appendChild(
+                        option
+                    );
+                });
+            })
+            .catch(function(error) {
+
+                console.error(
+                    "Failed to load FIS resources:",
+                    error
+                );
+
+                resourceSelect.innerHTML =
+                    "<option value=''>Unable to load resources</option>";
+            });
+    }
+
+
+    // ------------------------------------------------------------
+    // LOAD DESCRIPTION
+    // ------------------------------------------------------------
+
+    function loadDescription(
+        service,
+        experiment
+    ) {
+
+        if (!descriptionContainer) {
+            return;
+        }
+
+        if (!service || !experiment) {
+
+            descriptionContainer.style.display =
+                "none";
+
+            if (descriptionEmpty) {
+
+                descriptionEmpty.style.display =
+                    "block";
+            }
+
+            return;
+        }
+
+
+        fetch(
+            "/api/fis/descriptions/" +
+            encodeURIComponent(service) +
+            "/" +
+            encodeURIComponent(experiment)
+        )
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Failed to load experiment description"
+                    );
+                }
+
+                return response.json();
+            })
+            .then(function(data) {
+
+                if (
+                    !data ||
+                    !data.description
+                ) {
+
+                    descriptionContainer.style.display =
+                        "none";
+
+                    if (descriptionEmpty) {
+
+                        descriptionEmpty.style.display =
+                            "block";
+                    }
+
+                    return;
+                }
+
+
+                if (descriptionText) {
+
+                    descriptionText.textContent =
+                        data.description || "";
+                }
+
+                if (impactText) {
+
+                    impactText.textContent =
+                        data.impact || "";
+                }
+
+                if (expectedBehaviorText) {
+
+                    expectedBehaviorText.textContent =
+                        data.expected_behavior || "";
+                }
+
+
+                descriptionContainer.style.display =
+                    "block";
+
+                if (descriptionEmpty) {
+
+                    descriptionEmpty.style.display =
+                        "none";
+                }
+            })
+            .catch(function(error) {
+
+                console.error(
+                    "Failed to load experiment description:",
+                    error
+                );
+
+                descriptionContainer.style.display =
+                    "none";
+
+                if (descriptionEmpty) {
+
+                    descriptionEmpty.style.display =
+                        "block";
+                }
+            });
+    }
+
+
+    // ------------------------------------------------------------
+    // LOAD FIS PARAMETERS
+    // ------------------------------------------------------------
+
+    function loadParameters(
+        service,
+        experiment
+    ) {
+
+        if (!parameterContainer) {
+            return;
+        }
+
+        parameterContainer.innerHTML = "";
+
+        if (!experiment) {
+            return;
+        }
+
+
+        const region =
+            getSelectedRegion();
+
+
+        fetch(
+            "/api/fis/parameters/" +
+            encodeURIComponent(service) +
+            "/" +
+            encodeURIComponent(experiment)
+        )
+            .then(function(response) {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                return response.json();
+            })
+            .then(function(data) {
+
+                const parameters =
+                    Array.isArray(data)
+                        ? data
+                        : (data.value || []);
+
+
+                parameters.forEach(
+                    function(parameter) {
+
+                        // ------------------------------------------------
+                        // AWS RESOURCE PARAMETER
+                        // ------------------------------------------------
+
+                        if (
+                            parameter.type ===
+                            "aws_resource"
+                        ) {
+
+                            const wrapper =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            wrapper.className =
+                                "mb-3";
+
+
+                            const label =
+                                document.createElement(
+                                    "label"
+                                );
+
+                            label.className =
+                                "form-label";
+
+                            label.textContent =
+                                parameter.label;
+
+
+                            const select =
+                                document.createElement(
+                                    "select"
+                                );
+
+                            select.className =
+                                "form-select";
+
+                            select.name =
+                                parameter.name;
+
+                            select.id =
+                                parameter.name;
+
+                            select.dataset.resource =
+                                parameter.resource_type;
+
+                            select.dataset.label =
+                                parameter.label;
+
+
+                            select.innerHTML =
+                                `<option value="">
+                                    Select ${parameter.label}
+                                </option>`;
+
+
+                            wrapper.appendChild(label);
+
+                            wrapper.appendChild(select);
+
+                            parameterContainer.appendChild(
+                                wrapper
+                            );
+
+
+                            if (!region) {
+
+                                select.innerHTML =
+                                    `<option value="">
+                                        Select AWS Region first
+                                    </option>`;
+
+                                return;
+                            }
+
+
+                            fetch(
+                                `/api/resources/${parameter.resource_type}/${region}`
+                            )
+                                .then(function(response) {
+
+                                    if (!response.ok) {
+
+                                        throw new Error(
+                                            `HTTP ${response.status}`
+                                        );
+                                    }
+
+                                    return response.json();
+                                })
+                                .then(function(resourceData) {
+
+                                    const resources =
+                                        Array.isArray(resourceData)
+                                            ? resourceData
+                                            : (
+                                                resourceData.value ||
+                                                []
+                                            );
+
+
+                                    resources.forEach(
+                                        function(resource) {
+
+                                            const value =
+                                                parameter.return
+                                                    ? resource[
+                                                        parameter.return
+                                                    ]
+                                                    : (
+                                                        resource.id ||
+                                                        resource.name ||
+                                                        resource.arn
+                                                    );
+
+
+                                            if (!value) {
+                                                return;
+                                            }
+
+
+                                            const option =
+                                                document.createElement(
+                                                    "option"
+                                                );
+
+                                            option.value =
+                                                value;
+
+                                            option.textContent =
+                                                resource.name ||
+                                                value;
+
+                                            select.appendChild(
+                                                option
+                                            );
+                                        }
+                                    );
+                                })
+                                .catch(function(error) {
+
+                                    console.error(
+                                        "Failed to load FIS resource:",
+                                        parameter.resource_type,
+                                        error
+                                    );
+                                });
+
+
+                            return;
+                        }
+
+
+                        // ------------------------------------------------
+                        // MANAGED RESOURCE TYPES
+                        // ------------------------------------------------
+
+                        if (
+                            parameter.name ===
+                            "managed_resource_types"
+                        ) {
+
+                            const wrapper =
+                                document.createElement(
+                                    "div"
+                                );
+
+                            wrapper.className =
+                                "mb-3";
+
+
+                            const label =
+                                document.createElement(
+                                    "label"
+                                );
+
+                            label.className =
+                                "form-label";
+
+                            label.textContent =
+                                parameter.label;
+
+
+                            const select =
+                                document.createElement(
+                                    "select"
+                                );
+
+                            select.className =
+                                "form-select";
+
+                            select.name =
+                                parameter.name;
+
+                            select.id =
+                                parameter.name;
+
+
+                            select.innerHTML = `
+                                <option value="">
+                                    Select ${parameter.label}
+                                </option>
+
+                                <option value="ALB">
+                                    ALB
+                                </option>
+
+                                <option value="NLB">
+                                    NLB
+                                </option>
+
+                                <option value="ALB,NLB">
+                                    ALB,NLB
+                                </option>
+                            `;
+
+
+                            if (parameter.default) {
+
+                                select.value =
+                                    parameter.default;
+                            }
+
+
+                            wrapper.appendChild(label);
+
+                            wrapper.appendChild(select);
+
+                            parameterContainer.appendChild(
+                                wrapper
+                            );
+
+                            return;
+                        }
+
+
+                        // ---------------------------------------------------
+                        // ADVANCED / INTERNAL FIS PARAMETER
+                        //
+                        // These parameters remain available to the template
+                        // builder but are not displayed in the normal UI.
+                        //
+                        // If an advanced parameter has a default value,
+                        // preserve that value using a hidden input.
+                        // ---------------------------------------------------
+
+                        if (parameter.advanced === true) {
+
+                            if (
+                                parameter.default !== undefined &&
+                                parameter.default !== null &&
+                                parameter.default !== ""
+                            ) {
+
+                                const hiddenInput =
+                                    document.createElement("input");
+
+                                hiddenInput.type = "hidden";
+
+                                hiddenInput.name =
+                                    parameter.name;
+
+                                hiddenInput.id =
+                                    parameter.name;
+
+                                hiddenInput.value =
+                                    parameter.default;
+
+                                parameterContainer.appendChild(
+                                    hiddenInput
+                                );
+                            }
+
+                            return;
+                        }
+
+
+                        // ---------------------------------------------------
+                        // NORMAL FIS PARAMETER
+                        // Duration / Status / etc.
+                        // ---------------------------------------------------
+
+                        const wrapper =
+                            document.createElement("div");
+
+                        wrapper.className =
+                            "mb-3";
+
+                        const label =
+                            document.createElement("label");
+
+                        label.className =
+                            "form-label";
+
+                        label.textContent =
+                            parameter.label;
+
+                        const input =
+                            document.createElement("input");
+
+                        input.className =
+                            "form-control";
+
+                        input.type =
+                            parameter.type === "number"
+                                ? "number"
+                                : "text";
+
+                        input.name =
+                            parameter.name;
+
+                        input.id =
+                            parameter.name;
+
+                        input.value =
+                            parameter.default ?? "";
+
+
+                        // ---------------------------------------------------
+                        // Validation metadata
+                        // ---------------------------------------------------
+
+                        if (parameter.required) {
+                            input.required = true;
+                        }
+
+                        if (
+                            parameter.min !== undefined &&
+                            parameter.min !== null
+                        ) {
+                            input.min = parameter.min;
+                        }
+
+                        if (
+                            parameter.max !== undefined &&
+                            parameter.max !== null
+                        ) {
+                            input.max = parameter.max;
+                        }
+
+
+                        wrapper.appendChild(label);
+
+                        wrapper.appendChild(input);
+
+                        parameterContainer.appendChild(
+                            wrapper
+                        );
+                    }
+                );
+            })
+            .catch(function(error) {
+
+                console.error(
+                    "Failed to load FIS parameters:",
+                    error
+                );
+            });
+    }
+
+
+    // ============================================================
+    // FIS SERVICE CHANGED
+    // ============================================================
+
+    if (serviceSelect) {
+
+        serviceSelect.addEventListener(
+            "change",
+            function () {
+
+                const service =
+                    serviceSelect.value;
+
+                const targetContainer =
+                    document.getElementById(
+                        "target-resource-container"
+                    );
+
+                const targetWrapper =
+                    document.getElementById(
+                        "target-resource-wrapper"
+                    );
+
+
+                if (
+                    service === "s3"
+                ) {
+
+                    if (targetContainer) {
+                        targetContainer.style.display =
+                            "none";
+                    }
+
+                    if (targetWrapper) {
+                        targetWrapper.style.display =
+                            "none";
+                    }
+
+                } else {
+
+                    if (targetContainer) {
+                        targetContainer.style.display =
+                            "";
+                    }
+
+                    if (targetWrapper) {
+                        targetWrapper.style.display =
+                            "";
+                    }
+                }
+
+
+                if (!service) {
+
+                    if (parameterContainer) {
+                        parameterContainer.innerHTML =
+                            "";
+                    }
+
+                    return;
+                }
+
+
+                loadExperiments(service);
+
+                loadFISResources(service);
+
+
+                if (parameterContainer) {
+
+                    parameterContainer.innerHTML =
+                        "";
+                }
+            }
+        );
+    }
+
+
+    // ============================================================
+    // FIS EXPERIMENT CHANGED
+    // ============================================================
+
+    if (experimentSelect) {
+
+        experimentSelect.addEventListener(
+            "change",
+            function () {
+
+                const service =
+                    serviceSelect.value;
+
+                const experiment =
+                    experimentSelect.value;
+
+
+                loadDescription(
+                    service,
+                    experiment
+                );
+
+                loadParameters(
+                    service,
+                    experiment
+                );
+            }
+        );
+    }
+
+
+    // ============================================================
+    // AUTO LOAD FIS
+    // ============================================================
+
+    if (
+        serviceSelect &&
+        serviceSelect.value
+    ) {
+
+        loadExperiments(
+            serviceSelect.value
+        );
+
+        loadFISResources(
+            serviceSelect.value
+        );
+    }
+
+});
+</script>
+
+{% if cloud == "azure" %}
+<script src="{{ url_for('static', filename='azure-resource-context.js') }}"></script>
+<script src="{{ url_for('static', filename='azure-component-context.js') }}"></script>
+{% endif %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const templateSelect = document.querySelector("[data-fis-template-select]");
+    const regionSelect = document.getElementById("aws_region");
+    if (!templateSelect || !regionSelect) return;
+
+    async function loadTemplates() {
+        const region = regionSelect.value;
+        if (!region || region === "__manual__") return;
+        const initial = templateSelect.value || templateSelect.dataset.initialValue || "";
+        templateSelect.disabled = true;
+        templateSelect.innerHTML = "<option value=''>Loading FIS experiment templates...</option>";
+        try {
+            const response = await fetch(`/api/fis/templates/${encodeURIComponent(region)}`);
+            const body = await response.json();
+            if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+            templateSelect.innerHTML = "<option value=''>Select FIS Experiment Template</option>";
+            body.forEach(function (template) {
+                const option = document.createElement("option");
+                option.value = template.id;
+                option.textContent = `${template.id} - ${template.description || "No description"}`;
+                option.selected = template.id === initial;
+                templateSelect.appendChild(option);
+            });
+        } catch (error) {
+            templateSelect.innerHTML = "<option value=''>Unable to load FIS templates</option>";
+        } finally {
+            templateSelect.disabled = false;
+        }
+    }
+
+    regionSelect.addEventListener("change", loadTemplates);
+    loadTemplates();
+});
+</script>
+{% if cloud == "azure" and service.service == "aks" %}
+<script src="{{ url_for('static', filename='azure-experiment.js') }}"></script>
+{% endif %}
+
+</div>
+
+{% if iam_policy %}
+
+<div
+    class="modal fade"
+    id="iamPolicyModal"
+    tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+
+        <div class="modal-content bg-dark text-light">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-shield-lock-fill text-warning"></i>
+
+                    Required IAM Policy
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <pre
+                    id="iamPolicy"
+                    class="bg-dark border rounded p-4"
+                    data-fis-policy-template="{{ iam_policy_json|e }}"
+                    style="font-size:14px;max-height:500px;overflow:auto;">{{ iam_policy_json }}</pre>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    id="copyPolicyBtn"
+                    type="button"
+                    class="btn btn-outline-info"
+                    onclick="copyIamPolicy()">
+
+                    <i class="bi bi-copy"></i>
+
+                    Copy Policy
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% if lambda_execution_policy_json %}
+<div class="modal fade" id="lambdaExecutionPolicyModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-shield-lock-fill text-info"></i> Lambda Execution Role Policy</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="lambdaExecutionPolicy" class="bg-dark border rounded p-4" data-fis-policy-template="{{ lambda_execution_policy_json|e }}" style="font-size:14px;max-height:500px;overflow:auto;">{{ lambda_execution_policy_json }}</pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+const iamSection =
+    document.getElementById("iamPermissions");
+
+const iamArrow =
+    document.getElementById("iamArrow");
+
+const fisConfigBucket =
+    document.getElementById("fis_config_bucket");
+
+function updateFisPolicyPreviews() {
+    const bucketName = fisConfigBucket && fisConfigBucket.value
+        ? fisConfigBucket.value
+        : "your_s3_bucket";
+    document.querySelectorAll("[data-fis-policy-template]").forEach(function (policy) {
+        policy.textContent = policy.dataset.fisPolicyTemplate.replaceAll("your_s3_bucket", bucketName);
+    });
+}
+
+if (fisConfigBucket) {
+    fisConfigBucket.addEventListener("change", updateFisPolicyPreviews);
+    updateFisPolicyPreviews();
+}
+
+if (iamSection && iamArrow) {
+
+    iamSection.addEventListener("show.bs.collapse", function () {
+
+        iamArrow.classList.remove("bi-chevron-right");
+        iamArrow.classList.add("bi-chevron-down");
+
+    });
+
+    iamSection.addEventListener("hide.bs.collapse", function () {
+
+        iamArrow.classList.remove("bi-chevron-down");
+        iamArrow.classList.add("bi-chevron-right");
+
+    });
+
+}
+
+async function copyIamPolicy() {
+
+    const button = document.getElementById("copyPolicyBtn");
+
+    const policy =
+        document
+            .getElementById("iamPolicy")
+            .textContent
+            .trim();
+
+    try {
+
+        await navigator.clipboard.writeText(policy);
+
+        button.innerHTML =
+            '<i class="bi bi-check-lg"></i> Copied';
+
+        button.classList.remove("btn-outline-info");
+
+        button.classList.add("btn-success");
+
+        setTimeout(function () {
+
+            button.innerHTML =
+                '<i class="bi bi-copy"></i> Copy Policy';
+
+            button.classList.remove("btn-success");
+
+            button.classList.add("btn-outline-info");
+
+        }, 2000);
+
+    } catch (err) {
+
+        button.innerHTML =
+            '<i class="bi bi-x-circle"></i> Failed';
+
+        button.classList.remove("btn-outline-info");
+
+        button.classList.add("btn-danger");
+
+        setTimeout(function () {
+
+            button.innerHTML =
+                '<i class="bi bi-copy"></i> Copy Policy';
+
+            button.classList.remove("btn-danger");
+
+            button.classList.add("btn-outline-info");
+
+        }, 2000);
+
+    }
+
+}
+
+</script>
+
+{% include "_version_footer.html" %}
+</body>
+
+</html>

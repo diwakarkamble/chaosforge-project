@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "title": "AWS Lambda Provisioned Concurrency Chaos Test",
+  "description": "Temporarily modify Lambda Provisioned Concurrency and restore the original value.",
+
+  "configuration": {
+    "lambda_name": null,
+    "aws_region": null,
+    "target_provisioned_concurrency": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-provisioned-concurrency",
+      "type": "action",
+      "provider": {
+        "type": "python",
+    "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_provisioned_concurrency_actions",
+        "func": "capture_current_provisioned_concurrency",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "update-provisioned-concurrency",
+      "type": "action",
+      "provider": {
+        "type": "python",
+    "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_provisioned_concurrency_actions",
+        "func": "update_provisioned_concurrency",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "provisioned_concurrency": "${target_provisioned_concurrency}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+    "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_provisioned_concurrency_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-original-provisioned-concurrency",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_provisioned_concurrency_actions",
+        "func": "restore_provisioned_concurrency",
+        "arguments": {
+          "function_name": "${lambda_name}",
+          "region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

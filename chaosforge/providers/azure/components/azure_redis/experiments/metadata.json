@@ -1,0 +1,42 @@
+{
+  "service": "azure_redis",
+  "display_name": "Azure Cache for Redis",
+  "experiments": [
+    {
+      "id": "azure-redis-reboot",
+      "name": "Reboot Redis",
+      "description": "Use Azure Chaos Studio to reboot Azure Cache for Redis nodes and test application resilience to a cache node restart.",
+      "source": "Azure Chaos Studio",
+      "engine": "Azure Chaos Studio",
+      "json": "chaos_studio/definitions/azure-redis-reboot.json",
+      "inputs": [
+        {"name": "redis_name", "label": "Redis Cache", "type": "azure_redis_cache", "required": true},
+        {"name": "chaos_identity_id", "label": "Azure Chaos Identity", "type": "azure_redis_chaos_identity", "required": true},
+        {"name": "reboot_type", "label": "Reboot Type", "type": "choice", "choices": ["AllNodes", "PrimaryNode", "SecondaryNode"], "default": "AllNodes", "required": true}
+      ]
+    },
+    {
+      "id": "azure-redis-flush",
+      "name": "Flush Cache",
+      "description": "Irreversibly flush Azure Cache for Redis data to test behavior when cached data is unavailable.",
+      "source": "Azure SDK custom action",
+      "engine": "Azure SDK",
+      "json": "custom/definitions/azure-redis-flush.json",
+      "inputs": [
+        {"name": "resource_id", "label": "Redis Cache", "type": "azure_component_resource", "required": true}
+      ]
+    },
+    {
+      "id": "azure-redis-access-disruption",
+      "name": "Cache Access Disruption",
+      "description": "Disable public network access to Azure Cache for Redis for the configured duration and restore the original setting during rollback.",
+      "source": "Azure SDK custom action",
+      "engine": "Azure SDK",
+      "json": "custom/definitions/azure-redis-access-disruption.json",
+      "inputs": [
+        {"name": "resource_id", "label": "Redis Cache", "type": "azure_component_resource", "required": true},
+        {"name": "duration_seconds", "label": "Fault Duration (seconds)", "type": "integer", "default": 300, "min": 1, "max": 3600, "required": true}
+      ]
+    }
+  ]
+}

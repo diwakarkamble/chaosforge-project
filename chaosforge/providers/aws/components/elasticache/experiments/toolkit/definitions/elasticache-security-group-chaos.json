@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "title": "Amazon ElastiCache Redis Security Group Chaos Test",
+  "description": "Temporarily modify the Security Group associated with a Redis replication group and restore the original configuration.",
+
+  "configuration": {
+    "replication_group_id": null,
+    "region": null,
+    "target_security_group_id": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-security-group",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+        "func": "capture_security_groups",
+        "arguments": {
+          "replication_group_id": "${replication_group_id}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "update-security-group",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+        "func": "modify_security_groups",
+        "arguments": {
+          "replication_group_id": "${replication_group_id}",
+          "region": "${region}",
+          "target_security_group_id": "${target_security_group_id}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_common",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-security-group",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elasticache.experiments.toolkit.actions.elasticache_replication_group_actions",
+        "func": "restore_replication_group"
+      }
+    }
+  ]
+}

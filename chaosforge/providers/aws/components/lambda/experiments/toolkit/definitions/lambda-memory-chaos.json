@@ -1,0 +1,70 @@
+{
+"version": "1.0.0",
+"title": "AWS Lambda Memory Chaos Test",
+"description": "Temporarily change Lambda memory to a user-specified value, wait 15 minutes, and restore the original memory setting.",
+
+"configuration": {
+"lambda_name": null,
+"aws_region": null,
+"target_memory_size": null,
+"wait_seconds": "300"
+},
+
+"method": [
+{
+"name": "capture-current-memory",
+"type": "action",
+"provider": {
+"type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_memory_actions",
+"func": "capture_current_memory",
+"arguments": {
+"function_name": "${lambda_name}",
+"region": "${aws_region}"
+}
+}
+},
+{
+"name": "update-memory",
+"type": "action",
+"provider": {
+"type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_memory_actions",
+"func": "update_memory",
+"arguments": {
+"function_name": "${lambda_name}",
+"memory_size": "${target_memory_size}",
+"region": "${aws_region}"
+}
+}
+},
+{
+  "name": "wait",
+  "type": "action",
+  "provider": {
+    "type": "python",
+    "module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_memory_actions",
+    "func": "wait_for_duration",
+    "arguments": {
+      "wait_seconds": "${wait_seconds}"
+    }
+  }
+}
+],
+
+"rollbacks": [
+{
+"name": "restore-original-memory",
+"type": "action",
+"provider": {
+"type": "python",
+"module": "chaosforge.providers.aws.components.lambda.experiments.toolkit.actions.lambda_memory_actions",
+"func": "restore_memory",
+"arguments": {
+"function_name": "${lambda_name}",
+"region": "${aws_region}"
+}
+}
+}
+]
+}

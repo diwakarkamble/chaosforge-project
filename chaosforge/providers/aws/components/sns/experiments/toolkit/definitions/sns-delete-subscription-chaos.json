@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "title": "AWS SNS Delete Subscription Chaos Test",
+  "description": "Temporarily delete an SNS Subscription and restore it.",
+
+  "configuration": {
+    "subscription_arn": null,
+    "region": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-subscription",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_actions",
+        "func": "capture_subscription",
+        "arguments": {
+          "subscription_arn": "${subscription_arn}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "delete-subscription",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_actions",
+        "func": "delete_subscription",
+        "arguments": {
+          "subscription_arn": "${subscription_arn}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.common_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-subscription",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_actions",
+        "func": "restore_subscription",
+        "arguments": {
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

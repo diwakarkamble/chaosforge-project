@@ -1,0 +1,308 @@
+{
+  "service": "ec2",
+  "display_name": "Amazon EC2",
+
+  "experiments": [
+
+    {
+      "id": "ec2-ebs-volume-detach",
+      "name": "EBS Volume Detachment",
+
+      "json": "ec2-ebs-volume-detach-chaos.json",
+
+      "iam": {
+        "read": [
+          "ec2:DescribeInstances",
+          "ec2:DescribeVolumes"
+        ],
+        "modify": [
+          "ec2:DetachVolume",
+          "ec2:AttachVolume"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "instance_id",
+          "label": "EC2 Instance",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "ec2",
+          "return": "id"
+        },
+        {
+          "name": "volume_id",
+          "label": "EBS Volume",
+          "required": true,
+          "type": "aws_resource",
+          "parent": "instance_id",
+          "resource_type": "ebs-volume",
+          "return": "id"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "force",
+          "label": "Force Detachment",
+          "type": "boolean",
+          "required": true,
+          "default": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Before Reattachment (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 30,
+          "min": 1,
+          "max": 300
+        }
+      ]
+    },
+
+    {
+      "id": "ec2-ebs-volume-attach",
+      "name": "EBS Volume Attachment",
+
+      "json": "ec2-ebs-volume-attach-chaos.json",
+
+      "iam": {
+        "read": [
+          "ec2:DescribeInstances",
+          "ec2:DescribeVolumes"
+        ],
+        "modify": [
+          "ec2:AttachVolume",
+          "ec2:DetachVolume"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "instance_id",
+          "label": "EC2 Instance",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "ec2",
+          "return": "id"
+        },
+        {
+          "name": "volume_id",
+          "label": "EBS Volume",
+          "required": true,
+          "type": "aws_resource",
+          "parent": "instance_id",
+          "resource_type": "ebs-volume-available",
+          "return": "id"
+        },
+        {
+          "name": "device_name",
+          "label": "Device Name",
+          "required": true,
+          "type": "text",
+          "default": "/dev/sdf"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait After Attachment (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 30,
+          "min": 1,
+          "max": 300
+        }
+      ]
+    },
+
+    {
+      "id": "ec2-ebs-volume-detach-asg",
+      "name": "EBS Volume Detachment (ASG)",
+
+      "json": "ec2-ebs-asg-detach-chaos.json",
+
+      "iam": {
+        "read": [
+          "autoscaling:DescribeAutoScalingGroups",
+          "ec2:DescribeInstances",
+          "ec2:DescribeVolumes"
+        ],
+        "modify": [
+          "ec2:DetachVolume",
+          "ec2:AttachVolume"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "autoscaling_group",
+          "label": "Auto Scaling Group",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "autoscaling-group",
+          "return": "name"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "force",
+          "label": "Force Detachment",
+          "type": "boolean",
+          "required": true,
+          "default": true
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait Before Reattachment (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 30,
+          "min": 1,
+          "max": 300
+        }
+      ]
+    },
+
+    {
+      "id": "ec2-ebs-volume-attach-asg",
+      "name": "EBS Volume Attachment (ASG)",
+
+      "json": "ec2-ebs-asg-attach-chaos.json",
+
+      "iam": {
+        "read": [
+          "autoscaling:DescribeAutoScalingGroups",
+          "ec2:DescribeInstances",
+          "ec2:DescribeVolumes"
+        ],
+        "modify": [
+          "ec2:AttachVolume",
+          "ec2:DetachVolume"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "autoscaling_group",
+          "label": "Auto Scaling Group",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "autoscaling-group",
+          "return": "name"
+        },
+        {
+          "name": "volume_id",
+          "label": "EBS Volume",
+          "required": true,
+          "type": "aws_resource",
+          "parent": "autoscaling_group",
+          "resource_type": "ebs-volume-asg-available",
+          "return": "id"
+        },
+        {
+          "name": "device_name",
+          "label": "Device Name",
+          "required": true,
+          "type": "text",
+          "default": "/dev/sdf"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "wait_seconds",
+          "label": "Wait After Attachment (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 30,
+          "min": 1,
+          "max": 300
+        }
+      ]
+    },
+
+    {
+      "id": "ec2-incremental-instance-stop",
+      "name": "Incremental Instance Stop",
+
+      "json": "ec2-incremental-stop-chaos.json",
+
+      "iam": {
+        "read": [
+          "ec2:DescribeInstances"
+        ],
+        "modify": [
+          "ec2:StopInstances",
+          "ec2:StartInstances"
+        ]
+      },
+
+      "inputs": [
+        {
+          "name": "instance_ids",
+          "label": "EC2 Instances",
+          "required": true,
+          "type": "aws_resource",
+          "resource_type": "ec2",
+          "multiple": true,
+          "return": "id"
+        },
+        {
+          "name": "aws_region",
+          "label": "AWS Region",
+          "type": "aws_region",
+          "required": true,
+          "default": "eu-central-1"
+        },
+        {
+          "name": "step_quantity",
+          "label": "Instances Per Step",
+          "type": "integer",
+          "required": true,
+          "default": 1,
+          "min": 1,
+          "max": 100
+        },
+        {
+          "name": "step_duration",
+          "label": "Wait Between Steps (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 60,
+          "min": 1,
+          "max": 3600
+        },
+        {
+          "name": "fault_duration_seconds",
+          "label": "Fault Duration (seconds)",
+          "type": "integer",
+          "required": true,
+          "default": 300,
+          "min": 1,
+          "max": 3600
+        }
+      ]
+    }
+
+  ]
+}

@@ -1,0 +1,31 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Workflow",
+    "description": "Executes multiple Chaos Mesh tasks using a workflow.",
+    "configuration": {
+        "aws_region": "eu-central-1",
+        "eks_cluster": "",
+        "namespace": "default",
+        "entry": "chaos-task",
+        "templates": [
+            {
+                "name": "chaos-task",
+                "task": {
+                    "container": {
+                        "name": "chaos-task",
+                        "image": "busybox:latest",
+                        "command": [
+                            "sh",
+                            "-c",
+                            "echo ChaosForge Workflow task executed successfully"
+                        ]
+                    }
+                },
+                "templateType": "Task"
+            }
+        ]
+    },
+    "chaos_mesh": {
+        "kind": "Workflow"
+    }
+}

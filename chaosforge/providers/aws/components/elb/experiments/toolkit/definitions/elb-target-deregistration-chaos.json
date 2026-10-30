@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+
+  "title": "Elastic Load Balancing Target Deregistration",
+
+  "description": "Deregisters a dynamically selected ELB target from its target group and restores the original target registration during rollback.",
+
+  "configuration": {
+    "aws_region": null,
+    "load_balancer": null,
+    "target_group": null,
+    "target": null
+  },
+
+  "method": [
+    {
+      "name": "deregister-elb-target",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_target_actions",
+        "func": "deregister_target",
+        "arguments": {
+          "target_group_arn": "${target_group}",
+          "target_id": "${target}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-elb-target",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_target_actions",
+        "func": "restore_target",
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

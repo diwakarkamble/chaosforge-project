@@ -1,0 +1,8 @@
+{
+  "kind": "VmssMemoryPressure",
+  "faultType": "physicalMemoryPressure",
+  "parameters": {
+    "pressureLevel": "95",
+    "virtualMachineScaleSetInstances": "[0]"
+  }
+}

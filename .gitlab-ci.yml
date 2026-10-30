@@ -1,0 +1,205 @@
+stages:
+  - test
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+      when: always
+
+
+variables:
+  SERVICE:
+    value: "lambda"
+    description: "AWS Service"
+  EXPERIMENT:
+    value: "lambda-timeout"
+    description: "Experiment"
+  AWS_REGION:
+    value: "eu-central-1"
+    description: "AWS Region"
+  LAMBDA_NAME:
+    value: "chaos-test-lambda"
+    description: "Lambda Function"
+  TARGET_TIMEOUT:
+    value: "3"
+    description: "Timeout"
+  WAIT_SECONDS:
+    value: "30"
+    description: "Wait Duration"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  SAST_EXCLUDED_PATHS: "chaos-venv"
+  SECRET_DETECTION_EXCLUDED_PATHS: "chaos-venv"
+
+cache:
+  paths:
+    - .cache/pip
+
+code_quality:
+  stage: test
+  image: ${CI_REGISTRY}/mercedes-intelligent-cloud/tools/container-images/base-2404:latest
+
+  script:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - export PATH="$HOME/.local/bin:$PATH"
+    - cd .
+
+    - uvx ruff check . --output-format=gitlab --exit-zero --output-file=ruff-report.json
+    - uvx ruff check . --output-format=json --exit-zero --output-file=ruff-report-raw.json
+
+    - |
+      python3 - <<'PY'
+      import json
+      from html import escape
+      from pathlib import Path
+
+      raw_path = Path("ruff-report-raw.json")
+      html_path = Path("ruff-report.html")
+
+      findings = (
+          json.loads(raw_path.read_text(encoding="utf-8"))
+          if raw_path.exists()
+          else []
+      )
+
+      rows = []
+
+      for finding in findings:
+          filename = escape(finding.get("filename", ""))
+          location = finding.get("location", {})
+          line = location.get("row", "")
+          column = location.get("column", "")
+          code = escape(finding.get("code") or "")
+          message = escape(finding.get("message", ""))
+
+          rows.append(
+              f"<tr>"
+              f"<td>{filename}</td>"
+              f"<td>{line}</td>"
+              f"<td>{column}</td>"
+              f"<td>{code}</td>"
+              f"<td>{message}</td>"
+              f"</tr>"
+          )
+
+      if not rows:
+          rows.append("<tr><td colspan='5'>No Ruff findings</td></tr>")
+
+      html = f"""<!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <title>Code Quality Report</title>
+        <style>
+          body {{
+            font-family: Arial, sans-serif;
+            margin: 24px;
+            color: #1f2937;
+          }}
+
+          h1 {{
+            margin-bottom: 8px;
+          }}
+
+          p {{
+            margin-top: 0;
+            color: #4b5563;
+          }}
+
+          table {{
+            border-collapse: collapse;
+            width: 100%;
+          }}
+
+          th, td {{
+            border: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+          }}
+
+          th {{
+            background: #f3f4f6;
+          }}
+
+          code {{
+            font-family: Menlo, monospace;
+          }}
+        </style>
+      </head>
+      <body>
+
+        <h1>Code Quality Report</h1>
+        <p>Generated from Ruff findings.</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Line</th>
+              <th>Column</th>
+              <th>Code</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {"".join(rows)}
+          </tbody>
+
+        </table>
+
+      </body>
+      </html>
+      """
+
+      html_path.write_text(html, encoding="utf-8")
+      PY
+
+  allow_failure: true
+
+  artifacts:
+    expose_as: "Code Quality Report"
+    untracked: false
+    when: always
+    access: all
+    expire_in: "30 days"
+
+    paths:
+      - ruff-report.json
+      - ruff-report.html
+
+    reports:
+      codequality: ruff-report.json
+
+code_coverage:
+  stage: test
+  image: ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/python:3.14
+  before_script:
+    - python --version
+    - python -c "import sys; assert sys.version_info[:2] == (3, 14)"
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt pytest pytest-cov
+    - pip install .
+  script:
+    - cd .
+    - mkdir -p coverage
+    - python -m pytest tests --cov=chaosforge --cov-fail-under=95 --cov-report=term-missing --cov-report=xml:coverage/coverage.xml --cov-report=json:coverage/coverage.json --cov-report=html:coverage/html --junitxml=test-report.xml
+  coverage: '/TOTAL.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    when: always
+    access: all
+    expire_in: "30 days"
+    paths:
+      - coverage/
+      - test-report.xml
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/coverage.xml
+      junit: test-report.xml

@@ -1,0 +1,6 @@
+{
+  "version": "1.0.0",
+  "title": "Azure PostgreSQL Flexible Server Stop",
+  "description": "Uses a chaosazure PostgreSQL action when the shared Toolkit runtime permits Azure extensions.",
+  "method": [{"type": "action", "name": "stop-postgresql-flexible-server", "provider": {"type": "python", "module": "chaosazure.postgresql_flexible.actions", "func": "stop_servers", "arguments": {"filter": "${filter}"}}}]
+}

@@ -1,0 +1,51 @@
+{
+    "version": "1.0.0",
+    "title": "API Gateway Stage Throttling Chaos",
+    "description": "Temporarily reduce API Gateway Stage throttling limits and restore them.",
+
+    "configuration": {
+        "rest_api_id": null,
+        "stage_name": null,
+        "throttle_rate": null,
+        "throttle_burst": null,
+        "aws_region": null,
+        "wait_seconds": null
+    },
+
+    "method": [
+        {
+            "name": "Reduce Stage Throttling",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_throttling_actions",
+                "func": "capture_and_update_throttling",
+                "arguments": {
+                    "rest_api_id": "${rest_api_id}",
+                    "stage_name": "${stage_name}",
+                    "region": "${aws_region}",
+                    "throttle_rate": "${throttle_rate}",
+                    "throttle_burst": "${throttle_burst}"
+                }
+            }
+        },
+        {
+            "name": "Wait",
+            "type": "action",
+            "provider": {
+                "type": "process",
+                "path": "timeout",
+                "arguments": "/T ${wait_seconds} /NOBREAK"
+            }
+        },
+        {
+            "name": "Rollback",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.apigateway.experiments.toolkit.actions.apigateway_stage_throttling_actions",
+                "func": "rollback_throttling"
+            }
+        }
+    ]
+}

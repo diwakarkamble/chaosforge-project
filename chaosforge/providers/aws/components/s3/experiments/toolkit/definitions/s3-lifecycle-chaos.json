@@ -1,0 +1,82 @@
+{
+    "version": "1.0.0",
+
+    "title": "Amazon S3 Lifecycle Configuration Chaos",
+
+    "description": "Modify S3 Lifecycle Configuration and restore the original configuration.",
+
+    "configuration": {
+        "bucket_name": null,
+        "aws_region": null,
+        "expiration_days": null,
+        "wait_seconds": "300"
+    },
+
+    "method": [
+        {
+            "type": "action",
+            "name": "capture-current-lifecycle",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_lifecycle_actions",
+                "func": "capture_current_lifecycle",
+
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        },
+
+        {
+            "type": "action",
+            "name": "update-lifecycle",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_lifecycle_actions",
+                "func": "update_lifecycle",
+
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}",
+                    "expiration_days": "${expiration_days}"
+                }
+            }
+        },
+
+        {
+            "type": "action",
+            "name": "wait",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_common",
+                "func": "wait",
+
+                "arguments": {
+                    "seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "type": "action",
+            "name": "restore-lifecycle",
+
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.s3.experiments.toolkit.actions.s3_lifecycle_actions",
+                "func": "restore_original_lifecycle",
+
+                "arguments": {
+                    "bucket_name": "${bucket_name}",
+                    "aws_region": "${aws_region}"
+                }
+            }
+        }
+    ]
+}

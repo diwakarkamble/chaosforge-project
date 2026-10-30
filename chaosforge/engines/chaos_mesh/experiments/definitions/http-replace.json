@@ -1,0 +1,22 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh HTTP Replace",
+    "description": "Replaces matching HTTP request or response content.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "target": "Request",
+        "port": 8080,
+        "method": "GET",
+        "path": "/",
+        "duration": "30s",
+        "replace": {
+            "path": "/chaosforge"
+        }
+    },
+    "chaos_mesh": {
+        "kind": "HTTPChaos",
+        "action": "replace"
+    }
+}

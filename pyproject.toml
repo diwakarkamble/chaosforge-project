@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chaosforge"
+version = "1.0.0"
+description = "Campaign-driven chaos engineering platform"
+requires-python = ">=3.14"
+dynamic = ["dependencies"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.14",
+]
+
+[project.scripts]
+chaosforge = "chaosforge.interfaces.cli.main:main"
+chaosforge-web = "chaosforge.interfaces.web.__main__:main"
+
+[tool.setuptools]
+packages = {find = {include = ["chaosforge*"]}}
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.package-data]
+chaosforge = [
+  "catalog/*.json",
+  "engines/chaos_mesh/experiments/*.json",
+  "engines/chaos_mesh/experiments/definitions/*.json",
+  "engines/chaos_mesh/schemas/v2.8.7/*.yaml",
+  "interfaces/web/templates/*.html",
+  "interfaces/web/static/*.css",
+  "interfaces/web/static/*.js",
+  "interfaces/web/static/icons/*.svg",
+  "interfaces/web/static/icons/*.md",
+  "providers/aws/fis/*.json",
+  "providers/aws/components/*/experiments/*.json",
+  "providers/aws/components/*/experiments/toolkit/definitions/*.json",
+  "providers/aws/components/*/experiments/custom/*.json",
+  "providers/azure/components/aks/experiments/*.json",
+  "providers/azure/components/aks/experiments/toolkit/*.json",
+  "providers/azure/components/aks/experiments/chaos_studio/specs/*.json",
+  "providers/azure/components/*/experiments/*.json",
+  "providers/azure/components/*/experiments/chaos_studio/definitions/*.json",
+  "providers/azure/components/*/experiments/toolkit/definitions/*.json",
+  "providers/azure/components/*/experiments/custom/definitions/*.json",
+]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = [
+  "E402", # Web initialization must set runtime paths before local imports.
+  "E701", # Compact safety-check closures are kept readable in large check maps.
+  "E702", # Compact safety-check closures are kept readable in large check maps.
+  "E741", # Existing parser comprehensions use short local names.
+]

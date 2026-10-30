@@ -1,0 +1,20 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh HTTP Delay",
+    "description": "Injects delay into matching HTTP requests or responses.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "target": "Request",
+        "port": 8080,
+        "method": "GET",
+        "path": "/",
+        "duration": "30s",
+        "delay": "2s"
+    },
+    "chaos_mesh": {
+        "kind": "HTTPChaos",
+        "action": "delay"
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh Network Bandwidth",
+    "description": "Limits network bandwidth for selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "rate": "1mbps"
+    },
+    "chaos_mesh": {
+        "kind": "NetworkChaos",
+        "action": "bandwidth"
+    }
+}

@@ -1,0 +1,88 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.Python
+build/
+dist/
+pip-wheel-metadata/
+
+# Test, lint, type-check, and coverage artifacts
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage/
+htmlcov/
+coverage.xml
+coverage.json
+test-report.xml
+pytest-report.xml
+ruff-report.json
+ruff-report-raw.json
+ruff-report.html
+
+# Logs
+*.log
+chaostoolkit.log
+
+# Generated runtime state and artifacts
+runtime/
+journal.json
+chaos-journal-*.json
+evidence/
+sns_topic_policy_state.json
+reports/
+/reports/
+
+# Backup files
+*.bak
+*.bkp
+
+# Virtual environments
+venv/
+.venv/
+chaos-venv/
+
+# Local credentials and infrastructure state
+.env
+.env.*
+!.env.example
+.aws/
+.azure/
+*.pem
+*.key
+*.p12
+*.pfx
+*.tfstate
+*.tfstate.*
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Claude
+.claude/
+claude/
+
+# GitHub Copilot
+.github/
+.copilot/
+copilot/
+chaosforge/providers/azure/graphify-out/
+graphify-out/
+tests/functional/
+
+key_vault.yaml

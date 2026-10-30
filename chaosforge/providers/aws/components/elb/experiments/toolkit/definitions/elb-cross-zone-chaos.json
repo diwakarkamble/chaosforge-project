@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+
+  "title": "ELB Cross-Zone Load Balancing Chaos",
+
+  "description": "Temporarily disables cross-zone load balancing for a selected ELB target group and restores the original configuration during rollback.",
+
+  "configuration": {
+    "aws_region": null,
+    "target_group": null
+  },
+
+  "method": [
+    {
+      "name": "disable-cross-zone",
+
+      "type": "action",
+
+      "provider": {
+        "type": "python",
+
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_cross_zone_actions",
+
+        "func": "disable_cross_zone",
+
+        "arguments": {
+          "target_group_arn": "${target_group}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-cross-zone",
+
+      "type": "action",
+
+      "provider": {
+        "type": "python",
+
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_cross_zone_actions",
+
+        "func": "restore_cross_zone",
+
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

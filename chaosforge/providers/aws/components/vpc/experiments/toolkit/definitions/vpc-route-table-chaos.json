@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "title": "VPC Route Table Chaos",
+  "description": "Temporarily remove a selected route and restore it after the configured wait.",
+  "configuration": {
+    "route_table_id": null,
+    "selected_route": null,
+    "aws_region": null,
+    "wait_seconds": 300
+  },
+  "method": [
+    {
+      "name": "Capture and Remove Route",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.vpc.experiments.toolkit.actions.vpc_route_table_actions",
+        "func": "capture_and_remove_route",
+        "arguments": {
+          "route_table_id": "${route_table_id}",
+          "selected_route": "${selected_route}",
+          "region": "${aws_region}"
+        }
+      }
+    },
+    {
+      "name": "Wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.common_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "name": "Restore Route",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.vpc.experiments.toolkit.actions.vpc_route_table_actions",
+        "func": "rollback_route"
+      }
+    }
+  ]
+}

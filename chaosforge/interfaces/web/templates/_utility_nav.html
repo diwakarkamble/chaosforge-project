@@ -1,0 +1,25 @@
+<div class="top-campaign-cart utility-nav">
+    <div class="cloud-identity {{ 'cloud-identity-authenticated' if cloud_identity and cloud_identity.authenticated else 'cloud-identity-anonymous' }}"
+         {% if cloud_identity %}id="cloud-identity" data-cloud="{{ cloud }}"{% endif %}>
+        <i class="bi {{ 'bi-shield-check' if cloud_identity and cloud_identity.authenticated else 'bi-shield-exclamation' }}" {% if cloud_identity %}id="cloud-identity-icon"{% endif %}></i>
+        <div>
+            <span {% if cloud_identity %}id="cloud-identity-label"{% endif %}>{{ cloud_identity.label if cloud_identity else 'Cloud identity' }}</span>
+            <strong {% if cloud_identity %}id="cloud-identity-name"{% endif %}>{{ cloud_identity.name if cloud_identity else 'Not logged in' }}</strong>
+        </div>
+    </div>
+    <div class="utility-actions">
+        <span class="utility-timezone" tabindex="0" title="{{ current_timezone }}">
+            {{ current_timezone_offset }}
+            <span class="utility-timezone-name"> {{ current_timezone }}</span>
+        </span>
+        <div class="utility-icons">
+            <a class="utility-icon" href="{{ url_for('campaign', cloud=cloud) }}" aria-label="Current {{ cloud|upper }} campaign with {{ campaign_count }} experiments">
+                <i class="bi bi-cart3"></i><span class="campaign-cart-count">{{ campaign_count }}</span>
+            </a>
+            <a class="utility-icon" href="{{ url_for('settings', cloud=cloud) }}" aria-label="Settings">
+                <i class="bi bi-gear-fill"></i><span class="visually-hidden">Settings</span>
+            </a>
+        </div>
+    </div>
+</div>
+<script defer src="{{ url_for('static', filename='cloud-identity.js') }}"></script>

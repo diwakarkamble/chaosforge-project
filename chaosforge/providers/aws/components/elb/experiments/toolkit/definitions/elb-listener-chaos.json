@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "title": "Elastic Load Balancing Listener Attribute Chaos",
+  "description": "Temporarily modifies a selected ELB listener attribute and restores the original value during rollback.",
+  "configuration": {
+    "aws_region": null,
+    "listener": null,
+    "attribute_key": null,
+    "attribute_value": null
+  },
+  "method": [
+    {
+      "name": "modify-elb-listener-attribute",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_listener_actions",
+        "func": "modify_listener_attribute",
+        "arguments": {
+          "listener_arn": "${listener}",
+          "attribute_key": "${attribute_key}",
+          "attribute_value": "${attribute_value}",
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "name": "restore-elb-listener-attribute",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.elb.experiments.toolkit.actions.elb_listener_actions",
+        "func": "restore_listener_attribute",
+        "arguments": {
+          "aws_region": "${aws_region}"
+        }
+      }
+    }
+  ]
+}

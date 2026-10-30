@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "title": "AWS SNS Subscription Filter Policy Chaos Test",
+  "description": "Temporarily modify the SNS Subscription Filter Policy and restore the original configuration.",
+
+  "configuration": {
+    "subscription_arn": null,
+    "region": null,
+    "wait_seconds": "300"
+  },
+
+  "method": [
+    {
+      "name": "capture-current-filter-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_filter_actions",
+        "func": "capture_current_filter_policy",
+        "arguments": {
+          "subscription_arn": "${subscription_arn}",
+          "region": "${region}",
+          "filter_policy": "${filter_policy}"
+        }
+      }
+    },
+    {
+      "name": "update-filter-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_filter_actions",
+        "func": "update_filter_policy",
+        "arguments": {
+          "subscription_arn": "${subscription_arn}",
+          "region": "${region}"
+        }
+      }
+    },
+    {
+      "name": "wait",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_filter_actions",
+        "func": "wait_for_duration",
+        "arguments": {
+          "wait_seconds": "${wait_seconds}"
+        }
+      }
+    }
+  ],
+
+  "rollbacks": [
+    {
+      "name": "restore-filter-policy",
+      "type": "action",
+      "provider": {
+        "type": "python",
+        "module": "chaosforge.providers.aws.components.sns.experiments.toolkit.actions.sns_subscription_filter_actions",
+        "func": "restore_filter_policy",
+        "arguments": {
+          "subscription_arn": "${subscription_arn}",
+          "region": "${region}"
+        }
+      }
+    }
+  ]
+}

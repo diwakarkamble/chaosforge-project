@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "title": "Chaos Mesh IO Latency",
+    "description": "Injects filesystem IO latency into selected Kubernetes pods.",
+    "configuration": {
+        "namespace": "default",
+        "mode": "one",
+        "selector": {},
+        "duration": "30s",
+        "volume_path": "/tmp",
+        "latency": "100ms"
+    },
+    "chaos_mesh": {
+        "kind": "IOChaos",
+        "action": "latency"
+    }
+}

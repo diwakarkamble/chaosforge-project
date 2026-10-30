@@ -1,0 +1,54 @@
+{
+    "version": "1.0.0",
+    "title": "EKS Node Cordon Chaos",
+    "description": "Cordons a selected Kubernetes node so that new workloads are not scheduled on it, waits for the configured duration, and then uncordons the node.",
+
+    "configuration": {
+        "eks_cluster": null,
+        "node_name": null,
+        "wait_seconds": 30,
+        "aws_region": null
+    },
+
+    "method": [
+        {
+            "name": "cordon-eks-node",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_cordon_actions",
+                "func": "cordon_eks_node",
+                "arguments": {
+                    "node_name": "${node_name}"
+                }
+            }
+        },
+        {
+            "name": "wait",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_actions",
+                "func": "wait_for_duration",
+                "arguments": {
+                    "wait_seconds": "${wait_seconds}"
+                }
+            }
+        }
+    ],
+
+    "rollbacks": [
+        {
+            "name": "uncordon-eks-node",
+            "type": "action",
+            "provider": {
+                "type": "python",
+                "module": "chaosforge.providers.aws.components.eks.experiments.toolkit.actions.eks_node_cordon_actions",
+                "func": "uncordon_eks_node",
+                "arguments": {
+                    "node_name": "${node_name}"
+                }
+            }
+        }
+    ]
+}

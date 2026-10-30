@@ -1,0 +1,8 @@
+{
+  "service": "azure_cosmos_db",
+  "display_name": "Azure Cosmos DB",
+  "experiments": [
+    {"id": "azure-cosmos-db-failover", "name": "Fail Over Cosmos DB", "description": "Azure Chaos Studio classic Cosmos DB failover fault.", "source": "Azure Chaos Studio", "engine": "Azure Chaos Studio", "json": "classic_definition.json", "inputs": [{"name": "resource_id", "label": "Cosmos DB Account", "type": "azure_component_resource", "required": true}, {"name": "chaos_identity_id", "label": "Azure Chaos Identity", "type": "azure_component_chaos_identity", "required": true}, {"name": "read_region", "label": "Read Region To Promote", "type": "text", "required": true}]},
+    {"id":"azure-cosmos-db-public-access-disruption","name":"Disable Cosmos DB Public Access","description":"Disable Cosmos DB public access for the configured duration and restore the original setting during rollback.","source":"Azure SDK custom action","engine":"Azure SDK","json":"custom/definitions/azure-cosmos-db-public-access-disruption.json","inputs":[{"name":"resource_id","label":"Cosmos DB Account","type":"azure_component_resource","required":true},{"name":"duration_seconds","label":"Fault Duration (seconds)","type":"integer","default":300,"min":1,"max":3600,"required":true}]}
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "kind": "VmssCpuPressure",
+  "faultType": "cpuPressure",
+  "parameters": {
+    "pressureLevel": "95",
+    "virtualMachineScaleSetInstances": "[0]"
+  }
+}
